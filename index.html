@@ -27,7 +27,10 @@ svg .ink{stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:r
 
 /* ── 頂端選單（7 格平均，字大不用滑） ── */
 .topbar{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--paper);border-bottom:3px solid var(--ink);padding-top:env(safe-area-inset-top)}
-.nav{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:8px 6px}
+.nav{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr) 40px;gap:2px;padding:8px 6px;align-items:center}
+.refresh{width:38px;height:38px;border:3px solid var(--ink);border-radius:50%;background:var(--mizu);font-size:17px;line-height:1;display:grid;place-items:center;padding:0}
+.refresh:active{transform:rotate(90deg) scale(.92)}
+.nav a{white-space:nowrap}
 .nav a{text-decoration:none;text-align:center;font-size:16px;line-height:1;padding:11px 0;border:3px solid transparent;border-radius:999px}
 .nav a.on{background:var(--yellow);border-color:var(--ink)}
 
@@ -282,6 +285,7 @@ footer svg{width:130px;margin:0 auto 6px}
     <a href="#stay">住宿</a>
     <a href="#todo">準備</a>
     <a href="#help">求助</a>
+    <button class="refresh" id="refreshBtn" aria-label="重新整理，取得最新行程"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="#3E3A39" stroke-width="2.8" stroke-linecap="round"/><path d="M20 3v5h-5" fill="none" stroke="#3E3A39" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
 </header>
 
@@ -1327,7 +1331,7 @@ $("sosList").innerHTML = SOS.map(h=>`
 $("foot").innerHTML = `<svg viewBox="0 0 100 60" aria-hidden="true">${cloud(4,22,.9,"anim-drift")}<g class="anim-float">${sun(72,24,14)}</g></svg>一路平安，玩得開心`;
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T13:48:09";
+const SITE_VERSION = "2026-10-09T13:52:19";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -1355,6 +1359,10 @@ const SITE_VERSION = "2026-10-09T13:48:09";
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) onShow(); });
   window.addEventListener("pageshow", e=>{ if(e.persisted) onShow(); });
   window.addEventListener("focus", checkUpdate);
+  $("refreshBtn").addEventListener("click", ()=>{
+    $("toast").textContent = "🔄 正在更新最新行程…"; $("toast").hidden = false;
+    setTimeout(()=>location.replace(location.pathname + "?v=" + Date.now() + location.hash), 400);
+  });
   checkUpdate();
   setInterval(()=>{ if(!document.hidden) checkUpdate(); }, 5*60*1000);
 })();
