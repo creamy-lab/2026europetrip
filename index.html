@@ -1730,40 +1730,8 @@ $("tfList").addEventListener("change", async e=>{
   }
   try{ await sbSend("PATCH",`taxfree?id=eq.${id}`,{scanned:e.target.checked}); loadTax(); }catch(err){ $("tfMsg").textContent = "沒有存到，請再試一次。"; }
 });
-/* 收據辨識（Tesseract.js，在手機上辨識，不需帳號） */
-let receiptPath = null, tessLoading = null;
-function loadTess(){
-  if (window.Tesseract) return Promise.resolve();
-  if (!tessLoading) tessLoading = new Promise((res,rej)=>{
-    const sc = document.createElement("script");
-    sc.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
-    sc.onload = res; sc.onerror = ()=>{ tessLoading = null; rej(new Error("load")); };
-    document.head.appendChild(sc);
-  });
-  return tessLoading;
-}
-function parseAmt(t){
-  t = t.replace(/\s/g,"");
-  if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(t)) t = t.replace(/\./g,"").replace(",",".");      // 1.234,56
-  else if (/^\d{1,3}(,\d{3})+(\.\d{1,2})?$/.test(t)) t = t.replace(/,/g,"");                    // 1,234.56
-  else t = t.replace(",",".");                                                                   // 234,56
-  const v = parseFloat(t); return isFinite(v) ? v : null;
-}
-function readReceipt(text){
-  const lines = text.split("\n").map(l=>l.trim()).filter(Boolean);
-  const num = /(\d{1,3}(?:[ .,]\d{3})*(?:[.,]\d{1,2})|\d+[.,]\d{2})/g;
-  let total = null;
-  const key = /(TOTAL|MONTANT|A PAGAR|À PAYER|IMPORTE|NET A PAYER|TTC|SOMA|VALOR)/i;
-  for (const l of lines){ if (key.test(l) && !/SUB|HT\b|TVA|IVA|VAT|TAX/i.test(l)){ const m = l.match(num); if (m){ const v = parseAmt(m[m.length-1]); if (v) total = Math.max(total||0, v); } } }
-  if (!total){ const all = (text.match(num)||[]).map(parseAmt).filter(v=>v && v<100000); if (all.length) total = Math.max(...all); }
-  const store = lines.find(l=>/[A-Za-zÀ-ÿ]{3,}/.test(l) && !/(TICKET|FACTURA|FACTURE|RECIBO|RECU|REÇU|NIF|TVA|SIRET|TEL|DATE|FECHA)/i.test(l)) || "";
-  let item = "";
-  if (total){
-    const it = lines.find(l=>!key.test(l) && !/(TVA|IVA|VAT|TAX|CB|CARTE|VISA|MASTER)/i.test(l) && (l.match(num)||[]).some(x=>parseAmt(x)===total) && /[A-Za-zÀ-ÿ]{3,}/.test(l));
-    if (it) item = it.replace(num,"").replace(/[€x*]/gi," ").replace(/[^A-Za-zÀ-ÿ0-9 &'.-]/g,"").replace(/\s+/g," ").trim().slice(0,40);
-  }
-  return {store: store.replace(/[^A-Za-zÀ-ÿ0-9 &'.-]/g,"").trim().slice(0,40), total, item};
-}
+/* 收據辨識：交給 AI（Claude Haiku，透過 Supabase Edge Function） */
+let receiptPath = null;
 const COUNTRY_ZH = {france:"法國", monaco:"摩納哥", portugal:"葡萄牙", spain:"西班牙", espana:"西班牙", "españa":"西班牙", korea:"韓國", "south korea":"韓國", "republic of korea":"韓國"};
 function guessCountry(aiCountry){
   const k = String(aiCountry||"").toLowerCase().trim();
@@ -1809,19 +1777,6 @@ function showAiReview(d){
     loadTax();
   };
 }
-async function basicOcr(blob){
-  const msg = $("ocrMsg");
-  msg.textContent = "改用基本辨識中…（第一次約 10–20 秒）";
-  await loadTess();
-  const out = await Tesseract.recognize(blob, "eng");
-  const {store, total, item} = readReceipt(out.data.text || "");
-  if (store) $("tfStore").value = store;
-  if (item) $("tfItem").value = item;
-  if (total) $("tfAmt").value = total;
-  const c = hereCity(); $("tfCur").value = (c==="首爾"||c==="仁川") ? "KRW" : "EUR";
-  $("tfCountry").value = guessCountry("");
-  msg.textContent = (store||total) ? "讀到一部分，請確認店名、商品和金額，再按「＋ 記一筆」。" : "看不太清楚，請手動輸入（收據照片已保存）。";
-}
 $("tfCam").addEventListener("change", async e=>{
   const f = e.target.files[0]; if(!f) return;
   const msg = $("ocrMsg");
@@ -1840,8 +1795,8 @@ $("tfCam").addEventListener("change", async e=>{
       showAiReview(d);
     }catch(err){
       const why = String(err && err.message || err).slice(0,160);
-      await basicOcr(blob);
-      $("ocrMsg").textContent += `（AI 沒有讀到，原因：${why}）`;
+      msg.textContent = `⚠️ AI 這次沒有讀到收據，請在下面手動輸入店名、商品和金額（收據照片已保存）。原因：${why}`;
+      $("tfStore").focus();
     }
   }catch(err){
     msg.textContent = "讀取失敗（可能網路不穩），請手動輸入店名和金額。";
@@ -2005,7 +1960,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T17:54:29";
+const SITE_VERSION = "2026-10-09T17:56:33";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
