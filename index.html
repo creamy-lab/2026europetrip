@@ -87,6 +87,10 @@ section:first-child{margin-top:0}
 .signer[aria-pressed="true"] .seal.stamp{animation:stamp .45s cubic-bezier(.3,1.6,.5,1)}
 @keyframes stamp{0%{transform:scale(1.6) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(-8deg);opacity:1}}
 .pledge .done{margin-top:12px;font-size:20px;min-height:1.6em}
+.pledge-ask{margin-top:14px;padding:12px 14px;border:3px dashed var(--ink);border-radius:var(--r-sm);background:var(--yellow);font-size:19px}
+.pledge-note{font-size:15px;margin-top:4px}
+.signer small{display:block;font-size:13px;line-height:1.2;min-height:1.2em}
+.signer[aria-disabled="true"]{cursor:default}
 .promise{margin-top:18px;padding:16px 18px}
 .promise h4{font-size:21px;font-weight:400;margin-bottom:6px}
 .promise li{list-style:none;padding:10px 0;font-size:17px}
@@ -302,7 +306,15 @@ footer svg{width:130px;margin:0 auto 6px}
     <div class="card pledge">
       <p>我們都同意，一起開開心心出發！</p>
       <div class="signers" id="signers"></div>
+      <div class="pledge-ask" id="pledgeAsk" hidden>
+        <p id="pledgeAskText"></p>
+        <div class="btn-row">
+          <button class="btn" id="pledgeYes">確定蓋章 ✋</button>
+          <button class="btn alt" id="pledgeNo">再想想</button>
+        </div>
+      </div>
       <p class="done" id="pledgeDone"></p>
+      <p class="pledge-note" id="pledgeNote">蓋章後全家每支手機都看得到，蓋了就不能反悔喔！</p>
     </div>
     <div class="card promise">
       <h4>🌟 導遊給爸媽的安心承諾</h4>
@@ -1010,21 +1022,66 @@ $("ruleList").innerHTML = RULES.map((r,i)=>`
     <div><h4>${r.e} ${esc(r.t)}</h4><p>${esc(r.d)}</p></div></li>`).join("");
 $("promiseList").innerHTML = PROMISES.map(p=>`<li><b>${esc(p.t)}</b>${esc(p.d)}</li>`).join("");
 
-const SKEY = "trip2026-pledge";
-let signed = store.get(SKEY);
-$("signers").innerHTML = SIGNERS.map((n,i)=>`
-  <button class="signer" data-s="${i}" aria-pressed="${!!signed[i]}"><span class="seal">${signed[i]?"同意":"按這裡"}</span>${esc(n)}</button>`).join("");
-function pledgeMsg(){ $("pledgeDone").textContent = SIGNERS.every((_,i)=>signed[i]) ? "🎉 全家宣誓完成，出發囉！" : ""; }
+// 宣誓蓋章：存在 Supabase，全家共用；只能新增、不能修改刪除（蓋了不能反悔）
+const SB_URL = "https://bxnzhevaikbvtydufpai.supabase.co";
+const SB_KEY = "sb_publishable_tEnBnvovVMkLkfUmWmCERQ_8NgVdJrr";
+let pledges = {};          // signer -> signed_at
+let asking = null;
+const fmtSigned = iso => { const d = new Date(iso); return `${d.getMonth()+1}/${d.getDate()} 宣誓`; };
+function renderSigners(){
+  $("signers").innerHTML = SIGNERS.map((n,i)=>{
+    const at = pledges[n];
+    return `<button class="signer" data-s="${i}" aria-pressed="${!!at}" aria-disabled="${!!at}">
+      <span class="seal">${at?"同意":"按這裡"}</span>${esc(n)}<small>${at?esc(fmtSigned(at)):""}</small></button>`;
+  }).join("");
+  const all = SIGNERS.every(n=>pledges[n]);
+  $("pledgeDone").textContent = all ? "🎉 全家宣誓完成，出發囉！" : "";
+}
+async function loadPledges(){
+  try{
+    const r = await fetch(`${SB_URL}/rest/v1/pledges?select=signer,signed_at`, {headers:{apikey:SB_KEY}, cache:"no-store"});
+    if(!r.ok) throw new Error(r.status);
+    const rows = await r.json();
+    const next = {}; rows.forEach(x=>next[x.signer]=x.signed_at);
+    const changed = JSON.stringify(next)!==JSON.stringify(pledges);
+    pledges = next;
+    if(changed && !asking) renderSigners();
+  }catch(e){ /* 沒網路時保持現狀 */ }
+}
+async function signPledge(name){
+  const r = await fetch(`${SB_URL}/rest/v1/pledges`, {method:"POST",
+    headers:{apikey:SB_KEY,"Content-Type":"application/json",Prefer:"return=minimal"},
+    body: JSON.stringify({signer:name})});
+  if(!r.ok && r.status!==409) throw new Error(r.status);   // 409 = 已經蓋過了
+}
 $("signers").addEventListener("click", e=>{
   const b = e.target.closest(".signer"); if(!b) return;
-  const i = b.dataset.s; signed[i] = !signed[i];
-  b.setAttribute("aria-pressed", signed[i]);
-  const seal = b.querySelector(".seal");
-  seal.textContent = signed[i] ? "同意" : "按這裡";
-  seal.classList.remove("stamp"); void seal.offsetWidth; if(signed[i]) seal.classList.add("stamp");
-  store.set(SKEY, signed); pledgeMsg();
+  const name = SIGNERS[+b.dataset.s];
+  if(pledges[name]) return;                                  // 已蓋章：鎖住
+  asking = name;
+  $("pledgeAskText").textContent = `${name}，蓋了就不能反悔喔！確定要蓋章嗎？`;
+  $("pledgeAsk").hidden = false; $("pledgeYes").focus();
 });
-pledgeMsg();
+$("pledgeNo").onclick = ()=>{ asking=null; $("pledgeAsk").hidden = true; renderSigners(); };
+$("pledgeYes").onclick = async ()=>{
+  const name = asking; if(!name) return;
+  $("pledgeYes").disabled = true;
+  try{
+    await signPledge(name);
+    pledges[name] = pledges[name] || new Date().toISOString();
+    asking = null; $("pledgeAsk").hidden = true;
+    renderSigners();
+    const seal = $("signers").querySelector(`[data-s="${SIGNERS.indexOf(name)}"] .seal`);
+    if(seal) seal.classList.add("stamp");
+    loadPledges();
+  }catch(err){
+    $("pledgeAskText").textContent = "網路不太穩，蓋章沒有成功，請稍後再按一次。";
+  }finally{ $("pledgeYes").disabled = false; }
+};
+renderSigners();
+loadPledges();
+setInterval(()=>{ if(!document.hidden) loadPledges(); }, 15000);
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) loadPledges(); });
 
 /* ══════════════ 交通 ══════════════ */
 const planeIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#FFFCF6" ${INK}/><path d="M9 21 L19 19 L16 12 L19 12 L25 19 L29 19 Q32 20 29 21 L25 21 L19 28 L16 28 L19 21 Z" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2" stroke-linejoin="round"/></svg>`;
