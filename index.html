@@ -310,6 +310,18 @@ section:first-child{margin-top:0}
 .al-day h4 small{font-size:14px;margin-left:6px}
 .chap-lock{margin-top:10px;font-size:16px;padding:12px;border:3px dashed var(--ink);border-radius:var(--r-sm);text-align:center;background:var(--paper)}
 
+/* ── AI 讀收據確認 ── */
+.ai-review{margin-top:12px;padding:12px 14px;background:var(--paper)}
+.ai-review h4{font-size:18px;font-weight:400}
+.ai-review label{display:block;font-size:14px;margin-top:8px}
+.ai-review input[type=text]{width:100%;font:inherit;font-size:17px;padding:6px 10px;border:2.5px solid var(--ink);border-radius:12px;background:var(--card);color:var(--ink)}
+.ai-item{display:grid;grid-template-columns:28px 1fr 96px;gap:8px;align-items:center;margin-top:8px}
+.ai-item > *{min-width:0}
+.ai-item input[type=checkbox]{width:24px;height:24px;accent-color:#7FB069}
+.ai-item input.pr{text-align:right;font-variant-numeric:tabular-nums}
+.ai-tot{font-size:16px;margin-top:10px}
+.ai-review .btn{width:100%;margin-top:12px}
+
 /* ── 相簿縮圖與放大預覽 ── */
 .ph-grid .th{display:block;aspect-ratio:1;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden;padding:0;max-width:100%;background:var(--paper);cursor:zoom-in}
 .ph-grid .th img{width:100%;height:100%;object-fit:cover;display:block}
@@ -520,6 +532,7 @@ footer svg{width:130px;margin:0 auto 6px}
       <p class="ck-sub">每買一件可以退稅的東西就記一筆，12/7 在巴塞隆納機場辦退稅時拿出來對照。</p>
       <label class="ph-up" style="background:var(--yellow)">📷 拍收據自動填寫<input type="file" accept="image/*" capture="environment" id="tfCam"></label>
       <p class="ck-msg" id="ocrMsg" role="status"></p>
+      <div class="ai-review card" id="aiReview" hidden></div>
       <img id="ocrPrev" alt="收據預覽" hidden style="max-width:100%;max-height:220px;border:3px solid var(--ink);border-radius:12px;margin-top:6px">
       <form id="tfForm" class="tf-form">
         <label for="tfStore">店名</label>
@@ -1683,19 +1696,23 @@ async function loadTax(){
     $("tfTotal").textContent = "";
   }catch(e){ $("tfList").innerHTML = ""; $("tfTotal").textContent = "暫時讀不到，有網路時會自動顯示"; }
 }
+async function addTaxRow({store, amount, currency, country, item, remark, city}){
+  const c = hereCity(), t = new Date();
+  const base = {store, amount, currency, country};
+  const rec = Object.assign({}, base, {item:item||null, remark:remark||null,
+    city: city || (todayIndex()>=0 ? (c==="回家"?"高雄":c) : country),
+    captured_on: `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`});
+  if (receiptPath) rec.receipt = receiptPath;
+  try{ await sbSend("POST","taxfree",rec); }
+  catch(e1){ await sbSend("POST","taxfree",base); }   // 資料表還沒加新欄位時，至少存基本資料
+}
 $("tfForm").addEventListener("submit", async e=>{
   e.preventDefault();
   const store = $("tfStore").value.trim(); if(!store) return;
   $("tfAdd").disabled = true;
   try{
-    const c = hereCity(), t = new Date();
-    const base = {store, amount: readMoney($("tfAmt").value), currency:$("tfCur").value, country:$("tfCountry").value};
-    const rec = Object.assign({}, base, {item:$("tfItem").value.trim()||null, remark:$("tfRemark").value.trim()||null,
-      city: todayIndex()>=0 ? (c==="回家"?"高雄":c) : $("tfCountry").value,
-      captured_on: `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`});
-    if (receiptPath) rec.receipt = receiptPath;
-    try{ await sbSend("POST","taxfree",rec); }
-    catch(e1){ await sbSend("POST","taxfree",base); }   // 資料表還沒加新欄位時，至少存基本資料
+    await addTaxRow({store, amount: readMoney($("tfAmt").value), currency:$("tfCur").value, country:$("tfCountry").value,
+      item:$("tfItem").value.trim(), remark:$("tfRemark").value.trim()});
     $("tfStore").value=""; $("tfAmt").value=""; $("tfItem").value=""; $("tfRemark").value=""; $("tfMsg").textContent = "已記下 ✓";
     receiptPath = null; $("ocrPrev").hidden = true; $("ocrMsg").textContent = "";
     loadTax();
@@ -1747,32 +1764,88 @@ function readReceipt(text){
   }
   return {store: store.replace(/[^A-Za-zÀ-ÿ0-9 &'.-]/g,"").trim().slice(0,40), total, item};
 }
+const COUNTRY_ZH = {france:"法國", monaco:"摩納哥", portugal:"葡萄牙", spain:"西班牙", espana:"西班牙", "españa":"西班牙", korea:"韓國", "south korea":"韓國", "republic of korea":"韓國"};
+function guessCountry(aiCountry){
+  const k = String(aiCountry||"").toLowerCase().trim();
+  if (COUNTRY_ZH[k]) return COUNTRY_ZH[k];
+  const c = hereCity();
+  return {"尼斯":"法國","芒通":"法國","格拉斯":"法國","巴黎":"法國","摩納哥":"摩納哥","里斯本":"葡萄牙","首爾":"韓國","仁川":"韓國"}[c] || "西班牙";
+}
+function blobToB64(blob){ return new Promise((res,rej)=>{ const r = new FileReader(); r.onload = ()=>res(String(r.result).split(",")[1]); r.onerror = rej; r.readAsDataURL(blob); }); }
+async function aiRead(blob){
+  const r = await fetch(`${SB_URL}/functions/v1/read-receipt`, {method:"POST", headers: sbH({"Content-Type":"application/json"}), body: JSON.stringify({image: await blobToB64(blob)})});
+  const j = await r.json().catch(()=>({}));
+  if (!r.ok || j.error) throw new Error(j.error || r.status);
+  return j;
+}
+function showAiReview(d){
+  const items = (Array.isArray(d.items) ? d.items : []).filter(x=>x && (x.name || x.price!=null));
+  const cur = d.currency==="KRW" ? "KRW" : "EUR", sym = cur==="KRW" ? "₩" : "€";
+  const country = guessCountry(d.country);
+  const box = $("aiReview");
+  box.innerHTML = `<h4>✨ 讀到的內容，請確認</h4>
+    <label for="aiStore">店名</label><input type="text" id="aiStore" value="${esc(d.store||"")}">
+    ${items.length ? items.map((it,k)=>`<div class="ai-item">
+        <input type="checkbox" id="aiChk${k}" checked aria-label="記下這一項">
+        <input type="text" id="aiName${k}" value="${esc(it.name||"")}" aria-label="商品">
+        <input type="text" class="pr" id="aiPrice${k}" inputmode="decimal" value="${it.price!=null?esc(it.price):""}" aria-label="價格（${sym}）">
+      </div>`).join("") : `<p class="ck-sub" style="margin-top:8px">沒有讀到個別商品，會用總額記一筆。</p>`}
+    <p class="ai-tot">總額：${sym}${d.total!=null?Number(d.total).toLocaleString("zh-TW",{maximumFractionDigits:2}):"—"}・${esc(country)}${d.city?`・${esc(d.city)}`:""}</p>
+    <button class="btn" id="aiSave">＋ 全部記下</button>
+    <button class="btn alt" id="aiCancel">不要，重拍</button>`;
+  box.hidden = false;
+  $("aiCancel").onclick = ()=>{ box.hidden = true; $("ocrMsg").textContent = ""; $("ocrPrev").hidden = true; receiptPath = null; };
+  $("aiSave").onclick = async ()=>{
+    const store = $("aiStore").value.trim() || "（未填店名）";
+    const rows = items.length
+      ? items.map((it,k)=>({chk:$("aiChk"+k).checked, item:$("aiName"+k).value.trim(), amount:readMoney($("aiPrice"+k).value)})).filter(x=>x.chk)
+      : [{item:null, amount: d.total!=null ? Math.round(Number(d.total)*100)/100 : null}];
+    if (!rows.length) return;
+    $("aiSave").disabled = true;
+    let ok = 0;
+    for (const r of rows){ try{ await addTaxRow({store, amount:r.amount, currency:cur, country, item:r.item}); ok++; }catch(e){} }
+    box.hidden = true; $("ocrPrev").hidden = true; receiptPath = null;
+    $("ocrMsg").textContent = ok===rows.length ? `✅ 已記下 ${ok} 筆` : `記下 ${ok} 筆，${rows.length-ok} 筆沒有存到，請再試一次。`;
+    loadTax();
+  };
+}
+async function basicOcr(blob){
+  const msg = $("ocrMsg");
+  msg.textContent = "改用基本辨識中…（第一次約 10–20 秒）";
+  await loadTess();
+  const out = await Tesseract.recognize(blob, "eng");
+  const {store, total, item} = readReceipt(out.data.text || "");
+  if (store) $("tfStore").value = store;
+  if (item) $("tfItem").value = item;
+  if (total) $("tfAmt").value = total;
+  const c = hereCity(); $("tfCur").value = (c==="首爾"||c==="仁川") ? "KRW" : "EUR";
+  $("tfCountry").value = guessCountry("");
+  msg.textContent = (store||total) ? "讀到一部分，請確認店名、商品和金額，再按「＋ 記一筆」。" : "看不太清楚，請手動輸入（收據照片已保存）。";
+}
 $("tfCam").addEventListener("change", async e=>{
   const f = e.target.files[0]; if(!f) return;
   const msg = $("ocrMsg");
+  $("aiReview").hidden = true;
   try{
     const blob = await shrink(f);
     $("ocrPrev").src = URL.createObjectURL(blob); $("ocrPrev").hidden = false;
-    msg.textContent = "上傳收據照片中…";
+    receiptPath = null;
     const path = `receipts/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
     fetch(`${SB_URL}/storage/v1/object/trip-photos/${path}`, {method:"POST", headers: sbH({"Content-Type":"image/jpeg","x-upsert":"false"}), body: blob})
       .then(r=>{ if(r.ok) receiptPath = path; }).catch(()=>{});
-    msg.textContent = "辨識收據中…（第一次要下載辨識工具，約 10–20 秒）";
-    await loadTess();
-    const out = await Tesseract.recognize(blob, "eng");
-    const {store, total, item} = readReceipt(out.data.text || "");
-    if (store) $("tfStore").value = store;
-    if (item) $("tfItem").value = item;
-    if (total) $("tfAmt").value = total;
-    const c = hereCity(); $("tfCur").value = (c==="首爾"||c==="仁川") ? "KRW" : "EUR";
-    const country = {"尼斯":"法國","芒通":"法國","格拉斯":"法國","巴黎":"法國","摩納哥":"摩納哥","里斯本":"葡萄牙","首爾":"韓國","仁川":"韓國"}[c] || "西班牙";
-    $("tfCountry").value = country;
-    msg.textContent = (store||total) ? "✅ 讀到了！請確認店名、商品和金額正確，再按「＋ 記一筆」。" : "看不太清楚，請手動輸入店名和金額（收據照片已保存）。";
-    $("tfStore").focus();
+    msg.textContent = "✨ AI 讀收據中…（約 3–10 秒）";
+    try{
+      const d = await aiRead(blob);
+      msg.textContent = "";
+      showAiReview(d);
+    }catch(err){
+      await basicOcr(blob);
+    }
   }catch(err){
-    msg.textContent = "辨識工具載入失敗（可能網路不穩），請手動輸入店名和金額。";
+    msg.textContent = "讀取失敗（可能網路不穩），請手動輸入店名和金額。";
   }finally{ e.target.value = ""; }
 });
+
 
 let delArm = null;
 $("tfList").addEventListener("click", async e=>{
@@ -1930,7 +2003,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T17:12:19";
+const SITE_VERSION = "2026-10-09T17:21:00";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
