@@ -236,6 +236,8 @@ section:first-child{margin-top:0}
 .driver .zh{font-size:17px;text-align:center;margin-bottom:12px}
 
 footer{text-align:center;margin-top:44px;font-size:18px}
+.ver{text-align:center;font-size:13px;margin-top:6px;opacity:.7}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:120;text-align:center;font-size:19px;padding:12px;border:3px solid var(--ink);border-radius:999px;background:var(--yellow);box-shadow:var(--shadow)}
 footer svg{width:130px;margin:0 auto 6px}
 
 /* ── 動畫 ── */
@@ -368,7 +370,10 @@ footer svg{width:130px;margin:0 auto 6px}
   </section>
 
   <footer id="foot"></footer>
+  <p class="ver" id="verLine"></p>
 </main>
+
+<div class="toast" id="toast" role="status" hidden>🔄 行程有更新，正在重新整理…</div>
 
 <div class="driver" id="bkModal" role="dialog" aria-modal="true" aria-label="給櫃檯看的訂單">
   <p class="zh">把手機拿給櫃檯人員看 👇</p>
@@ -998,6 +1003,7 @@ function todayIndex(){
 }
 function renderToday(){
   const el = $("today"), i = todayIndex(), now = new Date();
+  el.hidden = false;
   if (i < 0){
     if (now < new Date(TRIP.start)){
       const d = DAYS[0];
@@ -1319,6 +1325,39 @@ $("sosList").innerHTML = SOS.map(h=>`
 
 /* ══════════════ 頁尾 ══════════════ */
 $("foot").innerHTML = `<svg viewBox="0 0 100 60" aria-hidden="true">${cloud(4,22,.9,"anim-drift")}<g class="anim-float">${sun(72,24,14)}</g></svg>一路平安，玩得開心`;
+
+/* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
+const SITE_VERSION = "2026-10-09T13:48:09";
+(function(){
+  const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
+  if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
+  let checking = false;
+  async function checkUpdate(){
+    if (checking || !v) return; checking = true;
+    try{
+      const r = await fetch(`version.json?t=${Date.now()}`, {cache:"no-store"});
+      if (r.ok){
+        const j = await r.json();
+        if (j.version && j.version !== v){
+          $("toast").hidden = false;
+          setTimeout(()=>location.replace(location.pathname + "?v=" + encodeURIComponent(j.version) + location.hash), 900);
+          return;
+        }
+      }
+    }catch(e){}
+    checking = false;
+  }
+  function onShow(){
+    renderToday();                       // 「今天」卡片跟著時間更新
+    if (typeof cur === "number") loadWeather(cur);
+    checkUpdate();
+  }
+  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) onShow(); });
+  window.addEventListener("pageshow", e=>{ if(e.persisted) onShow(); });
+  window.addEventListener("focus", checkUpdate);
+  checkUpdate();
+  setInterval(()=>{ if(!document.hidden) checkUpdate(); }, 5*60*1000);
+})();
 
 /* ══════════════ 選單高亮 ══════════════ */
 const links = [...document.querySelectorAll(".nav a")];
