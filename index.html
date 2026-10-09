@@ -272,11 +272,11 @@ section:first-child{margin-top:0}
 .tf-table input[type=checkbox]{width:24px;height:24px;accent-color:#7FB069}
 .tf-table .del{font-size:13px;padding:2px 8px;border:2px solid var(--ink);border-radius:999px;background:var(--paper)}
 .card-sum{display:grid;gap:8px;margin-top:8px}
-.card-sum .cs{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 12px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--card)}
-.card-sum .cs > div{min-width:0}
-.card-sum .cs b{font-weight:400;font-size:18px;display:block}
-.card-sum .cs small{display:block;font-size:14px}
-.card-sum .cs .tw{text-align:right;white-space:nowrap;font-size:17px}
+.card-sum .cs{display:flex;flex-direction:column;gap:4px;padding:10px 14px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--card);min-width:0;overflow-wrap:anywhere}
+.card-sum .cs b{font-weight:400;font-size:19px;display:block}
+.card-sum .cs small{display:block;font-size:15px}
+.card-sum .cs .tw{display:block;font-size:16px;line-height:1.5}
+.card-sum .cs .tw .big{font-size:22px}
 .card-sum .cs.all{background:var(--yellow)}
 .card-sum .cs small.rf{color:#2F6B2F;margin-top:2px}
 .tf-sum{font-size:17px;margin-top:8px;padding:10px 12px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--green);line-height:1.5}
@@ -1768,13 +1768,13 @@ async function loadTax(){
     const cardRf = {};
     rows.forEach(r=>{ const k = normCard(r.card), c = r.currency || "EUR"; (cards[k] = cards[k] || {})[c] = (cards[k][c]||0) + (+r.amount||0);
       if (rf[r.id].v){ (cardRf[k] = cardRf[k] || {})[c] = (cardRf[k][c]||0) + rf[r.id].v; } });
-    const rfLine = byC => { let tw = 0; const o = Object.entries(byC||{}).map(([c,v])=>{ const n = toTWD(v,c); if(n!=null) tw+=n; return `${symOf(c)}${fmt2(v)}`; }); return o.length ? `<small class="rf">↩︎ 預估可退稅 ${o.join("・")}（約 NT$ ${Math.round(tw).toLocaleString("zh-TW")}）</small>` : `<small class="rf">↩︎ 預估可退稅：無</small>`; };
+    const rfLine = byC => { let tw = 0; const o = Object.entries(byC||{}).map(([c,v])=>{ const n = toTWD(v,c); if(n!=null) tw+=n; return `${symOf(c)}${fmt2(v)}`; }); return o.length ? `<small class="rf">↩︎ 預估可退稅 ${o.join("・")}<br>約 NT$ ${Math.round(tw).toLocaleString("zh-TW")}</small>` : `<small class="rf">↩︎ 預估可退稅：無</small>`; };
     const cardHtml = Object.entries(cards).sort((a,b)=>a[0]==="未填付款卡"?1:b[0]==="未填付款卡"?-1:a[0].localeCompare(b[0])).map(([k,byC])=>{
       let tw = 0, okTw = true;
       const orig = Object.entries(byC).map(([c,v])=>{ const n = toTWD(v,c); if(n==null) okTw=false; else tw+=n; return `${symOf(c)}${fmt2(v)}`; }).join("・");
-      return `<div class="cs"><div><b>💳 ${esc(k)}</b><small>${orig}</small>${rfLine(cardRf[k])}</div><div class="tw">約 NT$ ${Math.round(tw).toLocaleString("zh-TW")}${okTw?"":"＋"}</div></div>`;
+      return `<div class="cs"><b>💳 ${esc(k)}</b><span class="tw">刷卡合計 ${orig}<br>約 NT$ <span class="big">${Math.round(tw).toLocaleString("zh-TW")}</span>${okTw?"":"＋"}</span>${rfLine(cardRf[k])}</div>`;
     }).join("");
-    $("cardSum").innerHTML = rows.length ? cardHtml + `<div class="cs all"><div><b>全部合計</b><small>${Object.entries(byCur).map(([c,t])=>`${symOf(c)}${fmt2(t.amt)}`).join("・")}</small>${rfLine(Object.values(cardRf).reduce((a,o)=>{ Object.entries(o).forEach(([c,v])=>a[c]=(a[c]||0)+v); return a; },{}))}</div><div class="tw">約 NT$ ${Math.round(twd).toLocaleString("zh-TW")}</div></div>` : `<p class="ck-sub">記錄後這裡會自動統計每張卡刷了多少。</p>`;
+    $("cardSum").innerHTML = rows.length ? cardHtml + `<div class="cs all"><b>全部合計</b><span class="tw">刷卡合計 ${Object.entries(byCur).map(([c,t])=>`${symOf(c)}${fmt2(t.amt)}`).join("・")}<br>約 NT$ <span class="big">${Math.round(twd).toLocaleString("zh-TW")}</span></span>${rfLine(Object.values(cardRf).reduce((a,o)=>{ Object.entries(o).forEach(([c,v])=>a[c]=(a[c]||0)+v); return a; },{}))}</div>` : `<p class="ck-sub">記錄後這裡會自動統計每張卡刷了多少。</p>`;
     $("tfCardList").innerHTML = Object.keys(cards).filter(k=>k!=="未填付款卡").map(k=>`<option value="${esc(k)}">`).join("");
     $("tfTotal").textContent = "";
   }catch(e){ $("tfList").innerHTML = ""; $("tfTotal").textContent = "暫時讀不到，有網路時會自動顯示"; }
@@ -2104,7 +2104,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T18:28:32";
+const SITE_VERSION = "2026-10-09T18:36:40";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
