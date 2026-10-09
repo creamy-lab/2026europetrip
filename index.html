@@ -34,8 +34,19 @@ svg .ink{stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:r
 .nav a{text-decoration:none;text-align:center;font-size:clamp(13px,3.8vw,16px);line-height:1;padding:11px 0;border:3px solid transparent;border-radius:999px}
 .nav a.on{background:var(--yellow);border-color:var(--ink)}
 
-main{max-width:640px;margin:0 auto;padding:calc(82px + env(safe-area-inset-top)) 16px 40px}
-section{scroll-margin-top:84px;margin-top:44px}
+main{max-width:640px;margin:0 auto;padding:calc(124px + env(safe-area-inset-top)) 16px 40px}
+section{scroll-margin-top:130px;margin-top:0}
+main > section{display:none}
+main > section.active{display:block;animation:pageIn .35s ease-out}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+main [id]{scroll-margin-top:136px}
+.subbar{max-width:640px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;padding:0 10px 8px;scrollbar-width:none}
+.subbar::-webkit-scrollbar{display:none}
+.subbar.pop{animation:subPop .35s cubic-bezier(.3,1.4,.5,1)}
+@keyframes subPop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.chip{flex:none;font-size:15px;padding:4px 12px;border:2.5px solid var(--ink);border-radius:999px;background:var(--card);white-space:nowrap;line-height:1.4}
+.chip:active{transform:scale(.95)}
+.chip.on{background:var(--coral)}
 section:first-child{margin-top:0}
 .h2{display:inline-flex;align-items:center;gap:10px;font-size:24px;font-weight:400;background:var(--card);border:3px solid var(--ink);border-radius:999px;padding:4px 20px 4px 8px;box-shadow:var(--shadow);margin-bottom:18px}
 .h2 i{display:grid;place-items:center;width:34px;height:34px;border:3px solid var(--ink);border-radius:50%;font-style:normal;font-size:17px}
@@ -366,6 +377,7 @@ footer svg{width:130px;margin:0 auto 6px}
     <a href="#help">求助</a>
     <button class="refresh" id="refreshBtn" aria-label="重新整理，取得最新行程"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="#3E3A39" stroke-width="2.8" stroke-linecap="round"/><path d="M20 3v5h-5" fill="none" stroke="#3E3A39" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
+  <div class="subbar" id="subbar" role="navigation" aria-label="這一頁的內容"></div>
 </header>
 
 <main>
@@ -386,7 +398,7 @@ footer svg{width:130px;margin:0 auto 6px}
 
     <div class="card clocks" id="clocks"></div>
 
-    <div class="card checkin">
+    <div class="card checkin" id="ckCard">
       <h3 class="ck-title">👍 報平安</h3>
       <p class="ck-sub">每天按一下，讓 Ross 和家人知道你們平安</p>
       <div class="ck-btns" id="ckBtns"></div>
@@ -394,7 +406,7 @@ footer svg{width:130px;margin:0 auto 6px}
       <ul class="ck-list" id="ckList"></ul>
     </div>
 
-    <div class="card routemap">
+    <div class="card routemap" id="rmCard">
       <h3 class="ck-title">🗺️ 我們在這裡</h3>
       <div id="routeMap"></div>
       <a class="big-btn" href="#album" style="background:var(--coral)">📖 打開旅行相簿</a>
@@ -403,14 +415,14 @@ footer svg{width:130px;margin:0 auto 6px}
 
   <section id="vow">
     <h2 class="h2"><i style="background:var(--yellow)">♡</i>出發前宣誓</h2>
-    <div class="card vow-head"><small>出發前宣誓</small><h3>家庭旅遊<br>九大幸福守則</h3><p>請全體成員舉起右手，帶著最燦爛的笑容大聲朗讀！</p></div>
+    <div class="card vow-head" id="vwRules"><small>出發前宣誓</small><h3>家庭旅遊<br>九大幸福守則</h3><p>請全體成員舉起右手，帶著最燦爛的笑容大聲朗讀！</p></div>
     <ol class="rules" id="ruleList"></ol>
-    <div class="card penalty">
+    <div class="card penalty" id="vwPenalty">
       <h4>⚠️ 俏皮違規小罰則</h4>
       <p>旅途中違反任一誓言者，經全體表決通過，接受以下二選一：</p>
       <ol><li>下次全家旅行由違規者擔任「全程行程規劃師兼隨團導遊」😆</li><li>下次家族旅行恕不同遊，留在家裡看家顧門 🐶</li></ol>
     </div>
-    <div class="card pledge">
+    <div class="card pledge" id="vwPledge">
       <p>我們都同意，一起開開心心出發！</p>
       <div class="signers" id="signers"></div>
       <div class="pledge-ask" id="pledgeAsk" hidden>
@@ -423,7 +435,7 @@ footer svg{width:130px;margin:0 auto 6px}
       <p class="done" id="pledgeDone"></p>
       <p class="pledge-note" id="pledgeNote">蓋章後全家每支手機都看得到，蓋了就不能反悔喔！</p>
     </div>
-    <div class="card promise">
+    <div class="card promise" id="vwPromise">
       <h4>🌟 導遊給爸媽的安心承諾</h4>
       <ul id="promiseList"></ul>
     </div>
@@ -432,7 +444,7 @@ footer svg{width:130px;margin:0 auto 6px}
   <section id="flights">
     <h2 class="h2"><i style="background:var(--mizu)">✈</i>飛機・高鐵・租車</h2>
     <div class="flights" id="flightList"></div>
-    <h3 class="h3">🎟 門票與活動</h3>
+    <h3 class="h3" id="tkHead">🎟 門票與活動</h3>
     <div class="flights" id="ticketList"></div>
   </section>
 
@@ -451,7 +463,7 @@ footer svg{width:130px;margin:0 auto 6px}
   <section id="tools">
     <h2 class="h2"><i style="background:var(--mizu)">€</i>旅行小工具</h2>
 
-    <div class="card tool">
+    <div class="card tool" id="cvCard">
       <h3 class="ck-title">💶 價格換算成台幣</h3>
       <div class="cur-pick" role="group" aria-label="選擇幣別">
         <button class="cur" data-cur="EUR" aria-pressed="true">歐元 €</button>
@@ -463,7 +475,7 @@ footer svg{width:130px;margin:0 auto 6px}
       <p class="cv-rate" id="cvRate"></p>
     </div>
 
-    <div class="card tool">
+    <div class="card tool" id="tfCard">
       <h3 class="ck-title">🧾 退稅清單</h3>
       <p class="ck-sub">每買一件可以退稅的東西就記一筆，12/7 在巴塞隆納機場辦退稅時拿出來對照。</p>
       <label class="ph-up" style="background:var(--yellow)">📷 拍收據自動填寫<input type="file" accept="image/*" capture="environment" id="tfCam"></label>
@@ -495,20 +507,20 @@ footer svg{width:130px;margin:0 auto 6px}
 
   <section id="todo">
     <h2 class="h2"><i style="background:var(--green)">✓</i>出發前準備</h2>
-    <h3 class="h3">🧳 行李清單</h3>
+    <h3 class="h3" id="tdPack">🧳 行李清單</h3>
     <div class="card todo" id="packCard"></div>
-    <h3 class="h3">🛡 防小偷小撇步</h3>
+    <h3 class="h3" id="tdGuard">🛡 防小偷小撇步</h3>
     <div class="card promise" id="guardCard" style="margin-top:0"></div>
-    <h3 class="h3">📌 重要預約（導遊備忘）</h3>
+    <h3 class="h3" id="tdBook">📌 重要預約（導遊備忘）</h3>
     <div class="card todo" id="bookCard"></div>
   </section>
 
   <section id="help">
     <h2 class="h2"><i style="background:var(--coral)">☎</i>需要幫忙</h2>
-    <h3 class="h3">💬 用 LINE 找家人</h3>
+    <h3 class="h3" id="hpLine">💬 用 LINE 找家人</h3>
     <div class="card help" id="lineList"></div>
     <p class="help-tip">按下按鈕會打開 LINE 聊天室，再按右上角的 📞 就能直接通話（用網路，不用通話方案）。</p>
-    <h3 class="h3">🚨 緊急電話</h3>
+    <h3 class="h3" id="hpSos">🚨 緊急電話</h3>
     <div class="card help" id="sosList"></div>
     <p class="help-tip">報警、叫救護車的緊急號碼，一般不需要通話方案也能撥打。</p>
   </section>
@@ -1140,7 +1152,7 @@ $("route").innerHTML = TRIP.route.map(([n,c,d])=>`<button style="background:var(
 $("route").addEventListener("click", e=>{
   const b = e.target.closest("[data-go]"); if(!b) return;
   selectDay(+b.dataset.go, false);
-  $("days").scrollIntoView({behavior: reduce?"auto":"smooth"});
+  showPage("days");
 });
 
 const countEl = $("count");
@@ -1186,7 +1198,7 @@ renderToday();
 $("today").addEventListener("click", e=>{
   const b = e.target.closest("[data-go]"); if(!b) return;
   selectDay(+b.dataset.go, false);
-  $("days").scrollIntoView({behavior: reduce?"auto":"smooth"});
+  showPage("days");
 });
 
 /* ══════════════ 守則 ══════════════ */
@@ -1268,7 +1280,7 @@ function liveUrl(f){
   return `https://www.google.com/search?hl=zh-TW&q=${encodeURIComponent("Adif "+f.from[1]+" salidas tiempo real")}`;
 }
 $("flightList").innerHTML = FLIGHTS.map((f,i)=>`
-  <article class="card flight">
+  <article class="card flight" id="fl${i}" data-type="${f.type}">
     <div class="f-top"><span class="pill" style="background:var(--${f.type==="train"?"coral":f.type==="car"?"green":"mizu"})">${esc(f.no)}</span><span>${esc(f.date)}</span></div>
     <div class="f-code" style="margin-top:4px">${esc(f.air||"")}</div>
     <div class="f-mid" style="align-items:start">
@@ -1404,14 +1416,14 @@ function selectDay(i, animate){
   renderDay(i, animate);
 }
 dayBtns.addEventListener("click", e=>{ const b = e.target.closest(".day-btn"); if(b) selectDay(+b.dataset.i, true); });
-const toDays = ()=> $("days").scrollIntoView({behavior: reduce?"auto":"smooth"});
+const toDays = ()=> window.scrollTo({top:0, behavior: reduce?"auto":"smooth"});
 $("prevDay").onclick = ()=>{ if(cur>0){ selectDay(cur-1, true); toDays(); } };
 $("nextDay").onclick = ()=>{ if(cur<DAYS.length-1){ selectDay(cur+1, true); toDays(); } };
 selectDay(Math.max(0, todayIndex()), false);
 
 /* ══════════════ 住宿 ══════════════ */
 $("stayList").innerHTML = STAYS.map((s,i)=>`
-  <article class="card stay">
+  <article class="card stay" id="st${i}">
     <div class="stay-top" style="background:var(--${s.color})"><span>📍 ${esc(s.city)}</span><span>住 ${s.nights} 晚</span></div>
     <div class="stay-body">
       <h4>${esc(s.name)}</h4>
@@ -1807,14 +1819,14 @@ async function renderAlbum(){
     <div class="faces">${HEADS.map(([n,src])=>`<img src="${src}" alt="${esc(n)}">`).join("")}</div></div>${chapters}`;
 }
 function openAlbum(){ $("album").hidden = false; document.body.style.overflow = "hidden"; renderAlbum(); $("albumClose").focus(); }
-function closeAlbum(){ $("album").hidden = true; document.body.style.overflow = ""; if (location.hash === "#album") history.replaceState(null, "", location.pathname + location.search); }
+function closeAlbum(){ $("album").hidden = true; document.body.style.overflow = ""; if (location.hash === "#album") history.replaceState(null, "", "#" + (typeof curPage==="string" && curPage ? curPage : "home")); }
 $("albumClose").onclick = closeAlbum;
 document.addEventListener("click", e=>{ const a = e.target.closest('a[href="#album"]'); if(!a) return; e.preventDefault(); history.replaceState(null,"","#album"); openAlbum(); });
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("album").hidden) closeAlbum(); });
 if (location.hash === "#album") openAlbum();
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T16:37:57";
+const SITE_VERSION = "2026-10-09T16:44:01";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -1851,12 +1863,67 @@ const SITE_VERSION = "2026-10-09T16:37:57";
   setInterval(()=>{ if(!document.hidden) checkUpdate(); }, 5*60*1000);
 })();
 
-/* ══════════════ 選單高亮 ══════════════ */
-const links = [...document.querySelectorAll(".nav a")];
-const io = new IntersectionObserver(es=>{
-  es.forEach(en=>{ if(en.isIntersecting) links.forEach(a=>a.classList.toggle("on", a.getAttribute("href")==="#"+en.target.id)); });
-},{rootMargin:"-40% 0px -55% 0px"});
-document.querySelectorAll("main section").forEach(s=>io.observe(s));
+/* ══════════════ 分頁＋子選單 ══════════════ */
+const PAGES = ["home","vow","flights","days","stay","tools","todo","help"];
+function subItems(page){
+  const go = id => ({go:id});
+  switch(page){
+    case "home": return [["☀️ 今天",go("today")],["🕐 時間",go("clocks")],["👍 報平安",go("ckCard")],["🗺️ 我們在這裡",go("rmCard")],["📖 旅行相簿",{album:true}]];
+    case "vow": return [["♡ 九大守則",go("vwRules")],["⚠️ 小罰則",go("vwPenalty")],["✋ 宣誓蓋章",go("vwPledge")],["🌟 安心承諾",go("vwPromise")]];
+    case "flights": {
+      const first = t => FLIGHTS.findIndex(f=>f.type===t);
+      return [["✈️ 飛機",go("fl"+first("plane"))],["🚄 高鐵",go("fl"+first("train"))],["🚗 租車",go("fl"+first("car"))],["🎟 門票",go("tkHead")]];
+    }
+    case "days": {
+      const t = todayIndex(), list = t>=0 ? [["☀️ 今天",{day:t}]] : [];
+      return list.concat(CHAPTERS.map(c=>[c.name.replace("篇",""),{day:DAYS.findIndex(d=>d.date===c.days[0])}]));
+    }
+    case "stay": return STAYS.map((x,i)=>[x.city,go("st"+i)]);
+    case "tools": return [["💶 價格換算",go("cvCard")],["🧾 退稅清單",go("tfCard")]];
+    case "todo": return [["🧳 行李清單",go("tdPack")],["🛡 防小偷",go("tdGuard")],["📌 重要預約",go("tdBook")]];
+    case "help": return [["💬 LINE 找家人",go("hpLine")],["🚨 緊急電話",go("hpSos")]];
+  }
+  return [];
+}
+let curPage = null;
+function renderSubbar(page){
+  const sb = $("subbar"), items = subItems(page);
+  sb.innerHTML = items.map(([label,act],k)=>`<button class="chip" data-k="${k}">${esc(label)}</button>`).join("");
+  sb._items = items;
+  sb.classList.remove("pop"); void sb.offsetWidth; sb.classList.add("pop");
+  sb.scrollLeft = 0;
+}
+function showPage(page, opts={}){
+  if (!PAGES.includes(page)) page = "home";
+  document.querySelectorAll("main > section").forEach(sec=>sec.classList.toggle("active", sec.id===page));
+  document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("on", a.getAttribute("href")==="#"+page));
+  if (page !== curPage) renderSubbar(page);
+  curPage = page;
+  if (location.hash !== "#"+page && location.hash !== "#album") history.replaceState(null, "", "#"+page);
+  if (!opts.keepScroll) window.scrollTo({top:0, behavior:"auto"});
+  if (page === "days") { const b = dayBtns.children[cur]; if (b) dayBtns.scrollTo({left: b.offsetLeft - 8}); }
+}
+document.querySelector(".nav").addEventListener("click", e=>{
+  const a = e.target.closest("a[href^='#']"); if(!a) return;
+  e.preventDefault(); showPage(a.getAttribute("href").slice(1));
+});
+$("subbar").addEventListener("click", e=>{
+  const b = e.target.closest(".chip"); if(!b) return;
+  const [,act] = $("subbar")._items[+b.dataset.k];
+  $("subbar").querySelectorAll(".chip").forEach(c=>c.classList.toggle("on", c===b));
+  $("subbar").scrollTo({left: Math.max(0, b.offsetLeft - 40), behavior: reduce?"auto":"smooth"});
+  if (act.album){ history.replaceState(null,"","#album"); openAlbum(); return; }
+  if (act.day !== undefined){ selectDay(act.day, true); window.scrollTo({top:0, behavior: reduce?"auto":"smooth"}); return; }
+  const el = document.getElementById(act.go);
+  if (el) el.scrollIntoView({behavior: reduce?"auto":"smooth", block:"start"});
+});
+// 頁面內的 #連結（例如「看第一天的行程」）也走分頁
+document.addEventListener("click", e=>{
+  const a = e.target.closest("main a[href^='#']"); if(!a || a.getAttribute("href")==="#album") return;
+  const id = a.getAttribute("href").slice(1);
+  if (PAGES.includes(id)){ e.preventDefault(); showPage(id); }
+});
+showPage((location.hash||"#home").slice(1) === "album" ? "home" : (location.hash||"#home").slice(1));
 </script>
 </body>
 </html>
