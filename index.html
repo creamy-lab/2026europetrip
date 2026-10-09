@@ -130,6 +130,10 @@ section:first-child{margin-top:0}
 .day-info{display:grid;gap:8px;margin-top:12px}
 .day-info .guard{background:var(--coral) !important}
 .today .guard{margin-top:10px;padding:10px 14px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--coral);font-size:17px}
+.wx{display:flex;align-items:center;gap:12px;padding:10px 12px !important;background:var(--mizu) !important}
+.wx .ic{font-size:34px;line-height:1}
+.wx .tt{font-size:22px;line-height:1.2}
+.wx small{display:block;font-size:14px}
 .day-info div{font-size:17px;padding:8px 12px;border:2.5px solid var(--ink);border-radius:var(--r-sm);background:var(--paper)}
 .walk{display:inline-flex;gap:3px;vertical-align:-3px;margin-left:4px}
 .walk i{width:14px;height:20px;border:2.5px solid var(--ink);border-radius:50%;background:var(--card)}
@@ -1128,6 +1132,45 @@ $("ticketList").addEventListener("click", e=>{
   openBk(t.local, t.date, t.bk, b);
 });
 
+/* ══════════════ 天氣（Open-Meteo，免費、不需金鑰） ══════════════ */
+const GEO = {
+  "首爾":[37.51,127.06],"巴黎":[49.01,2.55],"尼斯":[43.70,7.27],"芒通":[43.78,7.50],"摩納哥":[43.74,7.42],
+  "格拉斯":[43.66,6.92],"里斯本":[38.72,-9.14],"龍達":[36.74,-5.17],"格拉納達":[37.18,-3.60],"莊園":[37.17,-4.15],
+  "塞維亞":[37.39,-5.98],"巴塞隆納":[41.39,2.17],"仁川":[37.45,126.45],"回家":[22.62,120.30],
+};
+const WMO = c => c===0?["☀️","晴天"]:c<=2?["🌤️","晴時多雲"]:c===3?["☁️","陰天"]:c<=48?["🌫️","有霧"]:c<=57?["🌦️","毛毛雨"]:c<=67?["🌧️","下雨"]:c<=77?["🌨️","下雪"]:c<=82?["🌦️","陣雨"]:c<=86?["🌨️","陣雪"]:["⛈️","雷雨"];
+const wxCache = {};
+const tripDate = d => { const [m,dd]=d.date.split("/").map(Number); return `2026-${String(m).padStart(2,"0")}-${String(dd).padStart(2,"0")}`; };
+async function getJSON(url){ if(wxCache[url]) return wxCache[url]; const r = await fetch(url); if(!r.ok) throw new Error(r.status); return (wxCache[url] = await r.json()); }
+function wearTip(max, rain){
+  const t = max<12 ? "很冷，穿厚外套、戴圍巾" : max<18 ? "早晚涼，帶件外套" : "舒服，穿薄外套就好";
+  return rain>=50 ? t+"；記得帶傘 ☂️" : t;
+}
+async function loadWeather(i){
+  const d = DAYS[i], el = document.getElementById("wx"+i); if(!el) return;
+  const g = GEO[d.s]; if(!g){ el.remove(); return; }
+  const date = tripDate(d);
+  const daysAway = Math.round((new Date(date+"T12:00:00") - new Date())/864e5);
+  try{
+    if(daysAway <= 15 && daysAway >= -1){
+      const u = `https://api.open-meteo.com/v1/forecast?latitude=${g[0]}&longitude=${g[1]}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&current=temperature_2m&timezone=auto&forecast_days=16`;
+      const j = await getJSON(u), k = j.daily.time.indexOf(date);
+      if(k<0) throw new Error("no day");
+      const [ic,txt] = WMO(j.daily.weather_code[k]), hi=Math.round(j.daily.temperature_2m_max[k]), lo=Math.round(j.daily.temperature_2m_min[k]), rain=j.daily.precipitation_probability_max[k]??0;
+      const now = daysAway===0 && j.current ? `・現在 ${Math.round(j.current.temperature_2m)}°` : "";
+      el.innerHTML = `<span class="ic">${ic}</span><span><span class="tt">${lo}° – ${hi}°</span><small>天氣預報：${txt}・降雨 ${rain}%${now}</small><small>👕 ${wearTip(hi,rain)}</small></span>`;
+    } else {
+      const last = date.replace("2026","2025");
+      const u = `https://archive-api.open-meteo.com/v1/archive?latitude=${g[0]}&longitude=${g[1]}&start_date=${last}&end_date=${last}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
+      const j = await getJSON(u);
+      const [ic,txt] = WMO(j.daily.weather_code[0]), hi=Math.round(j.daily.temperature_2m_max[0]), lo=Math.round(j.daily.temperature_2m_min[0]);
+      el.innerHTML = `<span class="ic">${ic}</span><span><span class="tt">${lo}° – ${hi}°</span><small>去年同一天參考：${txt}（出發前兩週會自動換成天氣預報）</small><small>👕 ${wearTip(hi,0)}</small></span>`;
+    }
+  }catch(e){
+    el.innerHTML = `<span class="ic">🌡️</span><span><small>天氣暫時讀不到，有網路時會自動顯示</small></span>`;
+  }
+}
+
 /* ══════════════ 每日行程 ══════════════ */
 const dayBtns = $("dayBtns"), dayPanel = $("dayPanel");
 let cur = 0;
@@ -1147,6 +1190,7 @@ function renderDay(i, animate){
         <div><div class="n">第 ${i+1} 天・${md(d.date)}（${esc(d.wk)}）</div><h3>${esc(d.title)}</h3><div class="city">📍 ${esc(d.city)}</div></div>
       </div>
       <div class="day-info">
+        ${GEO[d.s]?`<div class="wx" id="wx${i}" aria-live="polite"><span class="ic">⏳</span><span><small>讀取天氣中…</small></span></div>`:""}
         ${d.meet?`<div>🕖 出門：${esc(d.meet)}</div>`:""}
         ${d.bring?`<div>🎒 要帶：${esc(d.bring)}</div>`:""}
         ${(()=>{const g=guardFor(i);return `<div class="guard">🛡 今日防小偷：<b style="font-weight:400">${esc(g.tip.t)}</b>${g.city?`<br>📍 ${esc(g.city)}`:""}</div>`})()}
@@ -1166,6 +1210,7 @@ function renderDay(i, animate){
         </div>
       </li>`).join("")}
     </ol>`;
+  loadWeather(i);
   if (animate){
     dayPanel.querySelector(".day-head").classList.add("bounce");
     dayPanel.querySelectorAll(".tl > li").forEach(li=>li.classList.add("bounce"));
