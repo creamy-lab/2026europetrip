@@ -263,8 +263,8 @@ section:first-child{margin-top:0}
 .tf-table{border-collapse:collapse;min-width:760px;width:100%;font-size:15px}
 .tf-table th,.tf-table td{border-bottom:2px dotted var(--ink);padding:6px 6px;text-align:left;vertical-align:middle;white-space:nowrap}
 .tf-table th{background:var(--yellow);font-weight:400;position:sticky;top:0}
-.tf-table td input[type=text],.tf-table td input[type=number]{font:inherit;font-size:15px;width:100%;min-width:90px;padding:4px 6px;border:2px solid transparent;border-radius:8px;background:transparent;color:var(--ink)}
-.tf-table td input[type=text]:focus,.tf-table td input[type=number]:focus{border-color:var(--ink);background:var(--paper);outline:none}
+.tf-table td input[type=text]{font:inherit;font-size:15px;width:100%;min-width:90px;padding:4px 6px;border:2px solid transparent;border-radius:8px;background:transparent;color:var(--ink)}
+.tf-table td input[type=text]:focus{border-color:var(--ink);background:var(--paper);outline:none}
 .tf-table td.num input{min-width:80px;text-align:right;font-variant-numeric:tabular-nums}
 .tf-table td.rm input{min-width:150px}
 .tf-table tr.done td{opacity:.6}
@@ -510,7 +510,7 @@ footer svg{width:130px;margin:0 auto 6px}
         <button class="cur" data-cur="KRW" aria-pressed="false">韓元 ₩</button>
       </div>
       <label class="cv-label" for="cvIn">標籤上的價格</label>
-      <input id="cvIn" class="cv-in" type="number" inputmode="decimal" placeholder="例如 250" min="0">
+      <input id="cvIn" class="cv-in" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 12.50">
       <div class="cv-out" id="cvOut">約 NT$ —</div>
       <p class="cv-rate" id="cvRate"></p>
     </div>
@@ -525,7 +525,7 @@ footer svg{width:130px;margin:0 auto 6px}
         <label for="tfStore">店名</label>
         <input id="tfStore" required placeholder="例如 Goyard 摩納哥">
         <div class="tf-row">
-          <div><label for="tfAmt">金額</label><input id="tfAmt" type="number" inputmode="decimal" min="0" placeholder="1200"></div>
+          <div><label for="tfAmt">金額</label><input id="tfAmt" type="text" inputmode="decimal" autocomplete="off" placeholder="1200.50"></div>
           <div><label for="tfCur">幣別</label><select id="tfCur"><option value="EUR">歐元</option><option value="KRW">韓元</option></select></div>
           <div><label for="tfCountry">國家</label><select id="tfCountry"><option>法國</option><option>摩納哥</option><option>葡萄牙</option><option>西班牙</option><option>韓國</option></select></div>
         </div>
@@ -1620,11 +1620,26 @@ function renderRoute(){
 }
 renderRoute();
 
+/* 金額解析：小數點或逗號都可以（12.50、12,50、1.234,56、1,234.56） */
+function readMoney(raw){
+  let t = String(raw||"").replace(/[^\d.,]/g,"");
+  if (!t) return null;
+  const lastDot = t.lastIndexOf("."), lastCom = t.lastIndexOf(",");
+  const dec = Math.max(lastDot, lastCom);
+  if (dec >= 0 && t.length - dec - 1 <= 2 && !(lastDot>=0 && lastCom>=0 && t.length-dec-1===3)){
+    t = t.slice(0,dec).replace(/[.,]/g,"") + "." + t.slice(dec+1);   // 最後一個符號是小數點
+  } else {
+    t = t.replace(/[.,]/g,"");                                        // 只有千分位
+  }
+  const v = parseFloat(t);
+  return isFinite(v) ? Math.round(v*100)/100 : null;
+}
+
 /* ══════════════ 價格換算 ══════════════ */
 let rates = {EUR:35, KRW:0.023}, rateNote = "（約略匯率，連上網路後自動更新）", cvCur = "EUR";
 function calcCv(){
-  const v = parseFloat($("cvIn").value);
-  $("cvOut").textContent = isFinite(v) && v>0 ? `約 NT$ ${Math.round(v*rates[cvCur]).toLocaleString("zh-TW")}` : "約 NT$ —";
+  const v = readMoney($("cvIn").value);
+  $("cvOut").textContent = v && v>0 ? `約 NT$ ${Math.round(v*rates[cvCur]).toLocaleString("zh-TW")}` : "約 NT$ —";
   $("cvRate").textContent = `1 ${cvCur==="EUR"?"歐元":"韓元"} ≈ ${cvCur==="EUR"?rates.EUR.toFixed(2):rates.KRW.toFixed(4)} 台幣 ${rateNote}`;
 }
 document.querySelector(".cur-pick").addEventListener("click", e=>{
@@ -1658,7 +1673,7 @@ async function loadTax(){
         <td>${esc(d(r))}</td><td>${esc(r.city||r.country||"")}</td>
         <td><input type="text" data-edit="store" data-id="${r.id}" value="${esc(r.store||"")}" aria-label="店名"></td>
         <td><input type="text" data-edit="item" data-id="${r.id}" value="${esc(r.item||"")}" placeholder="—" aria-label="商品"></td>
-        <td class="num">${sym(r)}<input type="number" inputmode="decimal" data-edit="amount" data-id="${r.id}" value="${esc(money(r))}" aria-label="價格" style="width:90px;display:inline-block"></td>
+        <td class="num">${sym(r)}<input type="text" inputmode="decimal" data-edit="amount" data-id="${r.id}" value="${esc(money(r))}" aria-label="價格" style="width:90px;display:inline-block"></td>
         <td class="rm"><input type="text" data-edit="remark" data-id="${r.id}" value="${esc(r.remark||"")}" placeholder="點這裡寫備註" aria-label="備註"></td>
         <td>${r.receipt?`<a href="${esc(phUrl(r.receipt))}" target="_blank" rel="noopener">🧾 看</a>`:"—"}</td>
         <td><button class="del" data-del="${r.id}">刪除</button></td></tr>`).join("")}</tbody>`;
@@ -1674,7 +1689,7 @@ $("tfForm").addEventListener("submit", async e=>{
   $("tfAdd").disabled = true;
   try{
     const c = hereCity(), t = new Date();
-    const base = {store, amount: $("tfAmt").value?+$("tfAmt").value:null, currency:$("tfCur").value, country:$("tfCountry").value};
+    const base = {store, amount: readMoney($("tfAmt").value), currency:$("tfCur").value, country:$("tfCountry").value};
     const rec = Object.assign({}, base, {item:$("tfItem").value.trim()||null, remark:$("tfRemark").value.trim()||null,
       city: todayIndex()>=0 ? (c==="回家"?"高雄":c) : $("tfCountry").value,
       captured_on: `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`});
@@ -1691,8 +1706,8 @@ $("tfList").addEventListener("change", async e=>{
   const id = e.target.dataset.id; if(!id) return;
   const field = e.target.dataset.edit;
   if (field){
-    let v = e.target.value.trim(); if (field==="amount") v = v===""?null:+v;
-    try{ await sbSend("PATCH",`taxfree?id=eq.${id}`,{[field]:v||(field==="amount"?v:null)}); $("tfMsg").textContent = "已更新 ✓"; loadTax(); }
+    let v = e.target.value.trim(); if (field==="amount") v = readMoney(v);
+    try{ await sbSend("PATCH",`taxfree?id=eq.${id}`,{[field]: field==="amount" ? v : (v||null)}); $("tfMsg").textContent = "已更新 ✓"; loadTax(); }
     catch(err){ $("tfMsg").textContent = "沒有存到，請再試一次。"; }
     return;
   }
@@ -1915,7 +1930,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T17:04:29";
+const SITE_VERSION = "2026-10-09T17:12:19";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
