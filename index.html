@@ -1735,6 +1735,7 @@ async function addTaxRow({store, amount, currency, country, item, remark, city, 
   try{ await sbSend("POST","taxfree",rec); return; }catch(e1){}
   await sbSend("POST","taxfree",base);                 // 資料表還沒加新欄位時，至少存基本資料
 }
+(function(){ const pl = placeFor(""); if (pl.country){ const sel = $("tfCountry"); if ([...sel.options].some(o=>o.value===pl.country)) sel.value = pl.country; if (pl.country==="韓國") $("tfCur").value = "KRW"; } })();
 $("tfForm").addEventListener("submit", async e=>{
   e.preventDefault();
   const store = $("tfStore").value.trim(); if(!store) return;
@@ -1765,6 +1766,19 @@ let receiptPath = null;
 const COUNTRY_ZH = {france:"法國", monaco:"摩納哥", portugal:"葡萄牙", spain:"西班牙", espana:"西班牙", "españa":"西班牙",
   korea:"韓國", "south korea":"韓國", "republic of korea":"韓國", "united states":"美國", "united states of america":"美國", usa:"美國", us:"美國",
   "united kingdom":"英國", uk:"英國", italy:"義大利", germany:"德國", japan:"日本", taiwan:"台灣", switzerland:"瑞士", netherlands:"荷蘭"};
+/* 依收據日期對照行程，決定國家與城市（不看收據上寫的國家） */
+const CITY_COUNTRY = {"首爾":"韓國","仁川":"韓國","回家":"韓國","巴黎":"法國","尼斯":"法國","芒通":"法國","格拉斯":"法國","摩納哥":"摩納哥",
+  "里斯本":"葡萄牙","龍達":"西班牙","格拉納達":"西班牙","莊園":"西班牙","塞維亞":"西班牙","巴塞隆納":"西班牙"};
+const CITY_NAME = {"莊園":"格拉納達","回家":"仁川"};
+function placeFor(receiptDate){
+  let i = -1;
+  const m = String(receiptDate||"").match(/^2026-(\d{2})-(\d{2})$/);
+  if (m) i = DAYS.findIndex(d=>d.date === `${+m[1]}/${+m[2]}`);
+  if (i < 0) i = todayIndex();                    // 收據日期不在行程內（或讀不到）→ 用今天的行程
+  if (i < 0) return {country:"", city:"", from:"none"};
+  const s = DAYS[i].s;
+  return {country: CITY_COUNTRY[s] || "", city: CITY_NAME[s] || s, from: m && DAYS[i] ? "receipt" : "today"};
+}
 function tripCountry(){
   const c = hereCity();
   return {"尼斯":"法國","芒通":"法國","格拉斯":"法國","巴黎":"法國","摩納哥":"摩納哥","里斯本":"葡萄牙","首爾":"韓國","仁川":"韓國"}[c] || "西班牙";
@@ -1794,13 +1808,15 @@ function showAiReview(d){
   const curList = ["EUR","KRW","USD","GBP","TWD"]; if (!curList.includes(cur0)) curList.push(cur0);
   const box = $("aiReview");
   const fv = v => v==null ? "" : v;
+  const place = placeFor(d.date);
   box.innerHTML = `<h4>✨ 讀到的內容，請確認（都可以修改）</h4>
     <label for="aiStore">店名</label><input type="text" id="aiStore" value="${esc(d.store||"")}">
     <div class="ai-row3">
-      <div><label for="aiCountry">國家</label><input type="text" id="aiCountry" list="aiCountryList" value="${esc(guessCountry(d.country))}"></div>
-      <div><label for="aiCity">城市</label><input type="text" id="aiCity" value="${esc(d.city||"")}"></div>
+      <div><label for="aiCountry">國家</label><input type="text" id="aiCountry" list="aiCountryList" value="${esc(place.country)}" placeholder="例如 法國"></div>
+      <div><label for="aiCity">城市</label><input type="text" id="aiCity" value="${esc(place.city)}" placeholder="例如 尼斯"></div>
       <div><label for="aiCur">幣別</label><select id="aiCur">${curList.map(c=>`<option value="${c}"${c===cur0?" selected":""}>${c}</option>`).join("")}</select></div>
     </div>
+    <p class="ck-sub" style="font-size:13px;margin-top:4px">${place.from==="receipt"?"📅 國家、城市是依收據日期對照行程自動帶入":place.from==="today"?"📅 國家、城市是依今天的行程自動帶入":"📅 出發後會依行程自動帶入國家、城市，現在請自己填"}</p>
     <datalist id="aiCountryList"><option value="法國"><option value="摩納哥"><option value="葡萄牙"><option value="西班牙"><option value="韓國"><option value="美國"></datalist>
     ${items.length ? items.map((it,k)=>`<div class="ai-it">
         <div class="ai-it-top"><input type="checkbox" id="aiChk${k}" checked aria-label="記下這一項"><input type="text" id="aiName${k}" value="${esc(it.name)}" aria-label="商品"></div>
@@ -2030,7 +2046,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T18:13:20";
+const SITE_VERSION = "2026-10-09T18:14:56";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
