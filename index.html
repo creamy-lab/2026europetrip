@@ -371,6 +371,7 @@ section:first-child{margin-top:0}
 .btn.wide{grid-column:1 / -1}
 .btn.off{opacity:.45;pointer-events:none}
 .btn.live{background:var(--mizu)}
+.f-livenote{margin-top:8px;font-size:15px;color:#7a716c}
 .bk-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:14px;margin:14px 0}
 .bk-title{text-align:center}
 .bk-title b{display:block;font-size:26px;font-weight:400;line-height:1.3;word-break:break-word}
@@ -1354,9 +1355,18 @@ const planeIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" c
 const carIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#FFFCF6" ${INK}/><path d="M9 24 L12 16 H28 L31 24 Z" fill="#B9DAA5" stroke="#3E3A39" stroke-width="2" stroke-linejoin="round"/><circle cx="14" cy="26" r="2.5" fill="#3E3A39"/><circle cx="26" cy="26" r="2.5" fill="#3E3A39"/></svg>`;
 const trainIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#FFFCF6" ${INK}/><path d="M9 25 V19 Q9 13 16 13 H24 Q31 13 31 21 V25 Z" fill="#F2A497" stroke="#3E3A39" stroke-width="2" stroke-linejoin="round"/><path d="M11 29 H29" stroke="#3E3A39" stroke-width="2" stroke-linecap="round"/></svg>`;
 // 即時動態：飛機用 Google 航班狀態卡；火車先連到車站即時時刻（收到車票後改成該班次）
+function liveEarly(f){
+  const m = f.date.match(/(\d+)月(\d+)日/); if (!m) return false;
+  return Date.now() < new Date(2026, +m[1]-1, +m[2]).getTime() - 3*864e5;
+}
 function liveUrl(f){
   if (f.live) return f.live;
-  if (f.type==="plane") return `https://www.google.com/search?hl=zh-TW&q=${encodeURIComponent(f.no.replace(/\s+/g,"")+" flight status")}`;
+  if (f.type==="plane"){
+    // FlightStats：指定「那一天」的那班飛機（出發前 3 天內才查得到）
+    const [al, num] = f.no.trim().split(/\s+/), m = f.date.match(/(\d+)月(\d+)日/);
+    if (m) return `https://www.flightstats.com/v2/flight-tracker/${al}/${num}?year=2026&month=${+m[1]}&date=${+m[2]}`;
+    return `https://www.google.com/search?hl=zh-TW&q=${encodeURIComponent(f.no.replace(/\s+/g,"")+" flight status")}`;
+  }
   return `https://www.google.com/search?hl=zh-TW&q=${encodeURIComponent("Adif "+f.from[1]+" salidas tiempo real")}`;
 }
 $("flightList").innerHTML = FLIGHTS.map((f,i)=>`
@@ -1374,6 +1384,7 @@ $("flightList").innerHTML = FLIGHTS.map((f,i)=>`
       ${f.bk&&f.bk.length?`<button class="btn" data-bkf="${i}">給櫃檯看</button>`:`<span class="btn off">訂單待補</span>`}
       <a class="btn live" target="_blank" rel="noopener" href="${esc(liveUrl(f))}">${esc(f.liveLabel||"🕒 即時動態")}</a>
     </div>
+    ${f.type==="plane"&&liveEarly(f)?`<div class="f-livenote">※ 起飛前 3 天內才查得到當天這班的動態</div>`:""}
   </article>`).join("");
 
 TICKETS.sort((a,b)=>{const k=t=>{const m=t.date.match(/(\d+)月(\d+)日.*?(\d+):(\d+)/);return +m[1]*1e6 + +m[2]*1e4 + +m[3]*100 + +m[4];};return k(a)-k(b);});
@@ -2166,7 +2177,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T23:02:24";
+const SITE_VERSION = "2026-10-09T23:08:32";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
