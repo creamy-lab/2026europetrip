@@ -10,11 +10,21 @@ Return ONLY one JSON object, no other text:
  "city": city printed on the receipt or null,
  "country": country in English or null,
  "date": "YYYY-MM-DD" or null,
- "currency": ISO code such as "EUR" or "KRW",
- "items": [{"name": product name as printed, "price": final price for that line incl. tax, as a number}],
- "total": total paid incl. tax, as a number}
-Use a dot as the decimal separator. Leave out tax lines, discounts and payment lines from items.
-If something is unreadable use null. Never invent items.`;
+ "currency": ISO code of the money actually paid, exactly as on the receipt (e.g. "EUR", "USD", "KRW", "GBP"),
+ "items": [{"name": product name as printed,
+            "qty": number,
+            "net": line amount BEFORE tax, as a number,
+            "tax": tax amount for this line, as a number,
+            "price": line amount INCLUDING tax, as a number}],
+ "subtotal_net": total before tax or null,
+ "tax_total": total tax or null,
+ "total": total paid including tax}
+Rules:
+- If the printed item prices EXCLUDE tax (common in the US), net = printed price, tax = that line's tax, price = net + tax.
+- If the printed item prices already INCLUDE tax/VAT/TVA/IVA (common in Europe and Korea), price = printed price;
+  take the VAT from the receipt's VAT breakdown and split it across lines in proportion to price if it is only shown in total; net = price - tax.
+- Items' price values should add up to total. Leave out tax lines, discounts, deposits and payment lines from items.
+- Use a dot as the decimal separator. If something is unreadable use null. Never invent items.`;
 
 function corsHeaders(origin: string) {
   return {
