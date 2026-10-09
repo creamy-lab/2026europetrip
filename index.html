@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="歐洲慢活之旅">
+<meta name="theme-color" content="#FFFCF6">
+<title>歐洲慢活之旅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFCF6; --ink:#3E3A39; --card:#FFFFFF;
+  --coral:#F2A497; --yellow:#F6D27A; --mizu:#A8D3E6; --green:#B9DAA5;
+  --r:24px; --r-sm:16px; --shadow:4px 4px 0 var(--ink);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:"Huninn","PingFang TC","Noto Sans TC",system-ui,sans-serif;line-height:1.6;font-size:19px}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:inherit}
+svg{display:block}
+svg .ink{stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:4px solid var(--coral);outline-offset:3px}
+
+/* ── 頂端選單（7 格平均，字大不用滑） ── */
+.topbar{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--paper);border-bottom:3px solid var(--ink);padding-top:env(safe-area-inset-top)}
+.nav{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:8px 6px}
+.nav a{text-decoration:none;text-align:center;font-size:16px;line-height:1;padding:11px 0;border:3px solid transparent;border-radius:999px}
+.nav a.on{background:var(--yellow);border-color:var(--ink)}
+
+main{max-width:640px;margin:0 auto;padding:calc(82px + env(safe-area-inset-top)) 16px 40px}
+section{scroll-margin-top:84px;margin-top:44px}
+section:first-child{margin-top:0}
+.h2{display:inline-flex;align-items:center;gap:10px;font-size:24px;font-weight:400;background:var(--card);border:3px solid var(--ink);border-radius:999px;padding:4px 20px 4px 8px;box-shadow:var(--shadow);margin-bottom:18px}
+.h2 i{display:grid;place-items:center;width:34px;height:34px;border:3px solid var(--ink);border-radius:50%;font-style:normal;font-size:17px}
+.h3{font-size:21px;font-weight:400;margin:22px 0 10px}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);box-shadow:var(--shadow)}
+
+/* ── 首頁 ── */
+.hero{overflow:hidden}
+.hero-art{background:var(--mizu);border-bottom:3px solid var(--ink)}
+.hero-body{padding:18px 18px 22px;text-align:center}
+.hero .kicker{font-size:17px}
+.hero h1{font-size:30px;font-weight:400;line-height:1.3}
+.hero .sub{font-size:18px;margin-top:4px}
+.route{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:14px}
+.route button{font-size:17px;padding:3px 14px;border:3px solid var(--ink);border-radius:999px}
+.route-hint{font-size:14px;margin-top:6px}
+.count-label{margin-top:16px;font-size:19px}
+.count{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.count div{border:3px solid var(--ink);border-radius:var(--r-sm);padding:8px 0 6px}
+.count b{display:block;font-size:34px;font-weight:400;line-height:1.1;font-variant-numeric:tabular-nums}
+.count small{font-size:16px}
+
+.today{margin-top:18px;padding:16px 18px}
+.today .lbl{display:inline-block;font-size:16px;background:var(--coral);border:3px solid var(--ink);border-radius:999px;padding:0 12px}
+.today h3{font-size:24px;font-weight:400;line-height:1.35;margin-top:8px}
+.today p{font-size:18px;margin-top:4px}
+.today .next{margin-top:12px;padding:12px 14px;border:3px dashed var(--ink);border-radius:var(--r-sm);background:var(--paper)}
+.today .next b{font-weight:400;font-size:22px}
+.big-btn{display:block;width:100%;margin-top:14px;text-align:center;text-decoration:none;font-size:20px;padding:12px;border:3px solid var(--ink);border-radius:999px;background:var(--yellow);box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
+.big-btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+
+/* ── 守則 ── */
+.card.vow-head{padding:16px 18px;text-align:center;background:var(--yellow)}
+.vow-head small{display:block;font-size:16px}
+.vow-head h3{font-size:25px;font-weight:400;line-height:1.35}
+.vow-head p{font-size:16px;margin-top:6px}
+.rules{list-style:none;display:grid;gap:12px;margin-top:16px}
+.rule{display:flex;gap:14px;align-items:flex-start;padding:12px 16px}
+.rule .num{flex:none;width:42px;height:42px;display:grid;place-items:center;font-size:21px;border:3px solid var(--ink);border-radius:50%}
+.rule h4{font-size:20px;font-weight:400;line-height:1.4;padding-top:6px}
+.rule p{font-size:17px;margin-top:2px}
+.penalty{margin-top:16px;padding:14px 18px;background:var(--paper);border-style:dashed}
+.penalty h4{font-size:19px;font-weight:400}
+.penalty p{font-size:16px;margin-top:4px}
+.penalty ol{margin:8px 0 0 22px;font-size:17px}
+.pledge{margin-top:18px;padding:16px 18px;text-align:center}
+.pledge > p{font-size:19px}
+.signers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.signer{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:17px}
+.seal{width:72px;height:72px;border:3px dashed var(--ink);border-radius:50%;display:grid;place-items:center;font-size:15px;background:var(--paper);transition:transform .2s}
+.signer[aria-pressed="true"] .seal{border-style:solid;background:var(--coral);font-size:22px;transform:rotate(-8deg)}
+.signer[aria-pressed="true"] .seal.stamp{animation:stamp .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes stamp{0%{transform:scale(1.6) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(-8deg);opacity:1}}
+.pledge .done{margin-top:12px;font-size:20px;min-height:1.6em}
+.promise{margin-top:18px;padding:16px 18px}
+.promise h4{font-size:21px;font-weight:400;margin-bottom:6px}
+.promise li{list-style:none;padding:10px 0;font-size:17px}
+.promise li+li{border-top:2px dotted var(--ink)}
+.promise li b{display:block;font-weight:400;font-size:19px}
+
+/* ── 交通 ── */
+.flights{display:grid;gap:16px}
+.flight{padding:16px 18px}
+.f-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:17px}
+.pill{display:inline-block;font-size:16px;padding:1px 12px;border:3px solid var(--ink);border-radius:999px;background:var(--mizu)}
+.f-mid{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;margin:14px 0 6px}
+.f-city{font-size:25px;line-height:1.2}
+.f-code{font-size:15px}
+.f-term{display:inline-block;margin-top:4px;font-size:15px;padding:0 8px;border:2px solid var(--ink);border-radius:8px;background:var(--yellow)}
+.f-mid .r{text-align:right}
+.f-path{position:relative;height:34px;min-width:44px}
+.f-path::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:3px dashed var(--ink)}
+.f-path svg{position:absolute;left:50%;top:50%;width:38px;height:38px;transform:translate(-50%,-50%)}
+.f-times{display:flex;justify-content:space-between;font-size:20px}
+.f-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:3px dotted var(--ink);font-size:16px}
+.f-meta span{background:var(--paper);border:2px solid var(--ink);border-radius:10px;padding:1px 10px}
+
+/* ── 每日行程 ── */
+.days{display:flex;gap:10px;overflow-x:auto;padding:4px 4px 14px;margin:0 -4px;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day-btn{flex:none;width:84px;padding:8px 0 6px;background:var(--card);border:3px solid var(--ink);border-radius:18px;text-align:center;line-height:1.3;transition:transform .2s}
+.day-btn small{display:block;font-size:15px;white-space:nowrap}
+.day-btn b{display:block;font-size:24px;font-weight:400}
+.day-btn[aria-pressed="true"]{background:var(--coral);box-shadow:var(--shadow);transform:translateY(-3px)}
+.day-head{padding:14px 16px;margin:6px 0 16px}
+.day-head .top{display:flex;align-items:center;gap:14px}
+.day-head svg{flex:none;width:84px;height:84px;border:3px solid var(--ink);border-radius:18px;background:var(--mizu)}
+.day-head .n{font-size:16px}
+.day-head h3{font-size:22px;font-weight:400;line-height:1.35}
+.day-head .city{font-size:18px}
+.day-info{display:grid;gap:8px;margin-top:12px}
+.day-info .guard{background:var(--coral) !important}
+.today .guard{margin-top:10px;padding:10px 14px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--coral);font-size:17px}
+.day-info div{font-size:17px;padding:8px 12px;border:2.5px solid var(--ink);border-radius:var(--r-sm);background:var(--paper)}
+.walk{display:inline-flex;gap:3px;vertical-align:-3px;margin-left:4px}
+.walk i{width:14px;height:20px;border:2.5px solid var(--ink);border-radius:50%;background:var(--card)}
+.walk i.on{background:var(--green)}
+
+.tl{list-style:none;position:relative}
+.tl::before{content:"";position:absolute;left:72px;top:12px;bottom:12px;border-left:3px dashed var(--ink)}
+.tl li{display:grid;grid-template-columns:58px 30px 1fr;align-items:start;margin-bottom:16px}
+.tl .t{font-size:18px;padding-top:13px;font-variant-numeric:tabular-nums;line-height:1.25}
+.tl .t small{display:block;font-size:14px;margin-top:3px}
+.tl .dot{width:20px;height:20px;margin:16px auto 0;border:3px solid var(--ink);border-radius:50%;background:var(--card);position:relative;z-index:1}
+.tl li.must .dot{background:var(--coral)}
+.tl .box{padding:12px 14px;border-radius:18px;position:relative;min-width:0}
+.tl .box h4{font-size:20px;font-weight:400;line-height:1.4}
+.tl li.must .box h4{padding-right:52px}
+.tl .notes{list-style:none;margin-top:6px}
+.tl .notes li{display:block;font-size:16px;line-height:1.5;margin:3px 0 0}
+.maps{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mapbtn{font-size:15px;text-decoration:none;padding:3px 12px;border:2.5px solid var(--ink);border-radius:999px;background:var(--mizu);box-shadow:2px 2px 0 var(--ink)}
+.dad{margin-top:10px;padding:8px 12px;border:2.5px dashed var(--ink);border-radius:14px;background:var(--paper);font-size:16px;line-height:1.5}
+.dad b{font-weight:400;display:block;font-size:16px}
+.dad ul{list-style:none;margin:4px 0}
+.tl .dad li{display:block;margin:2px 0;animation:none}
+.dad small{font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:16px;padding:1px 12px 1px 5px;border:2.5px solid var(--ink);border-radius:999px;line-height:24px}
+.tag svg{width:20px;height:20px}
+.must-badge{position:absolute;top:-12px;right:-6px;font-size:16px;background:var(--coral);border:3px solid var(--ink);border-radius:12px;padding:1px 10px;transform:rotate(6deg)}
+.day-nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.day-nav button{font-size:19px;padding:12px 0;border:3px solid var(--ink);border-radius:999px;background:var(--card);box-shadow:var(--shadow)}
+.day-nav button:disabled{opacity:.35;box-shadow:none}
+
+/* ── 清單 ── */
+.todo{padding:14px 16px}
+.progress{display:flex;align-items:center;gap:10px;font-size:18px;margin-bottom:8px}
+.bar{flex:1;height:20px;border:3px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--paper)}
+.bar i{display:block;height:100%;width:0;background:var(--green);border-right:3px solid var(--ink);transition:width .4s}
+.bar i.zero{border-right:0}
+.todo ul{list-style:none}
+.todo li+li{border-top:2px dotted var(--ink)}
+.todo label{display:flex;align-items:center;gap:14px;padding:12px 2px;cursor:pointer}
+.todo input{position:absolute;opacity:0;pointer-events:none}
+.chk{flex:none;width:32px;height:32px;border:3px solid var(--ink);border-radius:10px;background:var(--card);display:grid;place-items:center;transition:background .2s}
+.chk svg{width:20px;height:20px;opacity:0;transform:scale(.4);transition:all .25s}
+.todo input:checked + .chk{background:var(--green)}
+.todo input:checked + .chk svg{opacity:1;transform:scale(1)}
+.todo input:checked ~ span{text-decoration:line-through;text-decoration-thickness:2px;opacity:.55}
+.todo input:focus-visible + .chk{outline:4px solid var(--coral);outline-offset:2px}
+.todo .txt small{display:block;font-size:15px}
+
+/* ── 住宿 ── */
+.stays{display:grid;gap:16px}
+.stay{overflow:hidden}
+.stay-top{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:3px solid var(--ink);font-size:18px}
+.stay-body{padding:12px 16px 16px}
+.stay h4{font-size:22px;font-weight:400;line-height:1.35}
+.stay .en{font-size:15px;margin-top:2px;word-break:break-word}
+.stay .addr{font-size:16px;margin-top:6px}
+.stay-row{display:flex;gap:8px;margin-top:10px;font-size:16px;flex-wrap:wrap}
+.stay-row span{border:2px solid var(--ink);border-radius:10px;padding:1px 10px;background:var(--paper)}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.btn{display:block;text-align:center;text-decoration:none;font-size:18px;padding:9px 6px;border:3px solid var(--ink);border-radius:999px;background:var(--yellow);box-shadow:3px 3px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.btn.alt{background:var(--card)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+
+/* ── 求助 ── */
+.help{padding:6px 18px}
+.help .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0}
+.help .row+.row{border-top:2px dotted var(--ink)}
+.help .who{font-size:19px;line-height:1.35}
+.help .who small{display:block;font-size:15px}
+.help-tip{font-size:16px;margin:10px 4px 0}
+.call.line{background:var(--green)}
+.call{flex:none;text-decoration:none;font-size:18px;padding:8px 14px;border:3px solid var(--ink);border-radius:999px;background:var(--coral);box-shadow:3px 3px 0 var(--ink);white-space:nowrap}
+
+/* ── 給櫃檯看 ── */
+.rooms{display:inline-block;margin-top:8px;font-size:17px;padding:2px 12px;border:2.5px solid var(--ink);border-radius:999px;background:var(--paper)}
+.btn.wide{grid-column:1 / -1}
+.btn.off{opacity:.45;pointer-events:none}
+.btn.live{background:var(--mizu)}
+.bk-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:14px;margin:14px 0}
+.bk-title{text-align:center}
+.bk-title b{display:block;font-size:26px;font-weight:400;line-height:1.3;word-break:break-word}
+.bk-title span{font-size:18px}
+.bk-item{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:12px 16px;box-shadow:var(--shadow)}
+.bk-item .lb{font-size:16px}
+.bk-item .k{font-size:15px;margin-top:6px}
+.bk-item .num{font-size:clamp(20px,7vw,30px);line-height:1.2;letter-spacing:0;word-break:break-all;font-variant-numeric:tabular-nums}
+.bk-item .nm{font-size:22px;line-height:1.3}
+
+/* ── 給司機看 ── */
+.driver{position:fixed;inset:0;z-index:100;background:var(--paper);display:none;flex-direction:column;padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom))}
+.driver.open{display:flex}
+.driver .say{font-size:26px;line-height:1.4;padding:14px 16px;background:var(--yellow);border:3px solid var(--ink);border-radius:var(--r)}
+.driver .dest{flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;text-align:center}
+.driver .dest b{font-size:34px;font-weight:400;line-height:1.3;word-break:break-word}
+.driver .dest p{font-size:28px;line-height:1.45}
+.driver .zh{font-size:17px;text-align:center;margin-bottom:12px}
+
+footer{text-align:center;margin-top:44px;font-size:18px}
+footer svg{width:130px;margin:0 auto 6px}
+
+/* ── 動畫 ── */
+.anim-float{animation:floaty 3.2s ease-in-out infinite}
+.anim-drift{animation:drift 7s ease-in-out infinite}
+.anim-drift2{animation:drift 9s ease-in-out infinite reverse}
+.anim-fly{animation:fly 5s ease-in-out infinite}
+.anim-sway{animation:sway 2.6s ease-in-out infinite}
+.anim-spin{animation:spin 24s linear infinite}
+.anim-bob{animation:bob 4s ease-in-out infinite}
+.anim-hop{animation:hop 1.1s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.anim-wave{animation:wave 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:0% 100%}
+@keyframes hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-5px)}}
+@keyframes wave{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}}
+.anim-float,.anim-drift,.anim-drift2,.anim-fly,.anim-sway,.anim-spin,.anim-bob{transform-box:fill-box;transform-origin:center}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes drift{0%,100%{transform:translateX(-8px)}50%{transform:translateX(8px)}}
+@keyframes fly{0%,100%{transform:translate(-8px,3px) rotate(-2deg)}50%{transform:translate(8px,-4px) rotate(2deg)}}
+@keyframes sway{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-2px) rotate(1deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-3px) rotate(3deg)}}
+.bounce{animation:bounceIn .55s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes bounceIn{0%{opacity:0;transform:translateY(18px) scale(.96)}60%{opacity:1;transform:translateY(-5px) scale(1.01)}100%{opacity:1;transform:none}}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+@media (min-width:600px){
+  .flights,.stays{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <nav class="nav" aria-label="主選單">
+    <a href="#home" class="on">首頁</a>
+    <a href="#vow">守則</a>
+    <a href="#flights">交通</a>
+    <a href="#days">行程</a>
+    <a href="#stay">住宿</a>
+    <a href="#todo">準備</a>
+    <a href="#help">求助</a>
+  </nav>
+</header>
+
+<main>
+  <section id="home">
+    <div class="card hero">
+      <div class="hero-art" id="heroArt"></div>
+      <div class="hero-body">
+        <p class="kicker" id="tripKicker"></p>
+        <h1 id="tripTitle"></h1>
+        <p class="sub" id="tripSub"></p>
+        <div class="route" id="route"></div>
+        <p class="route-hint">按城市可以直接看那幾天的行程</p>
+        <p class="count-label" id="countLabel">距離出發還有</p>
+        <div class="count" id="count"></div>
+      </div>
+    </div>
+    <div class="card today" id="today"></div>
+  </section>
+
+  <section id="vow">
+    <h2 class="h2"><i style="background:var(--yellow)">♡</i>出發前宣誓</h2>
+    <div class="card vow-head"><small>出發前宣誓</small><h3>家庭旅遊<br>九大幸福守則</h3><p>請全體成員舉起右手，帶著最燦爛的笑容大聲朗讀！</p></div>
+    <ol class="rules" id="ruleList"></ol>
+    <div class="card penalty">
+      <h4>⚠️ 俏皮違規小罰則</h4>
+      <p>旅途中違反任一誓言者，經全體表決通過，接受以下二選一：</p>
+      <ol><li>下次全家旅行由違規者擔任「全程行程規劃師兼隨團導遊」😆</li><li>下次家族旅行恕不同遊，留在家裡看家顧門 🐶</li></ol>
+    </div>
+    <div class="card pledge">
+      <p>我們都同意，一起開開心心出發！</p>
+      <div class="signers" id="signers"></div>
+      <p class="done" id="pledgeDone"></p>
+    </div>
+    <div class="card promise">
+      <h4>🌟 導遊給爸媽的安心承諾</h4>
+      <ul id="promiseList"></ul>
+    </div>
+  </section>
+
+  <section id="flights">
+    <h2 class="h2"><i style="background:var(--mizu)">✈</i>飛機・高鐵・租車</h2>
+    <div class="flights" id="flightList"></div>
+    <h3 class="h3">🎟 門票與活動</h3>
+    <div class="flights" id="ticketList"></div>
+  </section>
+
+  <section id="days">
+    <h2 class="h2"><i style="background:var(--coral)">★</i>每日行程</h2>
+    <div class="days" id="dayBtns" role="group" aria-label="選擇日期"></div>
+    <div id="dayPanel"></div>
+    <div class="day-nav"><button id="prevDay">◀ 前一天</button><button id="nextDay">下一天 ▶</button></div>
+  </section>
+
+  <section id="stay">
+    <h2 class="h2"><i style="background:var(--yellow)">⌂</i>住宿</h2>
+    <div class="stays" id="stayList"></div>
+  </section>
+
+  <section id="todo">
+    <h2 class="h2"><i style="background:var(--green)">✓</i>出發前準備</h2>
+    <h3 class="h3">🧳 行李清單</h3>
+    <div class="card todo" id="packCard"></div>
+    <h3 class="h3">🛡 防小偷小撇步</h3>
+    <div class="card promise" id="guardCard" style="margin-top:0"></div>
+    <h3 class="h3">📌 重要預約（導遊備忘）</h3>
+    <div class="card todo" id="bookCard"></div>
+  </section>
+
+  <section id="help">
+    <h2 class="h2"><i style="background:var(--coral)">☎</i>需要幫忙</h2>
+    <h3 class="h3">💬 用 LINE 找家人</h3>
+    <div class="card help" id="lineList"></div>
+    <p class="help-tip">按下按鈕會打開 LINE 聊天室，再按右上角的 📞 就能直接通話（用網路，不用通話方案）。</p>
+    <h3 class="h3">🚨 緊急電話</h3>
+    <div class="card help" id="sosList"></div>
+    <p class="help-tip">報警、叫救護車的緊急號碼，一般不需要通話方案也能撥打。</p>
+  </section>
+
+  <footer id="foot"></footer>
+</main>
+
+<div class="driver" id="bkModal" role="dialog" aria-modal="true" aria-label="給櫃檯看的訂單">
+  <p class="zh">把手機拿給櫃檯人員看 👇</p>
+  <div class="bk-title"><b id="bkName"></b><span id="bkDates"></span></div>
+  <div class="bk-list" id="bkList"></div>
+  <button class="big-btn" id="bkClose">關閉</button>
+</div>
+
+<div class="driver" id="driver" role="dialog" aria-modal="true" aria-label="給司機看的目的地">
+  <p class="zh">把手機拿給司機看 👇</p>
+  <div class="say" id="drvSay"></div>
+  <div class="dest"><b id="drvName"></b><p id="drvAddr"></p></div>
+  <button class="big-btn" id="drvClose">關閉</button>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   行程資料（之後改內容只要改這一段）
+   ══════════════════════════════════════════ */
+const TRIP = {
+  kicker: "Sherry 陪爸媽的家庭旅遊手冊",
+  title: "22 天歐洲奢華慢活之旅",
+  subtitle: "11月18日（三）– 12月9日（三）",
+  start: "2026-11-18T14:00:00+08:00",
+  end:   "2026-12-09T15:55:00+08:00",
+  // [名稱, 顏色, 從第幾天開始(0 起算)]
+  route: [["首爾","coral",0],["南法","yellow",2],["里斯本","mizu",7],["南西班牙","green",10],["巴塞隆納","coral",15],["回家","yellow",20]],
+};
+
+const RULES = [
+  {e:"🌸", t:"面帶微笑", d:"旅遊不生氣、不碎碎念、不吵架、不臭臉，嘴角隨時上揚 15 度！"},
+  {e:"🗺️", t:"信任導遊", d:"想去的地方出發前說好，出發後百分之百尊重行程安排，放空跟著走最快活！"},
+  {e:"📱", t:"科技潮爸媽", d:"一起學習用 AI 和翻譯 App 查菜單、點飲料，全程參與超有成就感！"},
+  {e:"🧘", t:"健康第一", d:"走累了隨時坐下喝熱茶、想上洗手間直接說，身體絕對不逞強！"},
+  {e:"🌈", t:"擁抱驚喜", d:"遇見的所有人事物都是最好的安排，享受當下、絕不後悔！"},
+  {e:"🤝", t:"緊緊跟隨", d:"手機充飽電，不脫隊、不失聯，彼此都在最溫暖的視線裡！"},
+  {e:"🛍️", t:"犒賞自己", d:"難得跨海長途旅行，想吃就吃、想買就買，把喜愛的回憶全部打包帶回家！"},
+  {e:"☀️", t:"快樂啟程", d:"開開心心出門，帶著滿滿好奇心探索世界！"},
+  {e:"🏡", t:"平安返家", d:"順順利利遊歷，平平安安回到溫暖的家！"},
+];
+const SIGNERS = ["爸爸","媽媽","Sherry"];
+
+const PROMISES = [
+  {t:"⏰ 早上從容不趕", d:"每天 07:30–08:00 起床，留將近 2 小時悠閒吃早餐、梳洗換裝，09:45–10:00 才出門。"},
+  {t:"☕ 媽媽專屬購物與下午茶", d:"每一站都安排地標級百年茶座與林蔭名品街，買得開心、坐得優雅。"},
+  {t:"🍲 飲食嚴格把關", d:"全員零牛肉（不吃牛肉、牛腩、牛骨湯）；爸爸每天全素熱食：熱湯、熱燉飯、現炒熱青菜，不吃生冷沙拉。"},
+  {t:"🚗 不爬坡、搭電梯、行李不離身", d:"摩納哥和西班牙莊園都走電梯與平路；長途移動先到飯店放行李，絕不把行李留在車上。"},
+];
+
+const FLIGHTS = [
+  {type:"plane", no:"TW 652", term:["國際線航廈","國際線航廈"], air:"德威航空（9 月已更名 Trinity Airways）", date:"11月18日（三）", from:["高雄","KHH 小港"], to:["首爾","GMP 金浦"], dep:"14:05", arr:"17:55", meta:["3 位旅客"],
+    bk:[{label:"機票（與首爾飯店同一筆訂單）", id:"1658115641095043", name:"YANG/HAN YING +2"}]},
+  {type:"plane", no:"OZ 501", term:["第二航廈 T2","第一航廈 T1"], air:"韓亞航空", date:"11月20日（五）", from:["首爾","ICN 仁川"], to:["巴黎","CDG 戴高樂"], dep:"10:05", arr:"16:25", meta:["商務艙・全平躺","3 位旅客"],
+    bk:[{label:"去回程商務艙機票", id:"1658115268345219", name:"HAN YING YANG +2"}]},
+  {type:"plane", no:"AF 7300", term:["第二航廈 2F","第二航廈 T2"], air:"法國航空", date:"11月21日（六）", from:["巴黎","CDG 戴高樂"], to:["尼斯","NCE"], dep:"07:10", arr:"08:50", meta:["3 位旅客"],
+    bk:[{label:"機票（與尼斯飯店同一筆訂單）", id:"1658115628670083", name:"YANG/HAN YING +2"}]},
+  {type:"car", no:"Sixt 租車", air:"經濟型轎車・自排（Audi A1／Mini Cooper 或同級）", date:"11月23日 – 11月24日", from:["取車","尼斯火車站"], to:["還車","尼斯火車站"], dep:"11/23 09:00", arr:"11/24 19:00", meta:["4 座・3 件行李","取車：12 Avenue Thiers","還車：14 Avenue Thiers"],
+    bk:[{label:"Sixt 租車（尼斯）", idLabel:"Reservation No.", id:"9740275606", name:"HAN YING YANG", room:"Pick-up: Nice Train Station, 12 Avenue Thiers"}],
+    live:"https://www.google.com/maps/search/?api=1&query=Sixt+Nice+Train+Station+12+Avenue+Thiers+06000+Nice", liveLabel:"📍 取車地點"},
+  {type:"plane", no:"TP 481", term:["第一航廈 T1","第一航廈 T1"], air:"葡萄牙航空", date:"11月25日（三）", from:["尼斯","NCE"], to:["里斯本","LIS"], dep:"11:55", arr:"13:40", meta:["Portugalia 實際執飛","3 位旅客"],
+    bk:[{label:"機票", id:"1658115635030083", name:"TSAI/CHING JUNG +2"}]},
+  {type:"plane", no:"TP 1136", term:["第一航廈 T1","主航廈"], air:"葡萄牙航空", date:"11月28日（六）", from:["里斯本","LIS"], to:["馬拉加","AGP"], dep:"11:55", arr:"14:10", meta:["Portugalia 實際執飛","3 位旅客"],
+    bk:[{label:"機票（與龍達飯店同一筆訂單）", id:"1658115664366723", name:"YUNG/TSUNG HUANG +2"}]},
+  {type:"car", no:"Sixt 租車", air:"豪華休旅車・自排（Skoda Kodiaq／Peugeot 5008 或同級）", date:"11月28日 – 12月1日", from:["取車","馬拉加機場"], to:["還車","塞維亞火車站"], dep:"11/28 15:30", arr:"12/1 15:30", meta:["7 座・5 件行李","取車：航廈內租車區 -1 樓","還車：Santa Justa 站 3 號停車場"],
+    bk:[{label:"Sixt 租車（馬拉加 → 塞維亞）", idLabel:"Reservation No.", id:"9739764971", name:"HAN YING YANG", room:"Pick-up: Málaga Airport, car rental area, floor -1"}],
+    live:"https://www.google.com/maps/search/?api=1&query=Sixt+Malaga+Airport", liveLabel:"📍 取車地點"},
+  {type:"train", no:"AVE 03943", term:["Sevilla-Santa Justa","Barcelona-Sants"], air:"西班牙國鐵 Renfe・Trainline 訂票", date:"12月3日（四）", from:["塞維亞","Santa Justa 站"], to:["巴塞隆納","Sants 站"], dep:"08:37", arr:"14:54", meta:["22 車","座位 7A・7B・7C","約 6 小時 17 分","帶護照"],
+    bk:[{label:"火車票（Trainline）", idLabel:"Ticket PNR", id:"MJCZDU", name:"3 位旅客", room:"Carriage 22, Seats 7A・7B・7C"}],
+    live:"https://www.google.com/search?hl=zh-TW&q=Renfe+AVE+03943+Sevilla+Barcelona+tiempo+real"},
+  {type:"plane", no:"OZ 512", term:["第一航廈 T1","第二航廈 T2"], air:"韓亞航空", date:"12月7日（一）", from:["巴塞隆納","BCN"], to:["仁川","ICN"], dep:"20:40", arr:"隔天 17:00", meta:["商務艙・全平躺","3 位旅客"],
+    bk:[{label:"去回程商務艙機票", id:"1658115268345219", name:"HAN YING YANG +2"}]},
+  {type:"plane", no:"TW 671", term:["第一航廈 T1","國際線航廈"], air:"德威航空（9 月已更名 Trinity Airways）", date:"12月9日（三）", from:["仁川","ICN"], to:["高雄","KHH 小港"], dep:"13:25", arr:"15:55", meta:["分兩筆訂單"],
+    bk:[{label:"爸爸的機票", id:"1658115905035459", name:"YUNG/TSUNG HUANG"},{label:"Sherry 與媽媽的機票", id:"1658115905057475", name:"YANG/HAN YING +1"}]},
+];
+
+/* 每日行程
+   t 開始 e 結束 n 名稱 tr 交通 must 必去 note 補充（字串或陣列；🥬 開頭＝爸爸素食） */
+const DAYS = [
+  {date:"11/18", wk:"三", s:"首爾", city:"韓國首爾", art:"seoul", title:"啟程出發・抵達首爾暖胃", walk:1, meet:"14:05 起飛，提早到小港機場", bring:"護照、外套、常用藥", items:[
+    {t:"14:05", e:"17:55", n:"高雄小港 ✈ 首爾金浦", tr:["飛機"], note:["德威航空 TW652（已更名 Trinity Airways，櫃檯可能掛新名字）","小港機場國際線航廈出發","機上小睡、喝熱茶吃輕食"]},
+    {t:"17:55", e:"19:15", n:"出關領行李，計程車到江南飯店", tr:["計程車"], note:"約 40 分鐘平穩車程"},
+    {t:"19:15", e:"19:30", n:"入住首爾江南多米旅館"},
+    {t:"19:30", e:"20:45", n:"嫩豆腐鍋暖胃晚餐", tr:["步行"], note:["飯店旁走 3 分鐘","🥬 爸爸：純素鮮菇蔬菜嫩豆腐煲＋紫米飯","🦐 媽媽與 Sherry：鮮蝦蛤蜊海鮮豆腐煲"]},
+    {t:"21:00", n:"飯店天然溫泉大浴場放鬆", note:"舒緩雙腿，早點睡調時差"},
+  ]},
+  {date:"11/19", wk:"四", s:"首爾", city:"韓國首爾", art:"seoul", title:"媽媽醫美茶歇・爸爸古剎茶香", walk:2, meet:"10:00 飯店大廳出發", bring:"", items:[
+    {t:"07:45", e:"09:45", n:"飯店養生早餐", note:"溫熱白粥、烤魚、韓式熱時蔬"},
+    {t:"10:00", e:"12:30", n:"狎鷗亭・清潭洞名品街散步", tr:["計程車"], note:"Galleria 百貨與旗艦店，路面寬敞平坦"},
+    {t:"13:00", e:"17:30", n:"媽媽與 Sherry：江南醫美保濕＋光療", note:"療程後在貴賓室喝紅棗人參熱茶"},
+    {t:"13:15", e:"15:15", n:"爸爸：千年古剎奉恩寺", tr:["計程車"], must:true, note:["計程車 8 分鐘","看 23 公尺彌勒大佛","在木造茶坊「蓮會堂」喝雙和茶配米菓"]},
+    {t:"15:30", e:"17:00", n:"爸爸：星空圖書館（COEX）", tr:["步行"], note:"室內平路，在大書牆下喝熱拿鐵"},
+    {t:"18:00", e:"19:30", n:"米其林必比登：百年屋晚餐", note:"現磨豆腐湯、野菜石鍋拌飯（無牛肉）"},
+    {t:"20:00", n:"回飯店休息、整理行李", note:"明天很早出發，早點睡"},
+  ]},
+  {date:"11/20", wk:"五", s:"巴黎", city:"首爾 → 法國巴黎", art:"flight", title:"商務艙飛巴黎・機場飯店過夜", walk:1, meet:"06:30 計程車出發（今天要早起！）", bring:"護照、外套", items:[
+    {t:"05:45", e:"06:20", n:"起床、退房", note:"早餐到機場貴賓室再吃"},
+    {t:"06:30", e:"07:40", n:"計程車到仁川機場第二航廈（T2）", tr:["計程車"], note:["約 1 小時多","⚠️ 韓亞航空今年已搬到第二航廈，跟司機說 Terminal 2"]},
+    {t:"07:40", e:"09:30", n:"報到、出境，貴賓室吃早餐", note:"商務艙櫃檯報到，不用排長隊"},
+    {t:"10:05", e:"16:25", n:"韓亞 OZ501 商務艙直飛巴黎", tr:["飛機"], must:true, note:"全平躺座椅，已預選海鮮／蔬食餐，機上可以好好睡"},
+    {t:"16:25", e:"17:45", n:"搭機場電車到美居酒店", tr:["電車","步行"], note:"CDGVAL 坐到「Parking PR」站，再走約 200 公尺平路"},
+    {t:"18:30", e:"20:00", n:"飯店餐廳晚餐", note:["海鮮蔬菜熱濃湯、烤雞胸","今晚兩間房：爸媽一間、Sherry 一間"]},
+  ]},
+  {date:"11/21", wk:"六", s:"尼斯", city:"法國尼斯", art:"nice", title:"鮮花市集・海景下午茶", walk:2, meet:"一早搭飛機（07:10 起飛）", bring:"護照", items:[
+    {t:"07:10", e:"08:50", n:"法航 AF7300 飛尼斯", tr:["飛機"], note:["從第二航廈 2F 出發，抵達尼斯第二航廈","從飯店搭 CDGVAL 到第二航廈，早點出門辦登機"]},
+    {t:"08:50", n:"計程車到 Le Soleia 飯店寄放行李", tr:["計程車"]},
+    {t:"10:00", e:"12:00", n:"薩雷雅鮮花市集", tr:["步行"], note:["平坦廣場，看薰衣草精油、手工皂、果乾","🥬 爸爸：百年老攤 Chez Thérésa 熱鷹嘴豆煎餅"]},
+    {t:"12:15", e:"13:45", n:"市集旁露台午餐 Le Safari", note:["烤地中海魚、香煎透抽","🥬 爸爸：炭烤時蔬＋野菇燉飯"]},
+    {t:"14:00", e:"15:30", n:"海濱大道看天使灣", tr:["步行"], note:"坐藍色長椅看海，到 #ILoveNICE 拍照（不爬樓梯）"},
+    {t:"15:45", e:"17:00", n:"☕ 內格雷斯科皇宮酒店下午茶", must:true, note:"百年宮殿飯店，三層熱茶點、熱可可、現烤司康"},
+    {t:"17:30", e:"19:00", n:"回飯店入住，躺平休息"},
+    {t:"19:30", n:"Sentimi 黑松露野菇燉飯晚餐"},
+  ]},
+  {date:"11/22", wk:"日", s:"芒通", city:"法國芒通", art:"menton", title:"海線火車・檸檬小鎮市集", walk:2, meet:"10:00 出發", bring:"", items:[
+    {t:"07:30", e:"09:45", n:"飯店頂樓咖啡早餐"},
+    {t:"10:15", e:"10:50", n:"搭雙層景觀火車到芒通", tr:["火車"], note:"35 分鐘，沿著海岸行駛"},
+    {t:"10:50", n:"計程車到海邊市集", tr:["計程車"], note:"5 分鐘，避開車站斜坡"},
+    {t:"11:00", e:"12:45", n:"芒通百年市集", must:true, note:["彩色磁磚老市場，買檸檬果醬、橄欖油","🥬 爸爸：現炸純素菠菜餃、熱鷹嘴豆餅"]},
+    {t:"13:00", e:"14:30", n:"Le Nautic 海景午餐", note:"海鱸魚、溫熱燉飯，看彩色山城"},
+    {t:"14:45", e:"16:00", n:"☕ 太陽長廊散步＋檸檬塔", tr:["步行"], note:"全平坦海濱步道，Au Baiser du Mitron 檸檬塔配熱花果茶"},
+    {t:"16:30", e:"17:30", n:"坐火車回尼斯", tr:["計程車","火車"]},
+    {t:"18:30", n:"熱蔬菜濃湯、海鮮義大利麵晚餐"},
+  ]},
+  {date:"11/23", wk:"一", s:"摩納哥", city:"摩納哥", art:"monaco", title:"Mini Cooper 兜風・摩納哥購物", walk:2, meet:"08:40 計程車到尼斯火車站取車", bring:"護照（退稅用）", items:[
+    {t:"07:30", e:"08:30", n:"悠閒早餐"},
+    {t:"08:40", n:"計程車到尼斯火車站", tr:["計程車"], note:"約 10 分鐘"},
+    {t:"09:00", e:"09:30", n:"🚗 圓夢時刻：坐上 Mini Cooper！", tr:["自駕"], must:true, note:["第一次坐 Mini Cooper 兜風蔚藍海岸，記得在車旁合照！","📌 Sixt 租車訂單 9740275606，尼斯火車站 12 Avenue Thiers"]},
+    {t:"09:30", e:"10:15", n:"開車看埃茲古堡全景", tr:["自駕"], note:"在平坦觀景台遠眺，不爬坡"},
+    {t:"10:30", e:"12:30", n:"💎 蒙地卡羅購物：Goyard 必逛", map:[["賭場地下停車場", "https://www.google.com/maps/search/?api=1&query=Parking+du+Casino+Monte-Carlo"], ["Goyard", "https://www.google.com/maps/search/?api=1&query=Goyard+17+Avenue+de+Monte-Carlo+Monaco"]], dad:["日本庭園（Jardin Japonais）：禪風池塘和小橋，從賭場平路走約 10 分鐘", "或在巴黎咖啡館露台喝熱茶看超跑，等一下大家就在這裡吃午餐"], must:true, note:["👜 Goyard：17–19 Avenue de Monte-Carlo（週一 10:00 開門）","有時間再逛 LV、Chanel，都在賭場旁同一條名店街，走幾步就到","帶護照，可辦退稅","車停賭場地下停車場，搭電梯上地面","買好的東西直接放回後車廂鎖好"]},
+    {t:"12:30", e:"14:15", n:"☕ 巴黎咖啡館露台午餐", note:"看賭場廣場噴泉，海鮮酥盒、松露寬麵、千層派"},
+    {t:"14:30", e:"16:00", n:"親王宮廣場看遊艇港", map:[["漁夫停車場", "https://www.google.com/maps/search/?api=1&query=Parking+des+Pêcheurs+Monaco"]], tr:["自駕"], must:true, note:["車停漁夫停車場，搭大電梯直上，全程沒有樓梯","俯瞰停滿遊艇的赫庫勒斯港"]},
+    {t:"16:30", e:"17:15", n:"開車回尼斯", map:[["飯店", "https://www.google.com/maps/search/?api=1&query=Hôtel+Le+Soleia+48+Boulevard+Victor+Hugo+Nice"]], tr:["自駕"], note:"車停飯店停車位"},
+    {t:"18:00", e:"19:30", n:"熱越南河粉晚餐", note:["鮮雞湯河粉、鮮蝦海鮮河粉","🥬 爸爸：純素豆腐蔬菜河粉（全素湯頭）"]},
+  ]},
+  {date:"11/24", wk:"二", s:"格拉斯", city:"法國格拉斯", art:"grasse", title:"香水小鎮・古樹莊園午宴", walk:1, meet:"10:00 開車出發", bring:"", items:[
+    {t:"07:45", e:"09:45", n:"悠閒早餐"},
+    {t:"10:00", n:"開車前往香水之都格拉斯", tr:["自駕"]},
+    {t:"10:45", e:"12:00", n:"花宮娜歷史香水工坊", map:[["香水工坊停車場", "https://www.google.com/maps/search/?api=1&query=Fragonard+Usine+Historique+20+Boulevard+Fragonard+Grasse"]], must:true, note:"停車場直達，沒有台階；可買橙花手工皂、擴香瓶"},
+    {t:"12:30", e:"14:30", n:"古樹莊園午宴", note:["La Bastide Saint-Antoine，米其林名廚、17 世紀古樹下用餐","香煎海鱸魚","🥬 爸爸：羊肚菌時蔬熱燉飯"]},
+    {t:"15:00", e:"16:00", n:"開車回尼斯，到火車站還車", map:[["Sixt 還車", "https://www.google.com/maps/search/?api=1&query=Sixt+Nice+Train+Station+14+Avenue+Thiers+Nice"]], tr:["自駕"], note:"Sixt 尼斯火車站 14 Avenue Thiers，最晚 19:00 前還"},
+    {t:"16:00", n:"計程車回飯店", tr:["計程車"]},
+    {t:"16:30", e:"18:00", n:"回房休息、整理戰利品"},
+    {t:"18:30", n:"熱披薩、熱蔬菜湯晚餐"},
+  ]},
+  {date:"11/25", wk:"三", s:"里斯本", city:"葡萄牙里斯本", art:"lisbon", title:"飛抵里斯本・自由大道", walk:1, meet:"09:45 計程車去機場", bring:"護照", items:[
+    {t:"07:30", e:"09:30", n:"早餐、退房"},
+    {t:"09:45", n:"計程車到尼斯機場第一航廈（T1）", tr:["計程車"], note:"約 20 分鐘"},
+    {t:"11:55", e:"13:40", n:"葡萄牙航空 TP481 飛里斯本", tr:["飛機"]},
+    {t:"13:40", n:"計程車到 My Story Hotel Tejo 入住", tr:["計程車"]},
+    {t:"15:00", e:"17:00", n:"自由大道林蔭購物", dad:["坐在林蔭大道中間的露天咖啡亭喝杯咖啡，在樹下看人來人往"], tr:["步行"], note:"里斯本的香榭大道，人行道平坦有樹蔭"},
+    {t:"18:00", e:"19:30", n:"Pinóquio 晚餐", tr:["步行"], note:["飯店走 2 分鐘，陶鍋海鮮熱湯飯","🥬 爸爸：熱時蔬濃湯、炒時蔬白飯"]},
+  ]},
+  {date:"11/26", wk:"四", s:"里斯本", city:"葡萄牙里斯本", art:"tart", title:"世界遺產修道院・百年蛋塔", walk:2, meet:"09:40 計程車出發", bring:"", items:[
+    {t:"07:45", e:"09:30", n:"起床準備"},
+    {t:"09:40", n:"計程車到貝倫區", tr:["計程車"]},
+    {t:"10:00", e:"11:30", n:"熱羅尼莫斯修道院", must:true, note:"世界遺產石雕迴廊，無障礙通道，不用爬樓梯"},
+    {t:"11:30", e:"12:45", n:"☕ 創始老店吃熱蛋塔", tr:["步行"], must:true, note:"走 3 分鐘，1837 年老店，配熱咖啡、熱茶"},
+    {t:"13:00", e:"14:00", n:"河邊發現者紀念碑拍照", tr:["步行"]},
+    {t:"14:30", e:"17:30", n:"回飯店午休", tr:["計程車"]},
+    {t:"18:30", e:"20:15", n:"純素晚餐 26 Vegan Food Project", note:"烤杏鮑菇、純素千層麵、松露南瓜燉飯"},
+  ]},
+  {date:"11/27", wk:"五", s:"里斯本", city:"葡萄牙里斯本", art:"lisbon", title:"河畔散步・紅魔蝦晚宴", walk:2, meet:"10:00 出發", bring:"", items:[
+    {t:"07:45", e:"09:45", n:"起床、早餐"},
+    {t:"10:00", e:"11:45", n:"特茹河畔木棧道散步", tr:["步行"], note:"看大橋和基督像，平坦開闊"},
+    {t:"12:00", e:"13:15", n:"Viet Day 熱湯河粉午餐", note:["鮮雞河粉、鮮蝦蔬菜河粉","🥬 爸爸：香茅豆腐時蔬熱湯麵"]},
+    {t:"14:00", e:"16:30", n:"☕ 百年糕餅店下午茶＋逛街", dad:["商業廣場（Praça do Comércio）：河邊的大廣場，有拱廊和長椅可以看河景，平路走幾分鐘"], note:"1829 年 Confeitaria Nacional，杏仁塔配熱紅茶；之後買刺繡手工藝品"},
+    {t:"18:30", e:"20:30", n:"Cervejaria Ramiro 海鮮晚宴", must:true, note:["深海紅魔蝦、白酒蛤蜊","🥬 爸爸：蒜油蘑菇、番茄熱燉飯"]},
+  ]},
+  {date:"11/28", wk:"六", s:"龍達", city:"西班牙龍達", art:"ronda", title:"飛馬拉加・龍達懸崖看晚霞", walk:1, meet:"09:15 計程車去機場", bring:"護照、駕照（取車用）", items:[
+    {t:"07:30", e:"09:00", n:"早餐、退房"},
+    {t:"09:15", n:"計程車到里斯本機場第一航廈（T1）", tr:["計程車"]},
+    {t:"11:55", e:"14:10", n:"葡萄牙航空 TP1136 飛馬拉加", tr:["飛機"], note:"機上吃點東西墊胃"},
+    {t:"14:10", e:"15:15", n:"出關領行李，機場坐著休息、吃點熱食"},
+    {t:"15:30", e:"16:00", n:"Sixt 取車", tr:["自駕"], note:["📌 租車訂單 9739764971","馬拉加機場航廈內租車區，地下 1 樓（-1）","行李全部放後車廂"]},
+    {t:"16:00", e:"17:30", n:"開車到白色山城龍達", map:[["國營旅館（地下有停車場）", "https://www.google.com/maps/search/?api=1&query=Parador+de+Ronda+Plaza+España+Ronda"], ["備用：Martínez Astein 停車場", "https://www.google.com/maps/search/?api=1&query=Parking+Martínez+Astein+Ronda"]], tr:["自駕"], note:["約 1.5 小時，天黑前抵達","國營旅館地下有小型住客停車場，車位不多；滿了就停 Martínez Astein 公共停車場"]},
+    {t:"17:30", e:"17:50", n:"入住龍達國營旅館", note:"Parador de Ronda，就在新橋旁"},
+    {t:"17:50", e:"18:40", n:"☕ 國營旅館露台喝熱茶看晚霞", must:true, note:"不用走遠，坐著就能俯瞰百公尺深的峽谷與新橋"},
+    {t:"19:00", e:"20:30", n:"新橋第一排晚餐 Don Miguel", note:["慢燉伊比利豬頰肉、香煎海魚","🥬 爸爸：熱時蔬燉飯","飯後看新橋夜景"]},
+  ]},
+  {date:"11/29", wk:"日", s:"格拉納達", city:"西班牙格拉納達", art:"alhambra", title:"莊園放行李・阿爾罕布拉宮", walk:3, meet:"10:00 開車出發", bring:"護照（入宮會查證件）", items:[
+    {t:"07:30", e:"09:45", n:"早餐、退房"},
+    {t:"10:00", e:"11:25", n:"開車前往橄欖莊園", map:[["Finca La Bobadilla", "https://www.google.com/maps/search/?api=1&query=La+Bobadilla+Royal+Hideaway+Hotel+Loja+Granada"]], tr:["自駕"]},
+    {t:"11:25", e:"12:15", n:"先到莊園放行李", note:["Finca La Bobadilla，行李送進花園套房，車上清空防盜","爸媽在大廳喝迎賓熱茶"]},
+    {t:"12:15", e:"13:15", n:"開車到阿爾罕布拉宮", map:[["阿爾罕布拉宮官方停車場", "https://www.google.com/maps/search/?api=1&query=Parking+Alhambra+Granada"]], tr:["自駕"]},
+    {t:"13:20", e:"14:15", n:"走到入口，領中文語音導覽", tr:["步行"], note:"提早到納斯里德宮殿入口排隊"},
+    {t:"14:30", e:"17:00", n:"阿爾罕布拉宮", must:true, note:["📌 門票訂單 1631400MYXWB，3 位成人，已確認","⚠️ 14:30 準時進納斯里德宮殿（獅子中庭），過了時間就不能進","之後再逛軒尼洛里菲宮花園","入口會查護照，名字要跟票一樣","沿路石椅很多，累了隨時坐"]},
+    {t:"17:15", e:"18:45", n:"宮門口晚餐 Jardines Alberto", tr:["步行"], note:["出宮門走 2 分鐘","🥬 爸爸：香料熱蔬菜燉鍋＋熱燉飯","媽媽與 Sherry：香煎鮭魚、熱蔬菜濃湯"]},
+    {t:"19:00", e:"20:00", n:"開車回莊園，泡澡休息", map:[["Finca La Bobadilla", "https://www.google.com/maps/search/?api=1&query=La+Bobadilla+Royal+Hideaway+Hotel+Loja+Granada"]], tr:["自駕"]},
+  ]},
+  {date:"11/30", wk:"一", s:"莊園", city:"橄欖莊園 Finca La Bobadilla", art:"olive", title:"莊園放空日・橄欖油品鑑與晚宴", walk:1, meet:"不用趕，睡飽再說", bring:"泳衣（SPA 用）", items:[
+    {t:"08:30", e:"10:00", n:"莊園自助早餐", note:"已含在房價內"},
+    {t:"10:00", e:"11:45", n:"莊園散步、橄欖林拍照", note:"平路慢慢走，累了就回套房花園坐坐"},
+    {t:"12:00", e:"13:30", n:"🫒 三人一起橄欖油品鑑", must:true, note:["90 分鐘，品嚐剛冷壓的新鮮橄欖油","📌 已向飯店申請 12:00，等飯店回信確認"]},
+    {t:"13:30", e:"15:00", n:"莊園輕鬆午餐", note:"可以用 €100 酒吧／SPA 抵用額"},
+    {t:"15:00", e:"17:30", n:"SPA 水療區泡溫水", note:"每天 09:00–20:00 開放，不用預約，想去幾次都可以"},
+    {t:"17:30", e:"19:15", n:"回套房休息、換裝"},
+    {t:"19:30", e:"21:00", n:"El Cortijo 莊園晚宴", note:["📌 已向飯店申請 3 位 19:30，已註明爸爸吃素","🥬 爸爸：素食熱燉飯","媽媽與 Sherry：不吃牛肉"]},
+  ]},
+  {date:"12/1", wk:"二", s:"塞維亞", city:"西班牙塞維亞", art:"sevilla", title:"前往塞維亞・西班牙廣場夕陽", walk:2, meet:"10:00 開車出發", bring:"", items:[
+    {t:"07:45", e:"09:45", n:"起床、退房"},
+    {t:"10:00", n:"開車前往塞維亞", tr:["自駕"], note:"平坦高速公路約 1.5 小時"},
+    {t:"11:45", e:"12:30", n:"火車站還車，計程車到 Meliá Sevilla", map:[["Sixt 還車：Santa Justa 3 號停車場", "https://www.google.com/maps/search/?api=1&query=Sixt+Sevilla+Santa+Justa+Parking+3"]], tr:["自駕","計程車"], note:"Sixt 還車：Santa Justa 站 3 號停車場（最晚 15:30）"},
+    {t:"13:30", e:"15:30", n:"老城購物街慢慢逛", dad:["塞維亞大教堂：只看教堂裡面（平路），有哥倫布之墓；不用爬鐘樓（需要門票）"], tr:["步行"], note:"平坦行人徒步街，皮件、扇子、在地服飾"},
+    {t:"16:00", e:"17:30", n:"西班牙廣場看夕陽", must:true, note:"彩色瓷磚壁畫前拍照，二樓迴廊坐著曬太陽"},
+    {t:"18:00", e:"19:45", n:"Espacio Eslava 熱 Tapas 晚餐", note:"野菇溫泉蛋、伊比利豬肋排、菠菜燉鷹嘴豆"},
+  ]},
+  {date:"12/2", wk:"三", s:"塞維亞", city:"西班牙塞維亞", art:"carriage", title:"塞維亞王宮・白馬車遊老城", walk:2, meet:"10:00 計程車出發", bring:"護照", items:[
+    {t:"07:45", e:"09:45", n:"起床準備"},
+    {t:"10:00", n:"計程車到王宮", tr:["計程車"]},
+    {t:"10:15", e:"12:00", n:"塞維亞王宮", must:true, note:["📌 已預約 10:15 入場","少女中庭水池、皇家花園"]},
+    {t:"12:15", e:"13:45", n:"KingDo 中餐廳午餐", note:"鮮蝦雲吞湯、炒青菜、煎豆腐、蛋炒飯"},
+    {t:"14:00", e:"15:30", n:"☕ 阿方索十三世酒店下午茶", note:"彩色磁磚中庭，三層茶點配熱茶"},
+    {t:"15:45", e:"16:45", n:"白馬車遊老城", tr:["馬車"], must:true, note:"坐著逛橘子樹老街，不用走路"},
+    {t:"17:00", e:"19:30", n:"回飯店休息"},
+    {t:"20:00", e:"21:30", n:"百年老酒館 El Rinconcillo", tr:["計程車"], note:["📌 已訂位 20:00，3 位（Han Ying Yang），已確認","⚠️ 只保留 10 分鐘，19:40 前出門","伊比利火腿、西班牙烘蛋"]},
+  ]},
+  {date:"12/3", wk:"四", s:"巴塞隆納", city:"西班牙巴塞隆納", art:"train", title:"搭高鐵到巴塞隆納", walk:1, meet:"07:00 計程車出發（今天比較早）", bring:"護照、行李", items:[
+    {t:"07:00", e:"08:15", n:"計程車到塞維亞 Santa Justa 火車站", tr:["計程車"], note:"抵達巴塞隆納 Sants 車站"},
+    {t:"08:37", e:"14:54", n:"AVE 03943 高鐵到巴塞隆納", tr:["高鐵"], note:["🎫 22 車，座位 7A、7B、7C","訂位代號 MJCZDU（Trainline）","帶護照，上車可能查證件"]},
+    {t:"15:15", e:"15:45", n:"計程車到 Hotel Casa Luz 入住", tr:["計程車"], note:"家庭連通房"},
+    {t:"16:00", e:"17:30", n:"加泰隆尼亞廣場、英國宮百貨", dad:["英國宮百貨頂樓咖啡廳：喝熱茶看加泰隆尼亞廣場，就在同一棟樓裡等，溫暖又方便"], tr:["步行"]},
+    {t:"18:00", e:"19:30", n:"Ciutat Condal 熱 Tapas 晚餐", tr:["步行"], note:["飯店走 3 分鐘，伊比利豬肋條、蒜油鮮蝦","🥬 爸爸：炒野菇、香煎甜椒"]},
+  ]},
+  {date:"12/4", wk:"五", s:"巴塞隆納", city:"西班牙巴塞隆納", art:"barcelona", title:"聖家堂・佛朗明哥之夜", walk:2, meet:"10:30 出發", bring:"護照", items:[
+    {t:"07:45", e:"10:00", n:"頂樓露台熱早餐"},
+    {t:"10:30", e:"12:30", n:"加泰隆尼亞廣場、El Triangle 逛街", dad:["巴塞隆納主教座堂和迴廊：迴廊裡養了 13 隻白鵝，平路走約 10 分鐘"], tr:["步行"]},
+    {t:"13:00", e:"13:50", n:"Pho Hanoi 暖胃午餐", tr:["步行"], note:["鮮雞河粉、鮮蝦河粉","🥬 爸爸：純素豆腐蔬菜河粉（全素湯頭）"]},
+    {t:"13:55", e:"14:15", n:"計程車到聖家堂", tr:["計程車"]},
+    {t:"14:30", e:"16:30", n:"聖家堂＋搭電梯登塔", must:true, note:["📌 已預約 14:30 受難立面＋登塔","下午陽光照進彩繪玻璃，坐在長椅靜靜欣賞"]},
+    {t:"16:40", e:"17:40", n:"回飯店躺平休息", tr:["計程車"]},
+    {t:"17:45", e:"18:00", n:"計程車到蘭布拉大道", tr:["計程車"]},
+    {t:"18:00", e:"20:30", n:"自助晚餐＋佛朗明哥表演", must:true, note:["Tablao Cordobes（蘭布拉大道 35 號）","📌 Klook 訂單 SRY792479，3 位成人，已確認","18:00 自助晚餐＋飲料，素食有清楚標示","19:15 表演，優先座位","入場時 Sherry 打開 Klook App 的憑證"]},
+    {t:"20:45", n:"計程車回飯店，早點睡", tr:["計程車"]},
+  ]},
+  {date:"12/5", wk:"六", s:"巴塞隆納", city:"西班牙巴塞隆納", art:"mila", title:"米拉之家・感恩大道・大鐵鍋飯", walk:2, meet:"09:40 計程車出發", bring:"護照（退稅用）", items:[
+    {t:"07:30", e:"09:30", n:"起床、早餐"},
+    {t:"09:40", n:"計程車到米拉之家", tr:["計程車"]},
+    {t:"10:00", e:"11:30", n:"米拉之家", must:true, note:["📌 已預約 10:00","搭電梯上屋頂無障礙觀景台，看煙囪雕塑"]},
+    {t:"11:30", e:"13:15", n:"💎 感恩大道購物：Loewe 必逛", dad:["巴特略之家（高第設計）：就在 Loewe 隔壁，有電梯和語音導覽，約 1 小時（需要門票）"], tr:["步行"], must:true, note:["👜 Loewe 旗艦店 Casa Loewe：Passeig de Gràcia 35，就在巴特略之家旁邊","帶護照，可辦退稅","順著下坡走不費力；在巴特略之家對面長椅拍照"]},
+    {t:"13:15", e:"14:45", n:"午餐二選一", note:["Teresa Carles：松露野菇燉飯、南瓜湯","El Nacional：生蠔、香煎海魚"]},
+    {t:"15:00", e:"16:00", n:"☕ Majestic 酒店下午茶"},
+    {t:"16:15", e:"18:15", n:"回房補眠將近 2 小時"},
+    {t:"18:35", e:"18:55", n:"計程車到舊港口", tr:["計程車"]},
+    {t:"19:00", e:"20:45", n:"1836 年老店 7 Portes 晚餐", map:[["7 Portes","https://www.google.com/maps/search/?api=1&query=Restaurant+7+Portes+Passeig+d%27Isabel+II+14+Barcelona"]], must:true, note:["📌 已訂位 19:00，3 位（Sherry Yang），已確認","Passeig d'Isabel II 14","媽媽：大鐵鍋海鮮燉飯","🥬 爸爸：一整鍋全素蔬菜燉飯（入座時再提醒一次）"]},
+    {t:"21:00", n:"計程車回飯店", tr:["計程車"]},
+  ]},
+  {date:"12/6", wk:"日", s:"巴塞隆納", city:"西班牙巴塞隆納", art:"sea", title:"港邊看海・海灘燉飯", walk:2, meet:"10:15 計程車出發", bring:"", items:[
+    {t:"07:45", e:"10:00", n:"起床、早餐"},
+    {t:"10:15", n:"計程車到海港", tr:["計程車"]},
+    {t:"10:30", e:"12:00", n:"貝爾港木棧道看海", tr:["步行"], note:"吹海風看遊艇和海鷗，平坦開闊"},
+    {t:"12:30", e:"14:30", n:"Xiringuito Escribà 海灘燉飯", must:true, note:["📌 已預約","看大火現煮海鮮燉飯","🥬 爸爸：一整鍋純素野菇燉飯"]},
+    {t:"15:00", e:"16:30", n:"☕ 1906 年 Escribà 甜點店下午茶", note:"熱可可、焦糖布丁酥塔"},
+    {t:"17:00", e:"18:30", n:"回飯店整理行李"},
+    {t:"18:45", e:"20:00", n:"悅來小館中式晚餐", note:"鮮蝦豬肉湯麵、蒜炒高麗菜、煎豆腐"},
+  ]},
+  {date:"12/7", wk:"一", s:"巴塞隆納", city:"巴塞隆納 → 仁川", art:"flight", title:"最後採購・商務艙回程", walk:1, meet:"16:30 計程車去機場", bring:"護照、退稅單據", items:[
+    {t:"08:00", e:"10:00", n:"悠閒早餐、整理行李"},
+    {t:"10:30", e:"12:30", n:"英國宮百貨超市買特產", tr:["步行"], note:"橄欖油、番紅花、無花果巧克力"},
+    {t:"13:00", e:"15:30", n:"退房寄放行李，飯店庭院輕食"},
+    {t:"16:30", e:"17:00", n:"計程車到巴塞隆納機場第一航廈（T1）", tr:["計程車"]},
+    {t:"17:00", e:"18:30", n:"電子退稅、貴賓室休息", note:"可以淋浴、喝熱湯"},
+    {t:"20:40", n:"韓亞 OZ512 商務艙起飛", tr:["飛機"], note:"座椅放平，睡一整路"},
+  ]},
+  {date:"12/8", wk:"二", s:"仁川", city:"韓國仁川", art:"berry", title:"抵達仁川・石鍋拌飯與草莓", walk:1, meet:"", bring:"", items:[
+    {t:"17:00", e:"18:00", n:"抵達仁川第二航廈，計程車到金色鬱金香酒店", tr:["計程車"], note:"約 15 分鐘"},
+    {t:"18:30", e:"20:00", n:"雲西站嫩豆腐湯、石鍋拌飯", note:["點餐時記得說不加牛肉絲","逛樂天超市買韓國大草莓"]},
+  ]},
+  {date:"12/9", wk:"三", s:"回家", city:"仁川 → 高雄", art:"home", title:"南瓜粥・平安回高雄", walk:1, meet:"10:45 計程車去機場", bring:"護照", items:[
+    {t:"08:30", e:"10:15", n:"本粥：甜南瓜粥早餐"},
+    {t:"10:45", e:"11:15", n:"計程車到仁川機場第一航廈（T1）", tr:["計程車"], note:"⚠️ 回程是第一航廈，跟昨天抵達的第二航廈不同"},
+    {t:"13:25", e:"15:55", n:"仁川 ✈ 高雄小港", tr:["飛機"], note:["德威航空 TW671（已更名 Trinity Airways）","平安健康，帶著滿滿回憶回家！"]},
+  ]},
+];
+
+// 住宿（地址待從訂房確認信補上）
+const STAYS = [
+  {city:"首爾", color:"coral", name:"首爾江南多米旅館", local:"도미인 서울 강남", en:"Dormy Inn Seoul Gangnam", addr:"서울특별시 강남구 봉은사로 134", dates:"11/18 – 11/20", nights:2, lang:"ko", rooms:"三人同房・高級雙床房", note:"地下室有天然溫泉大浴場",
+    bk:[{label:"訂房（與去程機票同一筆）", id:"1658115641095043", name:"TSAI/CHING JUNG +2", room:"高級雙床房"}]},
+  {city:"巴黎", color:"mizu", name:"巴黎戴高樂機場美居酒店", local:"Mercure Paris CDG Airport & Convention", en:"", addr:"Route de la Commune, Roissypôle Ouest, 95700 Roissy-en-France", dates:"11/20 – 11/21", nights:1, lang:"fr", rooms:"兩間：爸媽一間・Sherry 一間", note:"搭機場電車 CDGVAL 到「Parking PR」站，再走約 200 公尺",
+    bk:[{label:"爸媽的房間", id:"1658114872221264", name:"TSUNG HUANG YUNG +1", room:"高級雙床房"},{label:"Sherry 的房間", id:"1658114872221270", name:"HAN YING YANG", room:"經典房"}]},
+  {city:"尼斯", color:"yellow", name:"尼斯 Le Soleia 精品酒店", local:"Hôtel Le Soleia by Inwood", en:"", addr:"48 Boulevard Victor Hugo, 06000 Nice", dates:"11/21 – 11/25", nights:4, lang:"fr", rooms:"三人同房・高級房", note:"飯店有停車位",
+    bk:[{label:"訂房（與巴黎→尼斯機票同一筆）", id:"1658115628670083", name:"TSAI/CHING JUNG +2", room:"高級房"}]},
+  {city:"里斯本", color:"green", name:"里斯本 My Story Hotel Tejo", local:"My Story Hotel Tejo", en:"", addr:"Rua dos Condes de Monsanto 2, 1100-159 Lisboa", dates:"11/25 – 11/28", nights:3, lang:"pt", rooms:"三人同房・家庭房", note:"市中心平坦街區",
+    bk:[{label:"訂房", id:"1658115104323511", name:"HAN YING YANG", room:"家庭房"}]},
+  {city:"龍達", color:"coral", name:"龍達國營旅館", local:"Parador de Ronda", en:"", addr:"Plaza España s/n, 29400 Ronda", dates:"11/28 – 11/29", nights:1, lang:"es", rooms:"三人同房・標準雙人房", note:"就在新橋旁的懸崖邊，房間外就是峽谷美景",
+    bk:[{label:"訂房（與里斯本→馬拉加機票同一筆）", id:"1658115664366723", name:"TSAI/CHING JUNG +2", room:"標準雙人房"}]},
+  {city:"橄欖莊園", color:"yellow", name:"Finca La Bobadilla 百年橄欖莊園", local:"La Bobadilla, a Royal Hideaway Hotel", en:"", addr:"Carretera Salinas – Villanueva de Tapia, km 65,5 (A-333), 18300 Loja, Granada", dates:"11/29 – 12/1", nights:2, lang:"es", rooms:"三人同房・花園套房（Residence Double Suite Garden）", note:"含自助早餐、SPA 水療區（09:00–20:00）、€100 酒吧／SPA 抵用額",
+    bk:[{label:"直接向飯店訂房（沒有訂單編號，報名字即可）", id:"", name:"YANG HAN YING (Sherry)", room:"Residence Double Suite Garden",
+      info:[["Dates","29 Nov – 1 Dec 2026 (2 nights), 3 guests, breakfast included"],["Booked with","Maria José Ortiz, Reservations Manager"],["Hotel phone","+34 958 32 18 61"]]}]},
+  {city:"塞維亞", color:"mizu", name:"塞維亞美利亞酒店", local:"Hotel Meliá Sevilla", en:"", addr:"Calle Doctor Pedro de Castro 1, 41004 Sevilla", dates:"12/1 – 12/3", nights:2, lang:"es", rooms:"三人同房・家庭房", note:"在西班牙廣場附近",
+    bk:[{label:"訂房", id:"1658114986055677", name:"HAN YING YANG +2", room:"家庭房"}]},
+  {city:"巴塞隆納", color:"green", name:"巴塞隆納卡薩盧茲酒店", local:"Hotel Casa Luz", en:"", addr:"Ronda de la Universitat 1, 08007 Barcelona", dates:"12/3 – 12/7", nights:4, lang:"es", rooms:"三人同房・連通房（最多 3 人）", note:"在大學廣場旁",
+    bk:[{label:"訂房（與 Sherry、媽媽回程機票同一筆）", id:"1658115905057475", name:"TSAI/CHING JUNG +1", room:"連通房（最多 3 人）"}]},
+  {city:"仁川", color:"coral", name:"仁川機場金色鬱金香酒店", local:"골든튤립 인천공항 호텔", en:"Golden Tulip Incheon Airport Hotel & Suites", addr:"인천광역시 중구 흰바위로59번길 8", dates:"12/8 – 12/9", nights:1, lang:"ko", rooms:"兩間：爸媽一間・Sherry 一間", note:"12/7 晚上在飛機上過夜",
+    bk:[{label:"爸媽的房間（與爸爸回程機票同一筆）", id:"1658115905035459", name:"YUNG/TSUNG HUANG", room:"標準雙床房"},{label:"Sherry 的房間", id:"1658115124192706", name:"HAN YING YANG", room:"住宅大床房"}]},
+];
+
+// 門票與活動
+const TICKETS = [
+  {name:"百年老店大鐵鍋飯晚餐", local:"Restaurant 7 Portes", date:"12月5日（六）19:00", addr:"Passeig d'Isabel II 14, 08003 Barcelona",
+    meta:["3 位","爸爸：全素蔬菜燉飯","入座時提醒不要牛肉"],
+    bk:[{label:"餐廳訂位（已確認）", idLabel:"Reservation", id:"", name:"Sherry Yang", room:"05/12/2026 19:00, 3 people – one vegetarian paella please, no beef"}]},
+  {name:"阿爾罕布拉宮門票", local:"Alhambra y Generalife", date:"11月29日（日）14:30", addr:"Calle Real de la Alhambra s/n, 18009 Granada",
+    meta:["14:30 準時進納斯里德宮殿","3 位成人","入口查護照","電子票在 Sherry 信箱（PDF／Passbook）"],
+    bk:[{label:"官方門票（已確認）", idLabel:"Order", id:"1631400MYXWB", name:"HAN YING YANG", room:"Adult × 3, 29/11/2026 14:30 (Nasrid Palaces)"}]},
+  {name:"百年老酒館晚餐", local:"El Rinconcillo", date:"12月2日（三）20:00", addr:"Calle Gerona 40, 41003 Sevilla",
+    meta:["3 位","只保留 10 分鐘","伊比利火腿、西班牙烘蛋"],
+    bk:[{label:"餐廳訂位（已確認）", idLabel:"Reservation", id:"", name:"Han Ying Yang", room:"02/12/2026 20:00, 3 personas"}]},
+  {name:"佛朗明哥表演＋自助晚餐", local:"Tablao Flamenco Cordobes", date:"12月4日（五）18:00", addr:"La Rambla 35, 08002 Barcelona",
+    meta:["表演＋自助餐＋飲料","優先座位","3 位成人","入場請開 Klook App 憑證"],
+    bk:[{label:"Klook 訂單（已確認）", idLabel:"Booking No.", id:"SRY792479", name:"YANG HAN YING", room:"Flamenco show + buffet & drinks + priority seating, 3 adults, 4 Dec 2026 18:00"}]},
+];
+
+// 防小偷：每天輪流一條＋當地重點提醒
+const GUARD_TIPS = [
+  {t:"包包斜背在身體前面", d:"拉鍊朝內，手輕輕放在包上；不要背在後面。"},
+  {t:"護照、大鈔放飯店保險箱", d:"身上只帶當天要用的錢和一張卡，其他放保險箱或貼身腰包。"},
+  {t:"手機不放後口袋、不放桌上", d:"用手機掛繩掛在身上；在咖啡館不要把手機放桌面。"},
+  {t:"坐下時包包放腿上", d:"餐廳、咖啡館不要把包包掛椅背或放旁邊椅子，夾在兩腳中間也可以。"},
+  {t:"陌生人靠近，直接說 No 走開", d:"問路、請簽名連署、送花送手環、說你衣服弄髒了，都是常見分心手法。"},
+  {t:"人擠的地方，包包抱胸前", d:"地鐵、電車、排隊、市集、拍照景點最容易被扒。"},
+  {t:"上下車、手扶梯特別小心", d:"車門口和手扶梯最擠，扒手最愛這一刻。"},
+  {t:"拍照手機要抓緊", d:"不要把手機交給陌生人幫忙拍，請 Sherry 拍就好。"},
+  {t:"車上不留任何東西", d:"下車時行李、購物袋全部帶走或鎖在看不到的後車廂。"},
+];
+const CITY_GUARD = {
+  "首爾":"韓國治安很好，但百貨公司和地鐵人多時，包包還是要顧好。",
+  "巴黎":"機場和機場電車人多，行李一定不離手、不離視線。",
+  "尼斯":"市集和海濱大道人多；露天座位手機不要放桌上。",
+  "芒通":"市集與火車站人多，包包放身體前面。",
+  "摩納哥":"治安很好；買好的東西馬上放回後車廂鎖好。",
+  "格拉斯":"停車後車內不留任何東西。",
+  "里斯本":"觀光區、電車和蛋塔店排隊時常有扒手，包包抱胸前。",
+  "龍達":"新橋觀景點人多；停車不要把行李留在車上。",
+  "格拉納達":"阿爾罕布拉宮停車場車內不留東西；排隊時包包放前面。",
+  "莊園":"在莊園裡很安全，放心放鬆。",
+  "塞維亞":"老城購物街和王宮排隊人多，注意包包和手機。",
+  "巴塞隆納":"⚠️ 巴塞隆納是歐洲扒手最多的城市之一！蘭布拉大道、加泰隆尼亞廣場、聖家堂和地鐵要特別小心。",
+  "仁川":"機場人多，行李推車隨時在身邊。",
+  "回家":"最後一天，行李和護照再檢查一次。",
+};
+const guardFor = i => {
+  const d = DAYS[i], g = GUARD_TIPS[i % GUARD_TIPS.length];
+  return { tip: g, city: CITY_GUARD[d.s] || "" };
+};
+
+const SAY = {
+  ko:"이 주소로 가 주세요.",
+  fr:"Pouvez-vous m'emmener à cette adresse, s'il vous plaît ?",
+  pt:"Por favor, leve-me a este endereço.",
+  es:"Por favor, lléveme a esta dirección.",
+};
+
+const PACK = [
+  ["護照","效期要超過 6 個月"],["常用藥","多帶幾天份"],["好走、防滑的鞋","石板路與市集多"],
+  ["保暖外套","11–12 月早晚冷"],["老花眼鏡",""],["手機充電器＋行動電源","守則第 6 條：手機充飽電"],
+  ["轉接頭","韓國、法國、葡萄牙、西班牙都是圓腳"],["泳衣","莊園 SPA 要用"],["保溫杯","隨時喝熱茶"],
+];
+const BOOK = [
+  ["阿爾罕布拉宮","✅ 已訂好：訂單 1631400MYXWB，11/29 14:30，3 位成人"],
+  ["聖家堂","12/4 14:30 受難立面＋登塔電梯・出發前 60 天"],
+  ["塞維亞王宮","12/2 10:15 免排隊票・出發前 60 天"],
+  ["El Rinconcillo 晚餐","✅ 已訂好：12/2 20:00，3 位"],
+  ["Finca La Bobadilla 莊園","等飯店回信確認 11/30 12:00 橄欖油品鑑、19:30 El Cortijo 晚餐（爸爸素食）"],
+  ["Finca 免費取消期限","10/30 前可免費取消，之後就確定入住"],
+  ["Tablao Cordobes 佛朗明哥","✅ 已訂好：Klook SRY792479，12/4 18:00，3 位成人"],
+  ["米拉之家","12/5 10:00 日間門票・出發前 30 天"],
+  ["7 Portes 百年燉飯","✅ 已訂好：12/5 19:00，3 位"],
+  ["Xiringuito Escribà","12/6 海景午餐・出發前 30 天"],
+];
+
+// LINE 連結：可填 LINE 的 QR 碼連結（https://line.me/ti/p/...）
+const LINE_CONTACTS = [
+  {who:"Sherry（女兒）", sub:"走散或需要幫忙，先找 Sherry", url:"https://line.me/ti/p/m1va22fxJ7"},
+  {who:"Ross（女婿，在台灣）", sub:"聯絡不到 Sherry 時", url:"https://line.me/ti/p/iGqrYw8A9j"},
+];
+const SOS = [
+  {who:"韓國", sub:"救護車・消防", tel:"119"},
+  {who:"韓國", sub:"警察", tel:"112"},
+  {who:"法國・摩納哥", sub:"警察、救護車", tel:"112"},
+  {who:"葡萄牙", sub:"警察、救護車", tel:"112"},
+  {who:"西班牙", sub:"警察、救護車", tel:"112"},
+];
+
+/* ══════════════ 交通標籤 ══════════════ */
+const S = 'stroke="#3E3A39" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"';
+const car = `<path d="M3 13 L5 7 H15 L17 13 Z" fill="#FFFCF6" ${S}/><circle cx="6.5" cy="15" r="1.6" fill="#3E3A39"/><circle cx="13.5" cy="15" r="1.6" fill="#3E3A39"/>`;
+const TR = {
+  "飛機":{c:"mizu",  i:`<path d="M2 9 L14 7 L12 3 L14 3 L18 7 L21 7 Q23 8 21 9 L18 9 L14 13 L12 13 L14 9 Z" fill="#FFFCF6" ${S}/>`},
+  "高鐵":{c:"mizu",  i:`<path d="M2 14 V9 Q2 5 8 5 H14 Q19 5 19 11 V14 Z" fill="#FFFCF6" ${S}/><path d="M5 17 H17" ${S}/>`},
+  "火車":{c:"yellow",i:`<rect x="3" y="4" width="14" height="10" rx="3" fill="#FFFCF6" ${S}/><path d="M3 9 H17 M5 17 L15 17" ${S}/>`},
+  "電車":{c:"yellow",i:`<rect x="3" y="6" width="14" height="9" rx="2.5" fill="#FFFCF6" ${S}/><path d="M10 6 L13 2" ${S}/><circle cx="6.5" cy="17" r="1.4" fill="#3E3A39"/><circle cx="13.5" cy="17" r="1.4" fill="#3E3A39"/>`},
+  "專車":{c:"coral", i:car},
+  "計程車":{c:"yellow",i:car},
+  "自駕":{c:"green", i:car},
+  "馬車":{c:"coral", i:`<path d="M4 6 H14 V12 H4 Z" fill="#FFFCF6" ${S}/><circle cx="6" cy="15" r="2.4" fill="#FFFCF6" ${S}/><circle cx="13" cy="15" r="2.4" fill="#FFFCF6" ${S}/><path d="M14 9 H18" ${S}/>`},
+  "步行":{c:"paper", i:`<ellipse cx="7" cy="7" rx="3" ry="4" fill="#FFFCF6" ${S}/><ellipse cx="13" cy="13" rx="3" ry="4" fill="#FFFCF6" ${S}/>`},
+};
+
+/* ══════════════ SVG 插圖 ══════════════ */
+const INK = 'class="ink"';
+const cloud = (x,y,s,cls) => `<g class="${cls}"><path transform="translate(${x} ${y}) scale(${s})" d="M0 20 Q0 8 12 10 Q16 0 28 4 Q38 0 42 10 Q54 10 52 20 Z" fill="#FFFCF6" ${INK}/></g>`;
+const sun = (x,y,r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#F6D27A" ${INK}/>`;
+
+// 全家三顆頭（坐在電車上）
+const HEADS = [
+  ["爸爸","data:image/jpeg;base64,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"],
+  ["媽媽","data:image/jpeg;base64,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"],
+  ["Sherry","data:image/jpeg;base64,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"],
+];
+// 沿著虛線走：爸爸、媽媽跟在後面，Sherry 拿著導遊旗帶路
+const head = (src, name, cx, cy, r, i) => `<clipPath id="hc${i}"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath>
+  <image href="${src}" x="${cx-r}" y="${cy-r}" width="${r*2}" height="${r*2}" clip-path="url(#hc${i})" preserveAspectRatio="xMidYMid slice"><title>${name}</title></image>
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" ${INK}/>`;
+const familyWalk = () => `
+  <g class="anim-hop" style="animation-delay:.4s">${head(HEADS[0][1],"爸爸",104,62,15,0)}</g>
+  <g class="anim-hop" style="animation-delay:.2s">${head(HEADS[1][1],"媽媽",144,54,15,1)}</g>
+  <g class="anim-hop">
+    <g class="anim-wave">
+      <line x1="204" y1="52" x2="208" y2="6" ${INK}/>
+      <path d="M208 6 L266 17 L208 28 Z" fill="#F2A497" ${INK}/>
+      <text x="212" y="20.5" font-size="8.5" fill="#3E3A39" font-family="Huninn, sans-serif">跟我走</text>
+    </g>
+    ${head(HEADS[2][1],"Sherry 導遊",188,52,17,2)}
+  </g>`;
+
+function heroSVG(){
+  return `<svg viewBox="0 0 360 230" role="img" aria-label="Sherry 拿著導遊旗帶爸爸媽媽沿著飛行路線出發，下方有首爾塔、南法棕櫚樹、里斯本電車與聖家堂">
+    <g class="anim-spin"><g>
+      ${[0,45,90,135,180,225,270,315].map(a=>`<line x1="300" y1="22" x2="300" y2="14" transform="rotate(${a} 300 50)" ${INK}/>`).join("")}
+    </g></g>
+    ${sun(300,50,20)}
+    ${cloud(30,30,1,"anim-drift")}
+    ${cloud(122,10,.55,"anim-drift2")}
+    <path d="M50 92 Q140 40 250 70" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-dasharray="2 9" stroke-linecap="round"/>
+    ${familyWalk()}
+    <g class="anim-fly"><g transform="translate(232 56) rotate(10)">
+      <path d="M0 10 L30 8 Q42 8 42 12 Q42 16 30 16 L0 14 Z" fill="#FFFCF6" ${INK}/>
+      <path d="M14 12 L24 0 L30 0 L24 12 Z" fill="#F2A497" ${INK}/>
+      <path d="M2 11 L-2 2 L4 2 L10 10 Z" fill="#F2A497" ${INK}/>
+    </g></g>
+    <path d="M-5 192 Q90 172 180 190 T365 186 V235 H-5 Z" fill="#B9DAA5" ${INK}/>
+    <g class="anim-float">
+      <line x1="48" y1="64" x2="48" y2="40" ${INK}/>
+      <circle cx="48" cy="38" r="4" fill="#F2A497" ${INK}/>
+      <rect x="42" y="98" width="12" height="86" fill="#FFFCF6" ${INK}/>
+      <rect x="37" y="64" width="22" height="16" rx="4" fill="#A8D3E6" ${INK}/>
+      <rect x="27" y="80" width="42" height="20" rx="9" fill="#F2A497" ${INK}/>
+    </g>
+    <g class="anim-sway">
+      <path d="M100 184 Q102 150 108 120 L114 121 Q109 152 108 184 Z" fill="#F6D27A" ${INK}/>
+      <path d="M111 120 Q92 104 78 116 Q94 112 111 122 Z" fill="#B9DAA5" ${INK}/>
+      <path d="M111 120 Q128 102 144 112 Q128 110 111 122 Z" fill="#B9DAA5" ${INK}/>
+      <path d="M111 120 Q104 98 112 88 Q114 104 113 121 Z" fill="#B9DAA5" ${INK}/>
+    </g>
+    <line x1="140" y1="106" x2="262" y2="110" ${INK}/>
+    <g class="anim-sway">
+      <line x1="196" y1="134" x2="208" y2="108" ${INK}/>
+      <rect x="160" y="128" width="76" height="10" rx="4" fill="#FFFCF6" ${INK}/>
+      <rect x="152" y="136" width="92" height="46" rx="11" fill="#F6D27A" ${INK}/>
+      ${[162,183,204,225].map(x=>`<rect x="${x}" y="144" width="13" height="14" rx="3" fill="#A8D3E6" ${INK}/>`).join("")}
+      <line x1="152" y1="168" x2="244" y2="168" ${INK}/>
+      <circle cx="174" cy="184" r="7" fill="#FFFCF6" ${INK}/>
+      <circle cx="222" cy="184" r="7" fill="#FFFCF6" ${INK}/>
+    </g>
+    <g>
+      <polygon points="270,150 278,96 286,150" fill="#F6D27A" ${INK}/>
+      <polygon points="288,150 297,78 306,150" fill="#FFFCF6" ${INK}/>
+      <polygon points="308,150 316,92 324,150" fill="#F6D27A" ${INK}/>
+      <circle cx="278" cy="94" r="3.5" fill="#F2A497" ${INK}/>
+      <circle cx="297" cy="76" r="3.5" fill="#F2A497" ${INK}/>
+      <circle cx="316" cy="90" r="3.5" fill="#F2A497" ${INK}/>
+      <rect x="264" y="148" width="66" height="38" rx="5" fill="#F2A497" ${INK}/>
+      <path d="M289 186 V172 Q297 162 305 172 V186" fill="#FFFCF6" ${INK}/>
+    </g>
+  </svg>`;
+}
+
+const plane = (x,y,r) => `<g class="anim-fly"><g transform="translate(${x} ${y}) rotate(${r})">
+  <path d="M0 10 L34 8 Q46 8 46 12 Q46 16 34 16 L0 14 Z" fill="#FFFCF6" ${INK}/>
+  <path d="M16 12 L26 -2 L32 -2 L26 12 Z" fill="#F2A497" ${INK}/>
+  <path d="M2 11 L-2 2 L4 2 L10 10 Z" fill="#F2A497" ${INK}/></g></g>`;
+
+const ART = {
+  seoul:`<path d="M-2 86 Q50 70 102 86 V102 H-2 Z" fill="#B9DAA5" ${INK}/>
+    <g class="anim-float"><line x1="50" y1="22" x2="50" y2="9" ${INK}/><circle cx="50" cy="8" r="3" fill="#F2A497" ${INK}/>
+    <rect x="45" y="44" width="10" height="38" fill="#FFFCF6" ${INK}/>
+    <rect x="40" y="22" width="20" height="12" rx="3" fill="#A8D3E6" ${INK}/>
+    <rect x="32" y="33" width="36" height="14" rx="7" fill="#F2A497" ${INK}/></g>`,
+  flight:`${cloud(6,64,.8,"anim-drift")}${cloud(54,20,.6,"anim-drift2")}${plane(24,40,-12)}`,
+  nice:`${sun(78,22,11)}<rect x="-2" y="60" width="104" height="44" fill="#A8D3E6" ${INK}/>
+    <path d="M-2 82 Q40 72 102 92 V104 H-2 Z" fill="#F6D27A" ${INK}/>
+    <g class="anim-sway"><path d="M30 86 Q31 62 36 40 L41 41 Q37 64 37 86 Z" fill="#FFFCF6" ${INK}/>
+    <path d="M38 40 Q22 28 10 40 Q24 34 38 43 Z" fill="#B9DAA5" ${INK}/>
+    <path d="M38 40 Q54 26 68 36 Q54 34 38 43 Z" fill="#B9DAA5" ${INK}/>
+    <path d="M38 40 Q32 22 40 14 Q42 28 40 42 Z" fill="#B9DAA5" ${INK}/></g>
+    <path d="M58 82 V66 M50 68 Q58 56 70 66 Z" fill="#F2A497" ${INK}/>`,
+  menton:`${cloud(54,10,.5,"anim-drift")}<g class="anim-float">
+    <path d="M44 32 Q52 20 64 24 Q56 34 44 32 Z" fill="#B9DAA5" ${INK}/>
+    <ellipse cx="48" cy="58" rx="30" ry="22" fill="#F6D27A" ${INK}/>
+    <path d="M16 58 L12 58 M80 58 L84 58" ${INK}/>
+    <path d="M34 50 Q40 46 46 48" fill="none" ${INK}/></g>
+    <path d="M-2 90 H102" ${INK}/>`,
+  monaco:`${sun(80,20,10)}<rect x="-2" y="66" width="104" height="38" fill="#A8D3E6" ${INK}/>
+    <path d="M6 66 V40 H22 V30 H34 V66" fill="#F2A497" ${INK}/>
+    <g class="anim-bob"><path d="M30 70 H90 L80 84 H38 Z" fill="#FFFCF6" ${INK}/>
+    <rect x="44" y="58" width="32" height="12" rx="4" fill="#F6D27A" ${INK}/>
+    <circle cx="52" cy="64" r="2" fill="#3E3A39"/><circle cx="60" cy="64" r="2" fill="#3E3A39"/><circle cx="68" cy="64" r="2" fill="#3E3A39"/></g>`,
+  grasse:`<path d="M-2 88 Q50 80 102 88 V102 H-2 Z" fill="#B9DAA5" ${INK}/>
+    <g class="anim-float"><rect x="40" y="18" width="20" height="10" rx="3" fill="#F6D27A" ${INK}/>
+    <rect x="43" y="28" width="14" height="10" fill="#FFFCF6" ${INK}/>
+    <rect x="28" y="38" width="44" height="44" rx="12" fill="#F2A497" ${INK}/>
+    <rect x="38" y="52" width="24" height="14" rx="4" fill="#FFFCF6" ${INK}/></g>
+    ${[[14,70],[86,66],[18,40]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="6" fill="#F6D27A" ${INK}/><circle cx="${x}" cy="${y}" r="2" fill="#3E3A39"/>`).join("")}`,
+  lisbon:`<line x1="2" y1="18" x2="98" y2="20" ${INK}/><line x1="0" y1="90" x2="100" y2="90" ${INK}/>
+    <g class="anim-sway"><line x1="48" y1="38" x2="58" y2="19" ${INK}/>
+    <rect x="22" y="34" width="56" height="8" rx="3" fill="#FFFCF6" ${INK}/>
+    <rect x="14" y="40" width="72" height="38" rx="9" fill="#F6D27A" ${INK}/>
+    ${[22,44,66].map(x=>`<rect x="${x}" y="47" width="12" height="12" rx="3" fill="#A8D3E6" ${INK}/>`).join("")}
+    <line x1="14" y1="67" x2="86" y2="67" ${INK}/>
+    <circle cx="30" cy="80" r="6" fill="#FFFCF6" ${INK}/><circle cx="70" cy="80" r="6" fill="#FFFCF6" ${INK}/></g>`,
+  tart:`<g class="anim-float"><path d="M40 30 Q36 22 40 14 M52 30 Q48 22 52 14 M64 30 Q60 22 64 14" fill="none" ${INK}/></g>
+    <path d="M14 52 L24 82 H76 L86 52 Z" fill="#F6D27A" ${INK}/>
+    <ellipse cx="50" cy="52" rx="36" ry="12" fill="#F6D27A" ${INK}/>
+    <ellipse cx="50" cy="52" rx="26" ry="7" fill="#FFFCF6" ${INK}/>
+    <circle cx="42" cy="51" r="3" fill="#F2A497" ${INK}/><circle cx="56" cy="53" r="2.5" fill="#F2A497" ${INK}/>
+    <path d="M30 66 L32 78 M50 66 V80 M70 66 L68 78" ${INK}/>`,
+  ronda:`${cloud(56,8,.5,"anim-drift")}<path d="M-2 40 H30 L34 104 H-2 Z" fill="#F6D27A" ${INK}/>
+    <path d="M102 40 H70 L66 104 H102 Z" fill="#F6D27A" ${INK}/>
+    <rect x="34" y="88" width="32" height="16" fill="#A8D3E6" ${INK}/>
+    <rect x="26" y="34" width="48" height="10" fill="#FFFCF6" ${INK}/>
+    <path d="M38 44 V84 H62 V44 M42 44 V74 Q50 62 58 74 V44" fill="#FFFCF6" ${INK}/>
+    <rect x="4" y="26" width="16" height="14" fill="#FFFCF6" ${INK}/><rect x="80" y="24" width="16" height="16" fill="#FFFCF6" ${INK}/>`,
+  alhambra:`<rect x="-2" y="84" width="104" height="20" fill="#A8D3E6" ${INK}/>
+    <rect x="10" y="32" width="80" height="52" fill="#F2A497" ${INK}/>
+    ${[18,40,62].map(x=>`<path d="M${x} 84 V62 Q${x+10} 44 ${x+20} 62 V84" fill="#FFFCF6" ${INK}/>`).join("")}
+    ${[10,26,42,58,74].map(x=>`<rect x="${x}" y="24" width="10" height="8" fill="#F2A497" ${INK}/>`).join("")}
+    <g class="anim-float"><circle cx="50" cy="12" r="5" fill="#F6D27A" ${INK}/></g>`,
+  olive:`${sun(82,18,9)}<path d="M-2 86 Q50 76 102 86 V102 H-2 Z" fill="#B9DAA5" ${INK}/>
+    <path d="M46 86 Q44 70 48 58 L54 58 Q52 70 54 86 Z" fill="#F6D27A" ${INK}/>
+    <g class="anim-sway"><circle cx="34" cy="48" r="16" fill="#B9DAA5" ${INK}/><circle cx="66" cy="48" r="16" fill="#B9DAA5" ${INK}/>
+    <circle cx="50" cy="34" r="18" fill="#B9DAA5" ${INK}/>
+    ${[[34,46],[62,52],[50,30],[44,42]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="2.5" ry="3.5" fill="#3E3A39"/>`).join("")}</g>`,
+  sevilla:`<g class="anim-sway"><path d="M50 82 L12 46 A52 52 0 0 1 88 46 Z" fill="#F2A497" ${INK}/>
+    ${[22,34,50,66,78].map((x,i)=>`<line x1="50" y1="82" x2="${x}" y2="${[38,30,26,30,38][i]}" ${INK}/>`).join("")}
+    <path d="M24 50 A40 40 0 0 1 76 50" fill="none" stroke="#FFFCF6" stroke-width="4"/>
+    <rect x="45" y="80" width="10" height="16" rx="3" fill="#F6D27A" ${INK}/></g>`,
+  carriage:`<path d="M-2 90 H102" ${INK}/>
+    <g class="anim-bob"><path d="M14 44 H54 V70 H14 Z" fill="#FFFCF6" ${INK}/>
+    <path d="M10 44 Q34 26 58 44" fill="#F6D27A" ${INK}/>
+    <rect x="22" y="50" width="22" height="12" rx="3" fill="#A8D3E6" ${INK}/>
+    <circle cx="22" cy="78" r="10" fill="#FFFCF6" ${INK}/><circle cx="48" cy="78" r="8" fill="#FFFCF6" ${INK}/>
+    <path d="M54 60 H66" ${INK}/></g>
+    <path d="M66 60 Q68 44 80 42 L88 38 L90 46 L84 48 Q84 60 80 64 V86 M70 64 V86" fill="#FFFCF6" ${INK}/>`,
+  train:`${cloud(56,8,.5,"anim-drift")}<line x1="0" y1="88" x2="100" y2="88" ${INK}/>
+    <g class="anim-sway"><path d="M8 82 V54 Q8 40 24 40 H70 Q94 40 94 66 V82 Z" fill="#FFFCF6" ${INK}/>
+    <path d="M8 66 H94" stroke="#F2A497" stroke-width="6"/>
+    ${[18,36,54].map(x=>`<rect x="${x}" y="48" width="12" height="10" rx="2" fill="#A8D3E6" ${INK}/>`).join("")}
+    <circle cx="24" cy="84" r="4" fill="#3E3A39"/><circle cx="76" cy="84" r="4" fill="#3E3A39"/></g>`,
+  barcelona:`<path d="M-2 88 Q50 80 102 88 V102 H-2 Z" fill="#B9DAA5" ${INK}/>
+    <g class="anim-float"><polygon points="24,60 31,22 38,60" fill="#F6D27A" ${INK}/>
+    <polygon points="42,60 50,12 58,60" fill="#FFFCF6" ${INK}/>
+    <polygon points="62,60 69,22 76,60" fill="#F6D27A" ${INK}/>
+    <circle cx="50" cy="11" r="3" fill="#F2A497" ${INK}/></g>
+    <rect x="18" y="58" width="64" height="28" rx="5" fill="#F2A497" ${INK}/>
+    <path d="M42 86 V74 Q50 66 58 74 V86" fill="#FFFCF6" ${INK}/>`,
+  mila:`<path d="M10 92 V44 Q30 34 50 44 Q70 54 90 44 V92 Z" fill="#FFFCF6" ${INK}/>
+    <path d="M10 62 Q30 54 50 62 Q70 70 90 62 M10 78 Q30 70 50 78 Q70 86 90 78" fill="none" ${INK}/>
+    <g class="anim-float">${[24,48,72].map((x,i)=>`<rect x="${x-5}" y="${[26,30,32][i]}" width="10" height="14" rx="4" fill="#F6D27A" ${INK}/><circle cx="${x}" cy="${[22,26,28][i]}" r="6" fill="#F2A497" ${INK}/>`).join("")}</g>`,
+  sea:`${sun(80,20,10)}<rect x="-2" y="66" width="104" height="38" fill="#A8D3E6" ${INK}/>
+    <path d="M-2 80 Q12 74 26 80 T54 80 T82 80 T110 80" fill="none" ${INK}/>
+    <g class="anim-bob"><path d="M24 66 H70 L62 78 H32 Z" fill="#F2A497" ${INK}/>
+    <path d="M46 62 V20 L68 60 Z" fill="#FFFCF6" ${INK}/><path d="M44 60 V30 L28 60 Z" fill="#F6D27A" ${INK}/></g>`,
+  berry:`<g class="anim-float"><path d="M50 88 Q20 66 24 44 Q28 30 50 34 Q72 30 76 44 Q80 66 50 88 Z" fill="#F2A497" ${INK}/>
+    ${[[38,50],[50,46],[62,50],[44,62],[56,62],[50,74]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="2" ry="3" fill="#F6D27A"/>`).join("")}
+    <path d="M50 36 L38 24 L46 30 L50 18 L54 30 L62 24 Z" fill="#B9DAA5" ${INK}/></g>`,
+  home:`${plane(54,14,8)}<path d="M-2 88 Q50 80 102 88 V102 H-2 Z" fill="#B9DAA5" ${INK}/>
+    <rect x="24" y="50" width="48" height="38" fill="#FFFCF6" ${INK}/>
+    <polygon points="16,52 48,26 80,52" fill="#F2A497" ${INK}/>
+    <rect x="42" y="66" width="14" height="22" rx="3" fill="#F6D27A" ${INK}/>
+    <rect x="28" y="58" width="10" height="10" rx="2" fill="#A8D3E6" ${INK}/>`,
+};
+const art = k => `<svg viewBox="0 0 100 100" aria-hidden="true">${ART[k]||ART.flight}</svg>`;
+
+/* ══════════════ 工具 ══════════════ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const md = d => { const [m,dd] = d.split("/").map(Number); return `${m}月${dd}日`; };
+const WALK = ["","輕鬆","適中","比較多"];
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)) || {}; } catch(e){ return {}; } },
+  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+};
+const checkSVG = `<svg viewBox="0 0 16 16"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="#3E3A39" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+/* ══════════════ 首頁 ══════════════ */
+$("heroArt").innerHTML = heroSVG();
+$("tripKicker").textContent = TRIP.kicker;
+$("tripTitle").textContent = TRIP.title;
+$("tripSub").textContent = TRIP.subtitle;
+$("route").innerHTML = TRIP.route.map(([n,c,d])=>`<button style="background:var(--${c})" data-go="${d}">${esc(n)}</button>`).join("");
+$("route").addEventListener("click", e=>{
+  const b = e.target.closest("[data-go]"); if(!b) return;
+  selectDay(+b.dataset.go, false);
+  $("days").scrollIntoView({behavior: reduce?"auto":"smooth"});
+});
+
+const countEl = $("count");
+countEl.innerHTML = [["天","coral"],["小時","yellow"],["分鐘","mizu"]].map(([u,c])=>`<div style="background:var(--${c})"><b>0</b><small>${u}</small></div>`).join("");
+const cells = [...countEl.querySelectorAll("b")];
+function tick(){
+  const now = Date.now(), s = new Date(TRIP.start).getTime(), e = new Date(TRIP.end).getTime();
+  if (now >= s){
+    countEl.hidden = true;
+    $("countLabel").textContent = now <= e ? "旅行中，玩得開心！" : "旅程圓滿結束，平安到家 ♡";
+    return;
+  }
+  const d = Math.floor((s - now)/60000);
+  [Math.floor(d/1440), Math.floor(d%1440/60), d%60].forEach((n,i)=>{ if (cells[i].textContent !== String(n)) cells[i].textContent = n; });
+}
+tick(); setInterval(tick, 20000);
+
+function todayIndex(){
+  const now = new Date();
+  return DAYS.findIndex(d=>{const [m,dd]=d.date.split("/").map(Number);return m===now.getMonth()+1 && dd===now.getDate();});
+}
+function renderToday(){
+  const el = $("today"), i = todayIndex(), now = new Date();
+  if (i < 0){
+    if (now < new Date(TRIP.start)){
+      const d = DAYS[0];
+      el.innerHTML = `<span class="lbl">出發那天</span><h3>${md(d.date)}（${d.wk}）${esc(d.title)}</h3>
+        <p>🕖 ${esc(d.meet)}</p><p>🎒 要帶：${esc(d.bring)}</p>
+        <button class="big-btn" data-go="0">看第一天的行程</button>`;
+    } else el.hidden = true;
+    return;
+  }
+  const d = DAYS[i], hm = now.getHours()*60 + now.getMinutes();
+  const next = d.items.find(it=>{const [h,m]=it.t.split(":").map(Number);return h*60+m >= hm;});
+  const g = guardFor(i);
+  el.innerHTML = `<span class="lbl">今天・第 ${i+1} 天</span><h3>${esc(d.title)}</h3><p>📍 ${esc(d.city)}</p>
+    <div class="guard">🛡 早安提醒：${esc(g.tip.t)}${g.city?`<br>📍 ${esc(g.city)}`:""}</div>
+    ${next ? `<div class="next">接下來：<b>${esc(next.t)}　${esc(next.n)}</b></div>` : `<div class="next">今天的行程結束了，好好休息 🌙</div>`}
+    <button class="big-btn" data-go="${i}">看今天完整行程</button>`;
+}
+renderToday();
+$("today").addEventListener("click", e=>{
+  const b = e.target.closest("[data-go]"); if(!b) return;
+  selectDay(+b.dataset.go, false);
+  $("days").scrollIntoView({behavior: reduce?"auto":"smooth"});
+});
+
+/* ══════════════ 守則 ══════════════ */
+const RC = ["coral","yellow","mizu","green"];
+$("ruleList").innerHTML = RULES.map((r,i)=>`
+  <li class="card rule"><span class="num" style="background:var(--${RC[i%4]})">${i+1}</span>
+    <div><h4>${r.e} ${esc(r.t)}</h4><p>${esc(r.d)}</p></div></li>`).join("");
+$("promiseList").innerHTML = PROMISES.map(p=>`<li><b>${esc(p.t)}</b>${esc(p.d)}</li>`).join("");
+
+const SKEY = "trip2026-pledge";
+let signed = store.get(SKEY);
+$("signers").innerHTML = SIGNERS.map((n,i)=>`
+  <button class="signer" data-s="${i}" aria-pressed="${!!signed[i]}"><span class="seal">${signed[i]?"同意":"按這裡"}</span>${esc(n)}</button>`).join("");
+function pledgeMsg(){ $("pledgeDone").textContent = SIGNERS.every((_,i)=>signed[i]) ? "🎉 全家宣誓完成，出發囉！" : ""; }
+$("signers").addEventListener("click", e=>{
+  const b = e.target.closest(".signer"); if(!b) return;
+  const i = b.dataset.s; signed[i] = !signed[i];
+  b.setAttribute("aria-pressed", signed[i]);
+  const seal = b.querySelector(".seal");
+  seal.textContent = signed[i] ? "同意" : "按這裡";
+  seal.classList.remove("stamp"); void seal.offsetWidth; if(signed[i]) seal.classList.add("stamp");
+  store.set(SKEY, signed); pledgeMsg();
+});
+pledgeMsg();
+
+/* ══════════════ 交通 ══════════════ */
+const planeIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#FFFCF6" ${INK}/><path d="M9 21 L19 19 L16 12 L19 12 L25 19 L29 19 Q32 20 29 21 L25 21 L19 28 L16 28 L19 21 Z" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2" stroke-linejoin="round"/></svg>`;
+const carIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#FFFCF6" ${INK}/><path d="M9 24 L12 16 H28 L31 24 Z" fill="#B9DAA5" stroke="#3E3A39" stroke-width="2" stroke-linejoin="round"/><circle cx="14" cy="26" r="2.5" fill="#3E3A39"/><circle cx="26" cy="26" r="2.5" fill="#3E3A39"/></svg>`;
+const trainIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#FFFCF6" ${INK}/><path d="M9 25 V19 Q9 13 16 13 H24 Q31 13 31 21 V25 Z" fill="#F2A497" stroke="#3E3A39" stroke-width="2" stroke-linejoin="round"/><path d="M11 29 H29" stroke="#3E3A39" stroke-width="2" stroke-linecap="round"/></svg>`;
+// 即時動態：飛機用 Google 航班狀態卡；火車先連到車站即時時刻（收到車票後改成該班次）
+function liveUrl(f){
+  if (f.live) return f.live;
+  if (f.type==="plane") return `https://www.google.com/search?hl=zh-TW&q=${encodeURIComponent(f.no.replace(/\s+/g,"")+" flight status")}`;
+  return `https://www.google.com/search?hl=zh-TW&q=${encodeURIComponent("Adif "+f.from[1]+" salidas tiempo real")}`;
+}
+$("flightList").innerHTML = FLIGHTS.map((f,i)=>`
+  <article class="card flight">
+    <div class="f-top"><span class="pill" style="background:var(--${f.type==="train"?"coral":f.type==="car"?"green":"mizu"})">${esc(f.no)}</span><span>${esc(f.date)}</span></div>
+    <div class="f-code" style="margin-top:4px">${esc(f.air||"")}</div>
+    <div class="f-mid" style="align-items:start">
+      <div><div class="f-city">${esc(f.from[0])}</div><div class="f-code">${esc(f.from[1])}</div>${f.term?`<div class="f-term">${esc(f.term[0])}</div>`:""}</div>
+      <div class="f-path">${f.type==="train"?trainIcon:f.type==="car"?carIcon:planeIcon}</div>
+      <div class="r"><div class="f-city">${esc(f.to[0])}</div><div class="f-code">${esc(f.to[1])}</div>${f.term?`<div class="f-term">${esc(f.term[1])}</div>`:""}</div>
+    </div>
+    <div class="f-times"><span>${f.type==="car"?"取車":"出發"} ${esc(f.dep)}</span><span>${f.type==="car"?"還車":"抵達"} ${esc(f.arr)}</span></div>
+    <div class="f-meta">${f.meta.map(m=>`<span>${esc(m)}</span>`).join("")}</div>
+    <div class="btn-row">
+      ${f.bk&&f.bk.length?`<button class="btn" data-bkf="${i}">給櫃檯看</button>`:`<span class="btn off">訂單待補</span>`}
+      <a class="btn live" target="_blank" rel="noopener" href="${esc(liveUrl(f))}">${esc(f.liveLabel||"🕒 即時動態")}</a>
+    </div>
+  </article>`).join("");
+
+TICKETS.sort((a,b)=>{const k=t=>{const m=t.date.match(/(\d+)月(\d+)日.*?(\d+):(\d+)/);return +m[1]*1e6 + +m[2]*1e4 + +m[3]*100 + +m[4];};return k(a)-k(b);});
+$("ticketList").innerHTML = TICKETS.map((t,i)=>`
+  <article class="card flight">
+    <div class="f-top"><span class="pill" style="background:var(--coral)">🎟 門票</span><span>${esc(t.date)}</span></div>
+    <div class="f-city" style="margin-top:10px">${esc(t.name)}</div>
+    <div class="f-code">${esc(t.local)}・${esc(t.addr)}</div>
+    <div class="f-meta">${t.meta.map(m=>`<span>${esc(m)}</span>`).join("")}</div>
+    <div class="btn-row">
+      <button class="btn" data-bkt="${i}">給櫃檯看</button>
+      <a class="btn live" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.local+", "+t.addr)}">📍 地圖</a>
+    </div>
+  </article>`).join("");
+$("ticketList").addEventListener("click", e=>{
+  const b = e.target.closest("[data-bkt]"); if(!b) return;
+  const t = TICKETS[+b.dataset.bkt];
+  openBk(t.local, t.date, t.bk, b);
+});
+
+/* ══════════════ 每日行程 ══════════════ */
+const dayBtns = $("dayBtns"), dayPanel = $("dayPanel");
+let cur = 0;
+dayBtns.innerHTML = DAYS.map((d,i)=>{
+  const [m,dd] = d.date.split("/");
+  return `<button class="day-btn" aria-pressed="false" data-i="${i}"><small>第${i+1}天</small><b>${+m}/${+dd}</b><small>${esc(d.s)}</small></button>`;
+}).join("");
+
+function renderDay(i, animate){
+  const d = DAYS[i];
+  const notes = n => (Array.isArray(n)?n:[n]).filter(Boolean).map(x=>{
+    const t = esc(x); return `<li>${/^\p{Extended_Pictographic}/u.test(x)?t:"・"+t}</li>`;
+  }).join("");
+  dayPanel.innerHTML = `
+    <div class="card day-head">
+      <div class="top">${art(d.art)}
+        <div><div class="n">第 ${i+1} 天・${md(d.date)}（${esc(d.wk)}）</div><h3>${esc(d.title)}</h3><div class="city">📍 ${esc(d.city)}</div></div>
+      </div>
+      <div class="day-info">
+        ${d.meet?`<div>🕖 出門：${esc(d.meet)}</div>`:""}
+        ${d.bring?`<div>🎒 要帶：${esc(d.bring)}</div>`:""}
+        ${(()=>{const g=guardFor(i);return `<div class="guard">🛡 今日防小偷：<b style="font-weight:400">${esc(g.tip.t)}</b>${g.city?`<br>📍 ${esc(g.city)}`:""}</div>`})()}
+        ${d.walk?`<div>👟 走路：${WALK[d.walk]}<span class="walk">${[1,2,3].map(n=>`<i class="${n<=d.walk?"on":""}"></i>`).join("")}</span></div>`:""}
+      </div>
+    </div>
+    <ol class="tl">${d.items.map((it,k)=>`
+      <li class="${it.must?"must":""}" style="animation-delay:${animate?k*60:0}ms">
+        <div class="t">${esc(it.t)}${it.e?`<small>到 ${esc(it.e)}</small>`:""}</div><div class="dot"></div>
+        <div class="card box">
+          ${it.must?'<span class="must-badge">必去</span>':""}
+          <h4>${esc(it.n)}</h4>
+          ${it.tr&&it.tr.length?`<div class="tags">${it.tr.map(t=>{const m=TR[t]||{c:"paper",i:""};return `<span class="tag" style="background:var(--${m.c})"><svg viewBox="0 0 20 20" aria-hidden="true">${m.i}</svg>${esc(t)}</span>`}).join("")}</div>`:""}
+          ${it.note?`<ul class="notes">${notes(it.note)}</ul>`:""}
+          ${it.map?`<div class="maps">${it.map.map(([l,u])=>`<a class="mapbtn" target="_blank" rel="noopener" href="${esc(u)}">📍 ${esc(l)}</a>`).join("")}</div>`:""}
+          ${it.dad?`<div class="dad"><b>👴 爸爸可以考慮（自由選擇，不想去也沒關係）</b><ul>${it.dad.map(x=>`<li>・${esc(x)}</li>`).join("")}</ul><small>分開前跟 Sherry 約好會合地點和時間，手機保持有電 📱</small></div>`:""}
+        </div>
+      </li>`).join("")}
+    </ol>`;
+  if (animate){
+    dayPanel.querySelector(".day-head").classList.add("bounce");
+    dayPanel.querySelectorAll(".tl > li").forEach(li=>li.classList.add("bounce"));
+  }
+}
+function selectDay(i, animate){
+  cur = i;
+  dayBtns.querySelectorAll(".day-btn").forEach((x,k)=>x.setAttribute("aria-pressed", k===i));
+  const b = dayBtns.children[i];
+  dayBtns.scrollTo({left: b.offsetLeft - 8, behavior: reduce?"auto":"smooth"});
+  $("prevDay").disabled = i===0;
+  $("nextDay").disabled = i===DAYS.length-1;
+  renderDay(i, animate);
+}
+dayBtns.addEventListener("click", e=>{ const b = e.target.closest(".day-btn"); if(b) selectDay(+b.dataset.i, true); });
+const toDays = ()=> $("days").scrollIntoView({behavior: reduce?"auto":"smooth"});
+$("prevDay").onclick = ()=>{ if(cur>0){ selectDay(cur-1, true); toDays(); } };
+$("nextDay").onclick = ()=>{ if(cur<DAYS.length-1){ selectDay(cur+1, true); toDays(); } };
+selectDay(Math.max(0, todayIndex()), false);
+
+/* ══════════════ 住宿 ══════════════ */
+$("stayList").innerHTML = STAYS.map((s,i)=>`
+  <article class="card stay">
+    <div class="stay-top" style="background:var(--${s.color})"><span>📍 ${esc(s.city)}</span><span>住 ${s.nights} 晚</span></div>
+    <div class="stay-body">
+      <h4>${esc(s.name)}</h4>
+      <p class="en">${esc(s.en || s.local)}</p>
+      ${s.rooms?`<span class="rooms">🛏 ${esc(s.rooms)}</span>`:""}
+      <p class="addr">📮 ${esc(s.addr)}</p>
+      ${s.note?`<p class="addr">💡 ${esc(s.note)}</p>`:""}
+      <div class="stay-row"><span>🗓 ${esc(s.dates)}</span></div>
+      <div class="btn-row">
+        <button class="btn" data-drv="${i}">給司機看</button>
+        ${s.bk&&s.bk.length?`<button class="btn" data-bks="${i}">給櫃檯看</button>`:`<span class="btn off">訂單待補</span>`}
+        <a class="btn alt wide" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((s.en||s.local)+", "+s.addr)}">Google 地圖</a>
+      </div>
+    </div>
+  </article>`).join("");
+
+const drv = $("driver"); let lastFocus = null;
+$("stayList").addEventListener("click", e=>{
+  const b = e.target.closest("[data-drv]"); if(!b) return;
+  const s = STAYS[+b.dataset.drv];
+  $("drvSay").textContent = SAY[s.lang] || "";
+  $("drvName").textContent = s.local;
+  $("drvAddr").textContent = s.addr;
+  lastFocus = b; drv.classList.add("open"); $("drvClose").focus();
+});
+const bkm = $("bkModal");
+function openBk(title, dates, list, from){
+  $("bkName").textContent = title; $("bkDates").textContent = dates;
+  $("bkList").innerHTML = list.map(b=>`<div class="bk-item"><div class="lb">${esc(b.label)}</div>
+    ${b.id?`<div class="k">${esc(b.idLabel||"Booking No.")}</div><div class="num">${esc(b.id)}</div>`:""}
+    <div class="k">Guest name</div><div class="nm">${esc(b.name)}</div>
+    ${b.room?`<div class="k">${b.idLabel?"Details":"Room"}</div><div class="nm">${esc(b.room)}</div>`:""}
+    ${(b.info||[]).map(x=>`<div class="k">${esc(x[0])}</div><div class="nm">${esc(x[1])}</div>`).join("")}</div>`).join("");
+  lastFocus = from; bkm.classList.add("open"); $("bkClose").focus();
+}
+$("stayList").addEventListener("click", e=>{
+  const b = e.target.closest("[data-bks]"); if(!b) return;
+  const s = STAYS[+b.dataset.bks];
+  openBk(s.local, s.dates, s.bk, b);
+});
+$("flightList").addEventListener("click", e=>{
+  const b = e.target.closest("[data-bkf]"); if(!b) return;
+  const f = FLIGHTS[+b.dataset.bkf];
+  openBk(`${f.no}　${f.from[1]} → ${f.to[1]}`, f.date, f.bk, b);
+});
+function closeBk(){ bkm.classList.remove("open"); if(lastFocus) lastFocus.focus(); }
+$("bkClose").onclick = closeBk;
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && bkm.classList.contains("open")) closeBk(); });
+function closeDrv(){ drv.classList.remove("open"); if(lastFocus) lastFocus.focus(); }
+$("drvClose").onclick = closeDrv;
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && drv.classList.contains("open")) closeDrv(); });
+
+$("guardCard").innerHTML = `<ul>${GUARD_TIPS.map((g,i)=>`<li><b>${i+1}. ${esc(g.t)}</b>${esc(g.d)}</li>`).join("")}</ul>`;
+
+/* ══════════════ 準備清單 ══════════════ */
+function checklist(el, key, list, doneText){
+  let done = store.get(key);
+  el.innerHTML = `<div class="progress"><div class="bar"><i></i></div><span></span></div>
+    <ul>${list.map(([t,s],i)=>`<li><label><input type="checkbox" data-i="${i}" ${done[i]?"checked":""}><span class="chk">${checkSVG}</span><span class="txt">${esc(t)}${s?`<small>${esc(s)}</small>`:""}</span></label></li>`).join("")}</ul>`;
+  const fill = el.querySelector(".bar i"), txt = el.querySelector(".progress span");
+  const upd = ()=>{
+    const n = Object.values(done).filter(Boolean).length;
+    fill.style.width = (n/list.length*100)+"%"; fill.classList.toggle("zero", n===0);
+    txt.textContent = n===list.length ? doneText : `${n} / ${list.length}`;
+  };
+  el.addEventListener("change", e=>{ done[e.target.dataset.i] = e.target.checked; store.set(key, done); upd(); });
+  upd();
+}
+checklist($("packCard"), "trip2026-pack", PACK, "都準備好了！");
+checklist($("bookCard"), "trip2026-book", BOOK, "全部訂好了！");
+
+/* ══════════════ 求助 ══════════════ */
+$("lineList").innerHTML = LINE_CONTACTS.map(c=>`
+  <div class="row"><div class="who">${esc(c.who)}<small>${esc(c.sub)}</small></div>
+  ${c.url?`<a class="call line" target="_blank" rel="noopener" href="${esc(c.url)}">LINE 聯絡</a>`:`<span class="call line" style="opacity:.45">LINE 待補</span>`}</div>`).join("");
+$("sosList").innerHTML = SOS.map(h=>`
+  <div class="row"><div class="who">${esc(h.who)}<small>${esc(h.sub)}</small></div>
+  <a class="call" href="tel:${esc(h.tel)}">☎ ${esc(h.tel)}</a></div>`).join("");
+
+/* ══════════════ 頁尾 ══════════════ */
+$("foot").innerHTML = `<svg viewBox="0 0 100 60" aria-hidden="true">${cloud(4,22,.9,"anim-drift")}<g class="anim-float">${sun(72,24,14)}</g></svg>一路平安，玩得開心`;
+
+/* ══════════════ 選單高亮 ══════════════ */
+const links = [...document.querySelectorAll(".nav a")];
+const io = new IntersectionObserver(es=>{
+  es.forEach(en=>{ if(en.isIntersecting) links.forEach(a=>a.classList.toggle("on", a.getAttribute("href")==="#"+en.target.id)); });
+},{rootMargin:"-40% 0px -55% 0px"});
+document.querySelectorAll("main section").forEach(s=>io.observe(s));
+</script>
+</body>
+</html>
