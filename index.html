@@ -371,7 +371,14 @@ section:first-child{margin-top:0}
 .btn.wide{grid-column:1 / -1}
 .btn.off{opacity:.45;pointer-events:none}
 .btn.live{background:var(--mizu)}
-.f-livenote{margin-top:8px;font-size:15px;color:#7a716c}
+.wait-pop{position:fixed;inset:0;z-index:120;background:rgba(62,58,57,.45);display:none;align-items:center;justify-content:center;padding:20px}
+.wait-pop.open{display:flex}
+.wait-pop .box{background:var(--paper);border:3px solid var(--ink);border-radius:var(--r);padding:22px 20px 18px;max-width:340px;width:100%;text-align:center}
+.wait-pop .ic{font-size:44px;line-height:1}
+.wait-pop h3{font-size:24px;font-weight:400;margin:8px 0 10px}
+.wait-pop p{font-size:19px;line-height:1.55;margin:0 0 6px}
+.wait-pop .when{display:inline-block;background:var(--yellow);border:3px solid var(--ink);border-radius:var(--r-sm);padding:4px 14px;margin:6px 0 10px;font-size:22px}
+.wait-pop .big-btn{margin-top:10px;width:100%}
 .bk-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:14px;margin:14px 0}
 .bk-title{text-align:center}
 .bk-title b{display:block;font-size:26px;font-weight:400;line-height:1.3;word-break:break-word}
@@ -616,6 +623,18 @@ footer svg{width:130px;margin:0 auto 6px}
 </div>
 
 <div class="toast" id="toast" role="status" hidden>🔄 行程有更新，正在重新整理…</div>
+
+<div class="wait-pop" id="waitPop" role="dialog" aria-modal="true" aria-labelledby="waitTtl">
+  <div class="box">
+    <div class="ic">⏳</div>
+    <h3 id="waitTtl">現在還太早喔</h3>
+    <p><b id="waitWhat"></b></p>
+    <p id="waitWhy"></p>
+    <div class="when" id="waitWhen"></div>
+    <p>到時候再回來按一次「🕒 即時動態」就看得到囉！</p>
+    <button class="big-btn" id="waitOk">知道了</button>
+  </div>
+</div>
 
 <div class="driver" id="bkModal" role="dialog" aria-modal="true" aria-label="給櫃檯看的訂單">
   <p class="zh">把手機拿給櫃檯人員看 👇</p>
@@ -1355,10 +1374,13 @@ const planeIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" c
 const carIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#FFFCF6" ${INK}/><path d="M9 24 L12 16 H28 L31 24 Z" fill="#B9DAA5" stroke="#3E3A39" stroke-width="2" stroke-linejoin="round"/><circle cx="14" cy="26" r="2.5" fill="#3E3A39"/><circle cx="26" cy="26" r="2.5" fill="#3E3A39"/></svg>`;
 const trainIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#FFFCF6" ${INK}/><path d="M9 25 V19 Q9 13 16 13 H24 Q31 13 31 21 V25 Z" fill="#F2A497" stroke="#3E3A39" stroke-width="2" stroke-linejoin="round"/><path d="M11 29 H29" stroke="#3E3A39" stroke-width="2" stroke-linecap="round"/></svg>`;
 // 即時動態：飛機用 Google 航班狀態卡；火車先連到車站即時時刻（收到車票後改成該班次）
-function liveEarly(f){
-  const m = f.date.match(/(\d+)月(\d+)日/); if (!m) return false;
-  return Date.now() < new Date(2026, +m[1]-1, +m[2]).getTime() - 3*864e5;
+// 太早按「即時動態」：飛機起飛前 2 天起、火車當天才查得到，之前先跳提示請他們到時再回來
+function liveOpenDay(f){
+  if (f.type==="car") return null;
+  const m = f.date.match(/(\d+)月(\d+)日/); if (!m) return null;
+  return new Date(2026, +m[1]-1, +m[2] - (f.type==="plane" ? 2 : 0));
 }
+function liveEarly(f){ const d = liveOpenDay(f); return !!d && Date.now() < d.getTime(); }
 function liveUrl(f){
   if (f.live) return f.live;
   if (f.type==="plane"){
@@ -1382,9 +1404,8 @@ $("flightList").innerHTML = FLIGHTS.map((f,i)=>`
     <div class="f-meta">${f.meta.map(m=>`<span>${esc(m)}</span>`).join("")}</div>
     <div class="btn-row">
       ${f.bk&&f.bk.length?`<button class="btn" data-bkf="${i}">給櫃檯看</button>`:`<span class="btn off">訂單待補</span>`}
-      <a class="btn live" target="_blank" rel="noopener" href="${esc(liveUrl(f))}">${esc(f.liveLabel||"🕒 即時動態")}</a>
+      <a class="btn live" target="_blank" rel="noopener" data-lf="${i}" href="${esc(liveUrl(f))}">${esc(f.liveLabel||"🕒 即時動態")}</a>
     </div>
-    ${f.type==="plane"&&liveEarly(f)?`<div class="f-livenote">※ 起飛前 3 天內才查得到當天這班的動態</div>`:""}
   </article>`).join("");
 
 TICKETS.sort((a,b)=>{const k=t=>{const m=t.date.match(/(\d+)月(\d+)日.*?(\d+):(\d+)/);return +m[1]*1e6 + +m[2]*1e4 + +m[3]*100 + +m[4];};return k(a)-k(b);});
@@ -1557,12 +1578,29 @@ $("stayList").addEventListener("click", e=>{
   openBk(s.local, s.dates, s.bk, b);
 });
 $("flightList").addEventListener("click", e=>{
+  const a = e.target.closest("a.btn.live[data-lf]");
+  if (a){
+    const f = FLIGHTS[+a.dataset.lf];
+    if (liveEarly(f)){
+      e.preventDefault();
+      const d = liveOpenDay(f), wk = "日一二三四五六"[d.getDay()];
+      $("waitWhat").textContent = `${f.no.replace(/\s+/g," ")}（${f.date.replace(/（.*$/,"")}）`;
+      $("waitWhen").textContent = `${d.getMonth()+1}月${d.getDate()}日（${wk}）起`;
+      $("waitWhy").textContent = f.type==="plane" ? "航班動態要起飛前兩天才查得到" : "火車動態只有搭車當天才查得到";
+      lastFocus = a; $("waitPop").classList.add("open"); $("waitOk").focus();
+    }
+    return;
+  }
   const b = e.target.closest("[data-bkf]"); if(!b) return;
   const f = FLIGHTS[+b.dataset.bkf];
   openBk(`${f.no}　${f.from[1]} → ${f.to[1]}`, f.date, f.bk, b);
 });
 function closeBk(){ bkm.classList.remove("open"); if(lastFocus) lastFocus.focus(); }
 $("bkClose").onclick = closeBk;
+function closeWait(){ $("waitPop").classList.remove("open"); if(lastFocus) lastFocus.focus(); }
+$("waitOk").onclick = closeWait;
+$("waitPop").addEventListener("click", e=>{ if (e.target.id==="waitPop") closeWait(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && $("waitPop").classList.contains("open")) closeWait(); });
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && bkm.classList.contains("open")) closeBk(); });
 function closeDrv(){ drv.classList.remove("open"); if(lastFocus) lastFocus.focus(); }
 $("drvClose").onclick = closeDrv;
@@ -1733,6 +1771,9 @@ function toTWD(amount, cur){
 }
 const fmt2 = v => Number(v).toLocaleString("zh-TW",{minimumFractionDigits:0, maximumFractionDigits:2});
 /* 預估可退稅（觀光客退 VAT，扣掉退稅公司手續費後的大約比例） */
+const CITY_COUNTRY = {"首爾":"韓國","仁川":"韓國","回家":"韓國","巴黎":"法國","尼斯":"法國","芒通":"法國","格拉斯":"法國","摩納哥":"摩納哥",
+  "里斯本":"葡萄牙","龍達":"西班牙","格拉納達":"西班牙","莊園":"西班牙","塞維亞":"西班牙","巴塞隆納":"西班牙"};
+const CITY_NAME = {"莊園":"格拉納達","回家":"仁川"};
 const REFUND_RULES = {
   "法國":   {rate:0.12,  min:100.01, cur:"EUR"},
   "摩納哥": {rate:0.12,  min:100.01, cur:"EUR"},   // 摩納哥用法國的 VAT 制度
@@ -1844,9 +1885,6 @@ const COUNTRY_ZH = {france:"法國", monaco:"摩納哥", portugal:"葡萄牙", s
   korea:"韓國", "south korea":"韓國", "republic of korea":"韓國", "united states":"美國", "united states of america":"美國", usa:"美國", us:"美國",
   "united kingdom":"英國", uk:"英國", italy:"義大利", germany:"德國", japan:"日本", taiwan:"台灣", switzerland:"瑞士", netherlands:"荷蘭"};
 /* 依收據日期對照行程，決定國家與城市（不看收據上寫的國家） */
-const CITY_COUNTRY = {"首爾":"韓國","仁川":"韓國","回家":"韓國","巴黎":"法國","尼斯":"法國","芒通":"法國","格拉斯":"法國","摩納哥":"摩納哥",
-  "里斯本":"葡萄牙","龍達":"西班牙","格拉納達":"西班牙","莊園":"西班牙","塞維亞":"西班牙","巴塞隆納":"西班牙"};
-const CITY_NAME = {"莊園":"格拉納達","回家":"仁川"};
 function placeFor(receiptDate){
   let i = -1;
   const m = String(receiptDate||"").match(/^2026-(\d{2})-(\d{2})$/);
@@ -2177,7 +2215,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T23:08:32";
+const SITE_VERSION = "2026-10-09T23:14:30";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
