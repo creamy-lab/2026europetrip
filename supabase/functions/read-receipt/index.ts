@@ -16,6 +16,7 @@ Return ONLY one JSON object, no other text:
             "net": line amount BEFORE tax, as a number,
             "tax": tax amount for this line, as a number,
             "price": line amount INCLUDING tax, as a number}],
+ "card": card used to pay, as card brand plus last 4 digits if printed, e.g. "Visa •1234", "Mastercard •5678", "Visa", or null if paid in cash / not shown,
  "subtotal_net": total before tax or null,
  "tax_total": total tax or null,
  "total": total paid including tax}

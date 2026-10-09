@@ -260,7 +260,7 @@ section:first-child{margin-top:0}
 .tf-row > div{min-width:0}
 .tf-form .btn{width:100%;margin-top:12px}
 .tf-wrap{overflow-x:auto;margin-top:8px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--card)}
-.tf-table{border-collapse:collapse;min-width:960px;width:100%;font-size:15px}
+.tf-table{border-collapse:collapse;min-width:1080px;width:100%;font-size:15px}
 .tf-table th,.tf-table td{border-bottom:2px dotted var(--ink);padding:6px 6px;text-align:left;vertical-align:middle;white-space:nowrap}
 .tf-table th{background:var(--yellow);font-weight:400;position:sticky;top:0}
 .tf-table td input[type=text]{font:inherit;font-size:15px;width:100%;min-width:90px;padding:4px 6px;border:2px solid transparent;border-radius:8px;background:transparent;color:var(--ink)}
@@ -271,6 +271,13 @@ section:first-child{margin-top:0}
 .tf-table tfoot td{font-weight:400;background:var(--paper);border-bottom:0}
 .tf-table input[type=checkbox]{width:24px;height:24px;accent-color:#7FB069}
 .tf-table .del{font-size:13px;padding:2px 8px;border:2px solid var(--ink);border-radius:999px;background:var(--paper)}
+.card-sum{display:grid;gap:8px;margin-top:8px}
+.card-sum .cs{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 12px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--card)}
+.card-sum .cs > div{min-width:0}
+.card-sum .cs b{font-weight:400;font-size:18px;display:block}
+.card-sum .cs small{display:block;font-size:14px}
+.card-sum .cs .tw{text-align:right;white-space:nowrap;font-size:17px}
+.card-sum .cs.all{background:var(--yellow)}
 .tf-sum{font-size:17px;margin-top:8px;padding:10px 12px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--green);line-height:1.5}
 .tf-sum b{font-weight:400;font-size:20px}
 .tf-list{list-style:none;margin-top:8px}
@@ -552,6 +559,9 @@ footer svg{width:130px;margin:0 auto 6px}
           <div><label for="tfCur">幣別</label><select id="tfCur"><option value="EUR">歐元 €</option><option value="KRW">韓元 ₩</option><option value="USD">美元 US$</option><option value="GBP">英鎊 £</option><option value="TWD">台幣 NT$</option></select></div>
           <div><label for="tfCountry">國家</label><select id="tfCountry"><option>法國</option><option>摩納哥</option><option>葡萄牙</option><option>西班牙</option><option>韓國</option><option>美國</option><option>其他</option></select></div>
         </div>
+        <label for="tfCard">付款卡</label>
+        <input id="tfCard" list="tfCardList" placeholder="例如 Visa •1234（現金就寫「現金」）">
+        <datalist id="tfCardList"></datalist>
         <label for="tfItem">商品</label>
         <input id="tfItem" placeholder="例如 Saint Louis 托特包">
         <label for="tfRemark">備註</label>
@@ -563,8 +573,11 @@ footer svg{width:130px;margin:0 auto 6px}
       <p class="ck-sub" style="font-size:14px">表格可以左右滑動；店名、商品、價格、備註可直接點來修改，改完會自動存檔。</p>
       <p class="tf-sum" id="tfSum"></p>
       <div class="tf-wrap"><table class="tf-table" id="tfList"></table></div>
+      <h3 class="ck-title" style="margin-top:18px;font-size:19px">💳 各張卡刷了多少</h3>
+      <div class="card-sum" id="cardSum"></div>
       <p class="tf-total" id="tfTotal"></p>
       <p class="tf-note">💡 法國、摩納哥、葡萄牙買的東西，購物時請先問店員：從巴塞隆納離開歐洲時要怎麼辦退稅。</p>
+      <p class="tf-note">💳 刷卡時如果機器問「Pay in TWD or EUR？」，請選 <b style="font-weight:400">當地貨幣（EUR／KRW）</b>。選台幣通常會被多收匯差。</p>
     </div>
   </section>
 
@@ -1684,6 +1697,7 @@ fetch("https://open.er-api.com/v6/latest/TWD").then(r=>r.json()).then(j=>{
 calcCv();
 
 /* ══════════════ 退稅清單 ══════════════ */
+const COLS_CARD = "id,store,amount,net,tax,card,currency,country,scanned,receipt,city,item,remark,captured_on,created_at";
 const COLS_FULL = "id,store,amount,net,tax,currency,country,scanned,receipt,city,item,remark,captured_on,created_at";
 const COLS_MID  = "id,store,amount,currency,country,scanned,receipt,city,item,remark,captured_on,created_at";
 const CUR_SYM = {EUR:"€", KRW:"₩", USD:"US$", GBP:"£", TWD:"NT$", JPY:"¥", CHF:"CHF "};
@@ -1699,18 +1713,20 @@ const fmt2 = v => Number(v).toLocaleString("zh-TW",{minimumFractionDigits:0, max
 async function loadTax(){
   try{
     let rows;
-    try{ rows = await sbGet(`taxfree?select=${COLS_FULL}&order=created_at.asc`); }
+    try{ rows = await sbGet(`taxfree?select=${COLS_CARD}&order=created_at.asc`); }
+    catch(e00){ try{ rows = await sbGet(`taxfree?select=${COLS_FULL}&order=created_at.asc`); }
     catch(e){ try{ rows = await sbGet(`taxfree?select=${COLS_MID}&order=created_at.asc`); }
-      catch(e2){ rows = await sbGet("taxfree?select=id,store,amount,currency,country,scanned,created_at&order=created_at.asc"); } }
+      catch(e2){ rows = await sbGet("taxfree?select=id,store,amount,currency,country,scanned,created_at&order=created_at.asc"); } } }
     const val = v => v==null ? "" : v;
     const d = r => { const x = r.captured_on || (r.created_at||"").slice(0,10); if(!x) return ""; const [y,m,dd]=x.split("-"); return `${+m}/${+dd}`; };
     const cell = (r,f,lab) => `<td class="num">${symOf(r.currency)}<input type="text" inputmode="decimal" data-edit="${f}" data-id="${r.id}" value="${esc(val(r[f]))}" placeholder="—" aria-label="${lab}" style="width:84px;display:inline-block"></td>`;
-    $("tfList").innerHTML = `<thead><tr><th>日期</th><th>城市</th><th>店名</th><th>商品</th><th>未稅</th><th>稅</th><th>含稅價格</th><th>備註</th><th>收據</th><th></th></tr></thead>
+    $("tfList").innerHTML = `<thead><tr><th>日期</th><th>城市</th><th>店名</th><th>商品</th><th>未稅</th><th>稅</th><th>含稅價格</th><th>付款卡</th><th>備註</th><th>收據</th><th></th></tr></thead>
       <tbody>${rows.map(r=>`<tr>
         <td>${esc(d(r))}</td><td>${esc(r.city||r.country||"")}</td>
         <td><input type="text" data-edit="store" data-id="${r.id}" value="${esc(r.store||"")}" aria-label="店名"></td>
         <td><input type="text" data-edit="item" data-id="${r.id}" value="${esc(r.item||"")}" placeholder="—" aria-label="商品"></td>
         ${cell(r,"net","未稅")}${cell(r,"tax","稅")}${cell(r,"amount","含稅價格")}
+        <td><input type="text" data-edit="card" data-id="${r.id}" value="${esc(r.card||"")}" placeholder="—" aria-label="付款卡" list="tfCardList" style="min-width:110px"></td>
         <td class="rm"><input type="text" data-edit="remark" data-id="${r.id}" value="${esc(r.remark||"")}" placeholder="點這裡寫備註" aria-label="備註"></td>
         <td>${r.receipt?`<a href="${esc(phUrl(r.receipt))}" target="_blank" rel="noopener">🧾 看</a>`:"—"}</td>
         <td><button class="del" data-del="${r.id}">刪除</button></td></tr>`).join("")}</tbody>`;
@@ -1720,10 +1736,21 @@ async function loadTax(){
     const parts = Object.entries(byCur).map(([c,t])=>{ const n = toTWD(t.amt, c); if (n==null) twdOk = false; else twd += n;
       return `${symOf(c)}<b>${fmt2(t.amt)}</b>${t.tax?`（含稅金 ${symOf(c)}${fmt2(t.tax)}）`:""}`; });
     $("tfSum").innerHTML = rows.length ? `共 <b>${rows.length}</b> 筆・合計 ${parts.join("・")}${twd?`<br>約 NT$ <b>${Math.round(twd).toLocaleString("zh-TW")}</b>${twdOk?"":"（部分幣別無法換算）"}`:""}` : "還沒有記錄，買到可以退稅的東西時記一筆吧！";
+    // 💳 各張卡合計（原幣＋台幣）
+    const normCard = c => { const t = String(c||"").trim(); return t || "未填付款卡"; };
+    const cards = {};
+    rows.forEach(r=>{ const k = normCard(r.card), c = r.currency || "EUR"; (cards[k] = cards[k] || {})[c] = (cards[k][c]||0) + (+r.amount||0); });
+    const cardHtml = Object.entries(cards).sort((a,b)=>a[0]==="未填付款卡"?1:b[0]==="未填付款卡"?-1:a[0].localeCompare(b[0])).map(([k,byC])=>{
+      let tw = 0, okTw = true;
+      const orig = Object.entries(byC).map(([c,v])=>{ const n = toTWD(v,c); if(n==null) okTw=false; else tw+=n; return `${symOf(c)}${fmt2(v)}`; }).join("・");
+      return `<div class="cs"><div><b>💳 ${esc(k)}</b><small>${orig}</small></div><div class="tw">約 NT$ ${Math.round(tw).toLocaleString("zh-TW")}${okTw?"":"＋"}</div></div>`;
+    }).join("");
+    $("cardSum").innerHTML = rows.length ? cardHtml + `<div class="cs all"><div><b>全部合計</b><small>${Object.entries(byCur).map(([c,t])=>`${symOf(c)}${fmt2(t.amt)}`).join("・")}</small></div><div class="tw">約 NT$ ${Math.round(twd).toLocaleString("zh-TW")}</div></div>` : `<p class="ck-sub">記錄後這裡會自動統計每張卡刷了多少。</p>`;
+    $("tfCardList").innerHTML = Object.keys(cards).filter(k=>k!=="未填付款卡").map(k=>`<option value="${esc(k)}">`).join("");
     $("tfTotal").textContent = "";
   }catch(e){ $("tfList").innerHTML = ""; $("tfTotal").textContent = "暫時讀不到，有網路時會自動顯示"; }
 }
-async function addTaxRow({store, amount, currency, country, item, remark, city, net, tax}){
+async function addTaxRow({store, amount, currency, country, item, remark, city, net, tax, card}){
   const c = hereCity(), t = new Date();
   const base = {store, amount, currency, country};
   const rec = Object.assign({}, base, {item:item||null, remark:remark||null,
@@ -1731,6 +1758,7 @@ async function addTaxRow({store, amount, currency, country, item, remark, city, 
     captured_on: `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`});
   if (receiptPath) rec.receipt = receiptPath;
   const full = Object.assign({}, rec, {net: net ?? null, tax: tax ?? null});
+  try{ await sbSend("POST","taxfree",Object.assign({}, full, {card: card || null})); return; }catch(eC){}
   try{ await sbSend("POST","taxfree",full); return; }catch(e0){}
   try{ await sbSend("POST","taxfree",rec); return; }catch(e1){}
   await sbSend("POST","taxfree",base);                 // 資料表還沒加新欄位時，至少存基本資料
@@ -1742,7 +1770,7 @@ $("tfForm").addEventListener("submit", async e=>{
   $("tfAdd").disabled = true;
   try{
     await addTaxRow({store, amount: readMoney($("tfAmt").value), currency:$("tfCur").value, country:$("tfCountry").value,
-      item:$("tfItem").value.trim(), remark:$("tfRemark").value.trim()});
+      item:$("tfItem").value.trim(), remark:$("tfRemark").value.trim(), card:$("tfCard").value.trim()});
     $("tfStore").value=""; $("tfAmt").value=""; $("tfItem").value=""; $("tfRemark").value=""; $("tfMsg").textContent = "已記下 ✓";
     receiptPath = null; $("ocrPrev").hidden = true; $("ocrMsg").textContent = "";
     loadTax();
@@ -1816,6 +1844,7 @@ function showAiReview(d){
       <div><label for="aiCity">城市</label><input type="text" id="aiCity" value="${esc(place.city)}" placeholder="例如 尼斯"></div>
       <div><label for="aiCur">幣別</label><select id="aiCur">${curList.map(c=>`<option value="${c}"${c===cur0?" selected":""}>${c}</option>`).join("")}</select></div>
     </div>
+    <label for="aiCard">付款卡</label><input type="text" id="aiCard" list="tfCardList" value="${esc(d.card||"")}" placeholder="例如 Visa •1234">
     <p class="ck-sub" style="font-size:13px;margin-top:4px">${place.from==="receipt"?"📅 國家、城市是依收據日期對照行程自動帶入":place.from==="today"?"📅 國家、城市是依今天的行程自動帶入":"📅 出發後會依行程自動帶入國家、城市，現在請自己填"}</p>
     <datalist id="aiCountryList"><option value="法國"><option value="摩納哥"><option value="葡萄牙"><option value="西班牙"><option value="韓國"><option value="美國"></datalist>
     ${items.length ? items.map((it,k)=>`<div class="ai-it">
@@ -1850,14 +1879,14 @@ function showAiReview(d){
   $("aiCancel").onclick = ()=>{ box.hidden = true; $("ocrMsg").textContent = ""; $("ocrPrev").hidden = true; receiptPath = null; };
   $("aiSave").onclick = async ()=>{
     const store = $("aiStore").value.trim() || "（未填店名）";
-    const cur = $("aiCur").value, country = $("aiCountry").value.trim() || null, city = $("aiCity").value.trim() || country;
+    const cur = $("aiCur").value, country = $("aiCountry").value.trim() || null, city = $("aiCity").value.trim() || country, card = $("aiCard").value.trim();
     const rows = items.length
       ? items.map((it,k)=>({chk:$("aiChk"+k).checked, item:$("aiName"+k).value.trim(), net:readMoney($("aiNet"+k).value), tax:readMoney($("aiTax"+k).value), amount:readMoney($("aiPrice"+k).value)})).filter(x=>x.chk)
       : [{item:null, net:n(d.subtotal_net), tax:n(d.tax_total), amount:printed}];
     if (!rows.length) return;
     $("aiSave").disabled = true;
     let ok = 0;
-    for (const r of rows){ try{ await addTaxRow({store, amount:r.amount, net:r.net, tax:r.tax, currency:cur, country, city, item:r.item}); ok++; }catch(e){} }
+    for (const r of rows){ try{ await addTaxRow({store, amount:r.amount, net:r.net, tax:r.tax, currency:cur, country, city, item:r.item, card}); ok++; }catch(e){} }
     box.hidden = true; $("ocrPrev").hidden = true; receiptPath = null;
     $("ocrMsg").textContent = ok===rows.length ? `✅ 已記下 ${ok} 筆` : `記下 ${ok} 筆，${rows.length-ok} 筆沒有存到，請再試一次。`;
     loadTax();
@@ -2046,7 +2075,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T18:14:56";
+const SITE_VERSION = "2026-10-09T18:25:19";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
