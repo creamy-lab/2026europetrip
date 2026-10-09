@@ -37,10 +37,15 @@ Deno.serve(async (req) => {
     if (typeof image !== "string" || image.length < 100 || image.length > 6_000_000) {
       throw new Error("invalid image");
     }
+    // 去掉不小心貼進去的空白、引號、隱形字元，只留下金鑰本身
+    const apiKey = (Deno.env.get("ANTHROPIC_API_KEY") ?? "").replace(/[^\x21-\x7E]/g, "").replace(/["'`]/g, "");
+    if (!apiKey.startsWith("sk-ant-")) {
+      throw new Error("ANTHROPIC_API_KEY 看起來不對：請在 Supabase Secrets 重新貼上以 sk-ant- 開頭的金鑰");
+    }
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
-        "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") ?? "",
+        "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
         "content-type": "application/json",
       },
