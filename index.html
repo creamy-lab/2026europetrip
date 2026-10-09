@@ -452,6 +452,9 @@ footer svg{width:130px;margin:0 auto 6px}
     <div class="card tool">
       <h3 class="ck-title">🧾 退稅清單</h3>
       <p class="ck-sub">每買一件可以退稅的東西就記一筆，12/7 在巴塞隆納機場辦退稅時逐一打勾。</p>
+      <label class="ph-up" style="background:var(--yellow)">📷 拍收據自動填寫<input type="file" accept="image/*" capture="environment" id="tfCam"></label>
+      <p class="ck-msg" id="ocrMsg" role="status"></p>
+      <img id="ocrPrev" alt="收據預覽" hidden style="max-width:100%;max-height:220px;border:3px solid var(--ink);border-radius:12px;margin-top:6px">
       <form id="tfForm" class="tf-form">
         <label for="tfStore">店名</label>
         <input id="tfStore" required placeholder="例如 Goyard 摩納哥">
@@ -1578,9 +1581,9 @@ calcCv();
 /* ══════════════ 退稅清單 ══════════════ */
 async function loadTax(){
   try{
-    const rows = await sbGet("taxfree?select=id,store,amount,currency,country,scanned&order=created_at.asc");
+    let rows; try{ rows = await sbGet("taxfree?select=id,store,amount,currency,country,scanned,receipt&order=created_at.asc"); }catch(e){ rows = await sbGet("taxfree?select=id,store,amount,currency,country,scanned&order=created_at.asc"); }
     $("tfList").innerHTML = rows.map(r=>`<li><input type="checkbox" data-id="${r.id}" ${r.scanned?"checked":""} aria-label="${esc(r.store)} 已在機場掃描">
-      <span>${esc(r.store)}<small>${esc(r.country||"")}・${r.amount!=null?(r.currency==="KRW"?"₩":"€")+Number(r.amount).toLocaleString("zh-TW"):""}${r.scanned?"・✅ 已辦退稅":""}</small></span>
+      <span>${esc(r.store)}<small>${esc(r.country||"")}・${r.amount!=null?(r.currency==="KRW"?"₩":"€")+Number(r.amount).toLocaleString("zh-TW"):""}${r.scanned?"・✅ 已辦退稅":""}${r.receipt?`・<a href="${esc(phUrl(r.receipt))}" target="_blank" rel="noopener">🧾 收據</a>`:""}</small></span>
       <button class="del" data-del="${r.id}">刪除</button></li>`).join("");
     const eur = rows.filter(r=>r.currency!=="KRW").reduce((a,r)=>a+(+r.amount||0),0);
     const left = rows.filter(r=>!r.scanned).length;
@@ -1592,8 +1595,12 @@ $("tfForm").addEventListener("submit", async e=>{
   const store = $("tfStore").value.trim(); if(!store) return;
   $("tfAdd").disabled = true;
   try{
-    await sbSend("POST","taxfree",{store, amount: $("tfAmt").value?+$("tfAmt").value:null, currency:$("tfCur").value, country:$("tfCountry").value});
+    const rec = {store, amount: $("tfAmt").value?+$("tfAmt").value:null, currency:$("tfCur").value, country:$("tfCountry").value};
+    if (receiptPath) rec.receipt = receiptPath;
+    try{ await sbSend("POST","taxfree",rec); }
+    catch(e1){ if(!rec.receipt) throw e1; delete rec.receipt; await sbSend("POST","taxfree",rec); }
     $("tfStore").value=""; $("tfAmt").value=""; $("tfMsg").textContent = "已記下 ✓";
+    receiptPath = null; $("ocrPrev").hidden = true; $("ocrMsg").textContent = "";
     loadTax();
   }catch(err){ $("tfMsg").textContent = "網路不太穩，沒有存到，請再按一次。"; }
   finally{ $("tfAdd").disabled = false; }
@@ -1602,6 +1609,61 @@ $("tfList").addEventListener("change", async e=>{
   const id = e.target.dataset.id; if(!id) return;
   try{ await sbSend("PATCH",`taxfree?id=eq.${id}`,{scanned:e.target.checked}); loadTax(); }catch(err){ $("tfMsg").textContent = "沒有存到，請再試一次。"; }
 });
+/* 收據辨識（Tesseract.js，在手機上辨識，不需帳號） */
+let receiptPath = null, tessLoading = null;
+function loadTess(){
+  if (window.Tesseract) return Promise.resolve();
+  if (!tessLoading) tessLoading = new Promise((res,rej)=>{
+    const sc = document.createElement("script");
+    sc.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
+    sc.onload = res; sc.onerror = ()=>{ tessLoading = null; rej(new Error("load")); };
+    document.head.appendChild(sc);
+  });
+  return tessLoading;
+}
+function parseAmt(t){
+  t = t.replace(/\s/g,"");
+  if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(t)) t = t.replace(/\./g,"").replace(",",".");      // 1.234,56
+  else if (/^\d{1,3}(,\d{3})+(\.\d{1,2})?$/.test(t)) t = t.replace(/,/g,"");                    // 1,234.56
+  else t = t.replace(",",".");                                                                   // 234,56
+  const v = parseFloat(t); return isFinite(v) ? v : null;
+}
+function readReceipt(text){
+  const lines = text.split("\n").map(l=>l.trim()).filter(Boolean);
+  const num = /(\d{1,3}(?:[ .,]\d{3})*(?:[.,]\d{1,2})|\d+[.,]\d{2})/g;
+  let total = null;
+  const key = /(TOTAL|MONTANT|A PAGAR|À PAYER|IMPORTE|NET A PAYER|TTC|SOMA|VALOR)/i;
+  for (const l of lines){ if (key.test(l) && !/SUB|HT\b|TVA|IVA|VAT|TAX/i.test(l)){ const m = l.match(num); if (m){ const v = parseAmt(m[m.length-1]); if (v) total = Math.max(total||0, v); } } }
+  if (!total){ const all = (text.match(num)||[]).map(parseAmt).filter(v=>v && v<100000); if (all.length) total = Math.max(...all); }
+  const store = lines.find(l=>/[A-Za-zÀ-ÿ]{3,}/.test(l) && !/(TICKET|FACTURA|FACTURE|RECIBO|RECU|REÇU|NIF|TVA|SIRET|TEL|DATE|FECHA)/i.test(l)) || "";
+  return {store: store.replace(/[^A-Za-zÀ-ÿ0-9 &'.-]/g,"").trim().slice(0,40), total};
+}
+$("tfCam").addEventListener("change", async e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const msg = $("ocrMsg");
+  try{
+    const blob = await shrink(f);
+    $("ocrPrev").src = URL.createObjectURL(blob); $("ocrPrev").hidden = false;
+    msg.textContent = "上傳收據照片中…";
+    const path = `receipts/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+    fetch(`${SB_URL}/storage/v1/object/trip-photos/${path}`, {method:"POST", headers: sbH({"Content-Type":"image/jpeg","x-upsert":"false"}), body: blob})
+      .then(r=>{ if(r.ok) receiptPath = path; }).catch(()=>{});
+    msg.textContent = "辨識收據中…（第一次要下載辨識工具，約 10–20 秒）";
+    await loadTess();
+    const out = await Tesseract.recognize(blob, "eng");
+    const {store, total} = readReceipt(out.data.text || "");
+    if (store) $("tfStore").value = store;
+    if (total) $("tfAmt").value = total;
+    const c = hereCity(); $("tfCur").value = (c==="首爾"||c==="仁川") ? "KRW" : "EUR";
+    const country = {"尼斯":"法國","芒通":"法國","格拉斯":"法國","巴黎":"法國","摩納哥":"摩納哥","里斯本":"葡萄牙","首爾":"韓國","仁川":"韓國"}[c] || "西班牙";
+    $("tfCountry").value = country;
+    msg.textContent = (store||total) ? "✅ 讀到了！請確認店名和金額正確，再按「＋ 記一筆」。" : "看不太清楚，請手動輸入店名和金額（收據照片已保存）。";
+    $("tfStore").focus();
+  }catch(err){
+    msg.textContent = "辨識工具載入失敗（可能網路不穩），請手動輸入店名和金額。";
+  }finally{ e.target.value = ""; }
+});
+
 let delArm = null;
 $("tfList").addEventListener("click", async e=>{
   const b = e.target.closest("[data-del]"); if(!b) return;
@@ -1702,7 +1764,7 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("album").hid
 if (location.hash === "#album") openAlbum();
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T16:24:47";
+const SITE_VERSION = "2026-10-09T16:28:34";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
