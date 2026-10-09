@@ -352,6 +352,10 @@ section:first-child{margin-top:0}
 .lb{position:fixed;inset:0;z-index:130;background:#1E1C1B;display:flex;flex-direction:column}
 .lb-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;color:#FFFCF6;font-size:17px}
 .lb-top .btn{margin:0;padding:6px 16px;color:var(--ink)}
+.lb-btns{display:flex;gap:8px;flex:none}
+.lb-top .lb-del{background:var(--card)}
+.lb-top .lb-del.armed{background:var(--coral)}
+#lbCap{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-stage img{width:100%;height:100%}
 .lb-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
 .lb-stage img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;transition:transform .2s ease-out}
@@ -601,7 +605,7 @@ footer svg{width:130px;margin:0 auto 6px}
 </main>
 
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="照片預覽" hidden>
-  <div class="lb-top"><span id="lbCap"></span><button class="btn" id="lbClose">關閉</button></div>
+  <div class="lb-top"><span id="lbCap"></span><span class="lb-btns"><button class="btn lb-del" id="lbDel">🗑 刪除</button><button class="btn" id="lbClose">關閉</button></span></div>
   <div class="lb-stage" id="lbStage"><img id="lbImg" alt=""></div>
   <button class="lb-nav prev" id="lbPrev" aria-label="上一張">‹</button>
   <button class="lb-nav next" id="lbNext" aria-label="下一張">›</button>
@@ -1967,7 +1971,7 @@ async function loadPhotos(i){
   try{
     const rows = await sbGet(`photos?select=path&day=eq.${encodeURIComponent(day)}&order=created_at.asc`);
     if (cur !== i) return;
-    dayPhotoList = rows.map(r=>({url: phUrl(r.path), cap: `${md(day)}・${DAYS[i].city}`}));
+    dayPhotoList = rows.map(r=>({url: phUrl(r.path), path: r.path, cap: `${md(day)}・${DAYS[i].city}`}));
     grid.innerHTML = rows.length ? rows.map((r,k)=>`<button class="th" data-lbd="${k}" aria-label="放大看第 ${k+1} 張"><img src="${esc(phUrl(r.path))}" alt="" loading="lazy"></button>`).join("")
       : `<p class="ck-sub" style="grid-column:1/-1">這天還沒有照片，玩的時候拍幾張上傳吧！</p>`;
   }catch(e){ grid.innerHTML = `<p class="ck-sub" style="grid-column:1/-1">照片暫時讀不到，有網路時會自動顯示</p>`; }
@@ -2019,6 +2023,7 @@ function lbShow(){
   $("lbCap").textContent = it.cap;
   $("lbCount").textContent = `${lbI+1} / ${lbList.length}`;
   $("lbPrev").hidden = lbI === 0; $("lbNext").hidden = lbI === lbList.length-1;
+  lbDisarm(); $("lbDel").hidden = !it.path;
   [lbI-1, lbI+1].forEach(k=>{ if (lbList[k]) new Image().src = lbList[k].url; });
 }
 function openLB(list, i){ if(!list.length) return; lbList = list; lbI = i; $("lb").hidden = false; document.body.style.overflow = "hidden"; lbShow(); $("lbClose").focus(); }
@@ -2033,6 +2038,30 @@ function lbGo(d){
   }, reduce ? 0 : 180);
 }
 $("lbClose").onclick = closeLB;
+/* 刪除照片：按一次變「確定刪除？」，再按一次才刪 */
+let lbArmTimer = null;
+function lbDisarm(){ const b = $("lbDel"); b.classList.remove("armed"); b.textContent = "🗑 刪除"; b.disabled = false; clearTimeout(lbArmTimer); }
+$("lbDel").onclick = async ()=>{
+  const b = $("lbDel"), it = lbList[lbI]; if (!it || !it.path) return;
+  if (!b.classList.contains("armed")){ b.classList.add("armed"); b.textContent = "確定刪除？"; lbArmTimer = setTimeout(lbDisarm, 4000); return; }
+  b.disabled = true; b.textContent = "刪除中…";
+  try{
+    const r = await fetch(`${SB_URL}/rest/v1/photos?path=eq.${encodeURIComponent(it.path)}`, {method:"DELETE", headers: sbH({Prefer:"return=representation"})});
+    if (!r.ok) throw new Error(r.status);
+    const gone = await r.json().catch(()=>[]);
+    if (!gone.length) throw new Error("no-permission");
+    fetch(`${SB_URL}/storage/v1/object/trip-photos/${it.path}`, {method:"DELETE", headers: sbH()}).catch(()=>{});
+    lbList.splice(lbI, 1);
+    if (curPage === "album") renderAlbum(); else if (curPage === "days") loadPhotos(cur);
+    if (!lbList.length){ closeLB(); return; }
+    if (lbI >= lbList.length) lbI = lbList.length - 1;
+    lbShow();
+  }catch(err){
+    b.textContent = "刪除失敗"; b.disabled = false;
+    $("lbCap").textContent = String(err.message)==="no-permission" ? "還不能刪除：需要在 Supabase 開啟刪除權限" : "網路不穩，請再試一次";
+    lbArmTimer = setTimeout(()=>{ lbDisarm(); lbShow(); }, 3000);
+  }
+};
 $("lbPrev").onclick = ()=>lbGo(-1);
 $("lbNext").onclick = ()=>lbGo(1);
 $("lbStage").addEventListener("touchstart", e=>{ lbX0 = e.touches[0].clientX; lbDX = 0; $("lbImg").style.transition = "none"; }, {passive:true});
@@ -2081,7 +2110,7 @@ async function renderAlbum(){
       if (!ph.length || di < 0) return "";
       const thumbs = ph.map(pth=>{
         const k = albumList.length;
-        albumList.push({url: phUrl(pth), cap: `${md(d)}・${DAYS[di].city}`});
+        albumList.push({url: phUrl(pth), path: pth, cap: `${md(d)}・${DAYS[di].city}`});
         return `<button class="th" data-lb="${k}" aria-label="放大看 ${md(d)} 的照片"><img src="${esc(phUrl(pth))}" alt="" loading="lazy"></button>`;
       }).join("");
       return `<div class="al-day"><h4>${md(d)}（${esc(DAYS[di].wk)}）${esc(DAYS[di].title)}<small>📍 ${esc(DAYS[di].city)}</small></h4><div class="ph-grid al-grid">${thumbs}</div></div>`;
@@ -2107,7 +2136,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T18:53:07";
+const SITE_VERSION = "2026-10-09T21:01:27";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
