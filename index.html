@@ -351,7 +351,9 @@ section:first-child{margin-top:0}
 .al-sel{width:100%;font:inherit;font-size:18px;padding:8px 12px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
 .lb{position:fixed;inset:0;z-index:130;background:#1E1C1B;display:flex;flex-direction:column}
 .lb-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;color:#FFFCF6;font-size:17px}
-.lb-top .btn{margin:0;padding:6px 16px;color:var(--ink)}
+.lb-top .btn{margin:0;padding:6px 11px;color:var(--ink);white-space:nowrap}
+.lb-btns .btn{font-size:16px}
+.lb-top .lb-share{background:var(--mizu)}
 .lb-btns{display:flex;gap:8px;flex:none}
 .lb-top .lb-del{background:var(--card)}
 .lb-top .lb-del.armed{background:var(--coral)}
@@ -605,7 +607,7 @@ footer svg{width:130px;margin:0 auto 6px}
 </main>
 
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="照片預覽" hidden>
-  <div class="lb-top"><span id="lbCap"></span><span class="lb-btns"><button class="btn lb-del" id="lbDel">🗑 刪除</button><button class="btn" id="lbClose">關閉</button></span></div>
+  <div class="lb-top"><span id="lbCap"></span><span class="lb-btns"><button class="btn lb-share" id="lbShare">📤 分享</button><button class="btn lb-del" id="lbDel">🗑 刪除</button><button class="btn" id="lbClose">關閉</button></span></div>
   <div class="lb-stage" id="lbStage"><img id="lbImg" alt=""></div>
   <button class="lb-nav prev" id="lbPrev" aria-label="上一張">‹</button>
   <button class="lb-nav next" id="lbNext" aria-label="下一張">›</button>
@@ -2024,6 +2026,7 @@ function lbShow(){
   $("lbCount").textContent = `${lbI+1} / ${lbList.length}`;
   $("lbPrev").hidden = lbI === 0; $("lbNext").hidden = lbI === lbList.length-1;
   lbDisarm(); $("lbDel").hidden = !it.path;
+  lbPrepShare(it);
   [lbI-1, lbI+1].forEach(k=>{ if (lbList[k]) new Image().src = lbList[k].url; });
 }
 function openLB(list, i){ if(!list.length) return; lbList = list; lbI = i; $("lb").hidden = false; document.body.style.overflow = "hidden"; lbShow(); $("lbClose").focus(); }
@@ -2038,6 +2041,33 @@ function lbGo(d){
   }, reduce ? 0 : 180);
 }
 $("lbClose").onclick = closeLB;
+/* 分享照片：先在背景把照片下載好，按下去才能馬上叫出 iPhone 分享選單（WhatsApp、LINE…） */
+let lbShareFile = null, lbShareFor = null;
+function lbFileName(it){ const n = (it.path || it.url || "").split("?")[0].split("/").pop() || "photo.jpg"; return /\.(jpe?g|png|heic|webp|gif)$/i.test(n) ? n : n + ".jpg"; }
+function lbPrepShare(it){
+  lbShareFile = null; lbShareFor = it.url;
+  if (!navigator.share) return;
+  fetch(it.url).then(r=>r.ok ? r.blob() : null).then(b=>{
+    if (!b || lbShareFor !== it.url) return;
+    lbShareFile = new File([b], lbFileName(it), { type: b.type || "image/jpeg" });
+  }).catch(()=>{});
+}
+$("lbShare").onclick = async ()=>{
+  const it = lbList[lbI]; if (!it) return;
+  const text = `${TRIP.title || "2026歐洲之旅"}・${it.cap || ""}`.trim();
+  try{
+    if (lbShareFile && navigator.canShare && navigator.canShare({ files:[lbShareFile] })){
+      await navigator.share({ files:[lbShareFile], title: it.cap || "" });
+    } else if (navigator.share){
+      await navigator.share({ title: it.cap || "", text, url: it.url });
+    } else {
+      window.open(it.url, "_blank");
+    }
+  }catch(e){
+    if (e && e.name === "AbortError") return; // 自己取消，不用提示
+    try{ await navigator.share({ title: it.cap || "", text, url: it.url }); }catch(_){}
+  }
+};
 /* 刪除照片：按一次變「確定刪除？」，再按一次才刪 */
 let lbArmTimer = null;
 function lbDisarm(){ const b = $("lbDel"); b.classList.remove("armed"); b.textContent = "🗑 刪除"; b.disabled = false; clearTimeout(lbArmTimer); }
@@ -2136,7 +2166,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T21:01:27";
+const SITE_VERSION = "2026-10-09T23:02:24";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
