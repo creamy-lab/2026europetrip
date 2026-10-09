@@ -256,6 +256,28 @@ section:first-child{margin-top:0}
 .ph-up{display:block;text-align:center;margin-top:10px;font-size:18px;padding:10px;border:3px dashed var(--ink);border-radius:var(--r-sm);background:var(--paper);cursor:pointer}
 .ph-up input{position:absolute;opacity:0;width:1px;height:1px}
 
+/* ── 旅行相簿 ── */
+.album{position:fixed;inset:0;z-index:90;background:var(--paper);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.album-bar{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;background:var(--paper);border-bottom:3px solid var(--ink);font-size:21px}
+.album-bar b{font-weight:400}
+.album-bar .btn{margin:0;padding:6px 18px}
+.album-in{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+.al-cover{text-align:center;padding:18px;background:var(--yellow)}
+.al-cover h2{font-size:26px;font-weight:400;line-height:1.3}
+.al-cover p{font-size:16px;margin-top:4px}
+.al-cover .faces{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.al-cover .faces img{width:54px;height:54px;border-radius:50%;border:3px solid var(--ink);object-fit:cover}
+.chap{margin-top:26px;padding:16px}
+.chap-head{display:flex;align-items:center;gap:12px}
+.chap-head svg{flex:none;width:72px;height:72px;border:3px solid var(--ink);border-radius:16px;background:var(--mizu)}
+.chap-head h3{font-size:23px;font-weight:400;line-height:1.3}
+.chap-head small{display:block;font-size:15px}
+.chap-stamp{display:inline-block;margin-top:4px;font-size:14px;padding:0 10px;border:2.5px solid var(--ink);border-radius:999px;transform:rotate(-3deg)}
+.al-day{margin-top:16px;padding-top:12px;border-top:2px dotted var(--ink)}
+.al-day h4{font-size:18px;font-weight:400}
+.al-day h4 small{font-size:14px;margin-left:6px}
+.chap-lock{margin-top:10px;font-size:16px;padding:12px;border:3px dashed var(--ink);border-radius:var(--r-sm);text-align:center;background:var(--paper)}
+
 /* ── 給櫃檯看 ── */
 .rooms{display:inline-block;margin-top:8px;font-size:17px;padding:2px 12px;border:2.5px solid var(--ink);border-radius:999px;background:var(--paper)}
 .btn.wide{grid-column:1 / -1}
@@ -361,6 +383,7 @@ footer svg{width:130px;margin:0 auto 6px}
     <div class="card routemap">
       <h3 class="ck-title">🗺️ 我們在這裡</h3>
       <div id="routeMap"></div>
+      <a class="big-btn" href="#album" style="background:var(--coral)">📖 打開旅行相簿</a>
     </div>
   </section>
 
@@ -469,6 +492,11 @@ footer svg{width:130px;margin:0 auto 6px}
   <footer id="foot"></footer>
   <p class="ver" id="verLine"></p>
 </main>
+
+<div class="album" id="album" role="dialog" aria-modal="true" aria-label="旅行相簿" hidden>
+  <div class="album-bar"><b>📖 旅行相簿</b><button class="btn" id="albumClose">關閉</button></div>
+  <div class="album-in" id="albumIn"></div>
+</div>
 
 <div class="toast" id="toast" role="status" hidden>🔄 行程有更新，正在重新整理…</div>
 
@@ -1332,6 +1360,7 @@ function renderDay(i, animate){
       <h3 class="ck-title">📸 今天的照片</h3>
       <div class="ph-grid" id="phGrid"><p class="ck-sub">讀取中…</p></div>
       <label class="ph-up">＋ 上傳照片<input type="file" accept="image/*" multiple id="phInput"></label>
+      <a class="btn alt" href="#album" style="margin-top:10px">📖 看整本旅行相簿</a>
       <p class="ck-msg" id="phMsg" role="status"></p>
     </div>`;
   loadWeather(i);
@@ -1628,8 +1657,52 @@ async function uploadPhotos(i, files){
   if (cur === i) loadPhotos(i);
 }
 
+/* ══════════════ 旅行相簿：每到新城市自動長出新的一章 ══════════════ */
+const CHAPTERS = [
+  {name:"首爾篇", art:"seoul",     color:"coral",  from:"11/18", to:"11/20", days:["11/18","11/19"]},
+  {name:"南法篇", art:"nice",      color:"yellow", from:"11/20", to:"11/25", days:["11/20","11/21","11/22","11/23","11/24"]},
+  {name:"里斯本篇", art:"tart",    color:"mizu",   from:"11/25", to:"11/28", days:["11/25","11/26","11/27"]},
+  {name:"南西班牙篇", art:"alhambra", color:"green", from:"11/28", to:"12/3", days:["11/28","11/29","11/30","12/1","12/2"]},
+  {name:"巴塞隆納篇", art:"barcelona", color:"coral", from:"12/3", to:"12/7", days:["12/3","12/4","12/5","12/6","12/7"]},
+  {name:"回家篇", art:"home",      color:"yellow", from:"12/8", to:"12/9", days:["12/8","12/9"]},
+];
+const md2date = s => { const [m,d]=s.split("/").map(Number); return new Date(2026, m-1, d); };
+async function renderAlbum(){
+  const box = $("albumIn");
+  box.innerHTML = `<div class="card al-cover"><h2>Sherry 和爸媽的<br>歐洲慢活相簿</h2><p>2026.11.18 – 12.09・每到一個新城市就多一章</p>
+    <div class="faces">${HEADS.map(([n,src])=>`<img src="${src}" alt="${esc(n)}">`).join("")}</div></div><p class="ck-sub" style="margin-top:14px">讀取照片中…</p>`;
+  let rows = [];
+  try{ rows = await sbGet("photos?select=day,path&order=created_at.asc"); }catch(e){}
+  const byDay = {}; rows.forEach(r=>(byDay[r.day] = byDay[r.day] || []).push(r.path));
+  const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const chapters = CHAPTERS.map(c=>{
+    const started = today >= md2date(c.from), done = today > md2date(c.to);
+    const count = c.days.reduce((a,d)=>a+(byDay[d]||[]).length,0);
+    const head = `<div class="chap-head">${art(c.art)}<div><h3>${esc(c.name)}</h3><small>${c.from} – ${c.to}</small>
+      ${done?`<span class="chap-stamp" style="background:var(--green)">✓ 完成・${count} 張</span>`:started?`<span class="chap-stamp" style="background:var(--coral)">旅行中・${count} 張</span>`:""}</div></div>`;
+    if (!started && !count) return `<article class="card chap" style="opacity:.75">${head}<p class="chap-lock">🔒 ${c.from} 抵達後解鎖</p></article>`;
+    const days = c.days.map(d=>{
+      const di = DAYS.findIndex(x=>x.date===d), ph = byDay[d] || [];
+      if (di < 0 || (!ph.length && today < md2date(d))) return "";
+      return `<div class="al-day"><h4>${md(d)}（${esc(DAYS[di].wk)}）${esc(DAYS[di].title)}<small>📍 ${esc(DAYS[di].city)}</small></h4>
+        ${ph.length?`<div class="ph-grid">${ph.map(pth=>`<a href="${esc(phUrl(pth))}" target="_blank" rel="noopener"><img src="${esc(phUrl(pth))}" alt="${esc(d)} 的照片" loading="lazy"></a>`).join("")}</div>`
+          :`<p class="ck-sub">這天還沒有照片</p>`}</div>`;
+    }).join("");
+    return `<article class="card chap">${head}${days}</article>`;
+  }).join("");
+  const total = rows.length;
+  box.innerHTML = `<div class="card al-cover"><h2>Sherry 和爸媽的<br>歐洲慢活相簿</h2><p>2026.11.18 – 12.09・目前共 ${total} 張照片</p>
+    <div class="faces">${HEADS.map(([n,src])=>`<img src="${src}" alt="${esc(n)}">`).join("")}</div></div>${chapters}`;
+}
+function openAlbum(){ $("album").hidden = false; document.body.style.overflow = "hidden"; renderAlbum(); $("albumClose").focus(); }
+function closeAlbum(){ $("album").hidden = true; document.body.style.overflow = ""; if (location.hash === "#album") history.replaceState(null, "", location.pathname + location.search); }
+$("albumClose").onclick = closeAlbum;
+document.addEventListener("click", e=>{ const a = e.target.closest('a[href="#album"]'); if(!a) return; e.preventDefault(); history.replaceState(null,"","#album"); openAlbum(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("album").hidden) closeAlbum(); });
+if (location.hash === "#album") openAlbum();
+
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T16:15:07";
+const SITE_VERSION = "2026-10-09T16:24:47";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
