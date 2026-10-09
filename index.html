@@ -448,7 +448,7 @@ const DAYS = [
   {date:"11/18", wk:"三", s:"首爾", city:"韓國首爾", art:"seoul", title:"啟程出發・抵達首爾暖胃", walk:1, meet:"14:05 起飛，提早到小港機場", bring:"護照、外套、常用藥", items:[
     {t:"14:05", e:"17:55", n:"高雄小港 ✈ 首爾金浦", tr:["飛機"], note:["德威航空 TW652（已更名 Trinity Airways，櫃檯可能掛新名字）","小港機場國際線航廈出發","機上小睡、喝熱茶吃輕食"]},
     {t:"17:55", e:"19:15", n:"出關領行李，計程車到江南飯店", tr:["計程車"], note:"約 40 分鐘平穩車程"},
-    {t:"19:15", e:"19:30", n:"入住首爾江南多米旅館"},
+    {t:"19:15", e:"19:30", n:"入住首爾江南多米旅館", note:"兩間房：爸媽一間、Sherry 一間（已申請一間雙人床、一間兩張單人床）"},
     {t:"19:30", e:"20:45", n:"嫩豆腐鍋暖胃晚餐", tr:["步行"], note:["飯店旁走 3 分鐘","🥬 爸爸：純素鮮菇蔬菜嫩豆腐煲＋紫米飯","🦐 媽媽與 Sherry：鮮蝦蛤蜊海鮮豆腐煲"]},
     {t:"21:00", n:"飯店天然溫泉大浴場放鬆", note:"舒緩雙腿，早點睡調時差"},
   ]},
@@ -642,8 +642,9 @@ const DAYS = [
 
 // 住宿（地址待從訂房確認信補上）
 const STAYS = [
-  {city:"首爾", color:"coral", name:"首爾江南多米旅館", local:"도미인 서울 강남", en:"Dormy Inn Seoul Gangnam", addr:"서울특별시 강남구 봉은사로 134", dates:"11/18 – 11/20", nights:2, lang:"ko", rooms:"三人同房・高級雙床房", note:"地下室有天然溫泉大浴場",
-    bk:[{label:"訂房（與去程機票同一筆）", id:"1658115641095043", name:"TSAI/CHING JUNG +2", room:"高級雙床房"}]},
+  {city:"首爾", color:"coral", name:"首爾江南多米旅館", local:"도미인 서울 강남", en:"Dormy Inn Seoul Gangnam", addr:"서울특별시 강남구 봉은사로 134", dates:"11/18 – 11/20", nights:2, lang:"ko", rooms:"兩間：爸媽一間・Sherry 一間", note:"地下室有天然溫泉大浴場・飯店電話 +82 2-2548-5489",
+    bk:[{label:"兩間房（高級雙床房 × 2）", idLabel:"Hotel Booking No.", id:"1658115642313219", name:"TSAI/CHING JUNG +2", room:"Superior Twin × 2 rooms, 18–20 Nov (2 nights). Request: one double-bed room and one twin room, quiet high floor, away from elevator",
+      info:[["Hotel Confirmation No.","1658114888647464"],["Trip order (with flight)","1658115641095043"],["Hotel phone","+82 2-2548-5489"]]}]},
   {city:"巴黎", color:"mizu", name:"巴黎戴高樂機場美居酒店", local:"Mercure Paris CDG Airport & Convention", en:"", addr:"Route de la Commune, Roissypôle Ouest, 95700 Roissy-en-France", dates:"11/20 – 11/21", nights:1, lang:"fr", rooms:"兩間：爸媽一間・Sherry 一間", note:"搭機場電車 CDGVAL 到「Parking PR」站，再走約 200 公尺",
     bk:[{label:"爸媽的房間", id:"1658114872221264", name:"TSUNG HUANG YUNG +1", room:"高級雙床房"},{label:"Sherry 的房間", id:"1658114872221270", name:"HAN YING YANG", room:"經典房"}]},
   {city:"尼斯", color:"yellow", name:"尼斯 Le Soleia 精品酒店", local:"Hôtel Le Soleia by Inwood", en:"", addr:"48 Boulevard Victor Hugo, 06000 Nice", dates:"11/21 – 11/25", nights:4, lang:"fr", rooms:"三人同房・高級房", note:"飯店有停車位",
