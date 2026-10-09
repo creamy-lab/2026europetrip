@@ -27,11 +27,11 @@ svg .ink{stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:r
 
 /* ── 頂端選單（7 格平均，字大不用滑） ── */
 .topbar{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--paper);border-bottom:3px solid var(--ink);padding-top:env(safe-area-inset-top)}
-.nav{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr) 40px;gap:2px;padding:8px 6px;align-items:center}
-.refresh{width:38px;height:38px;border:3px solid var(--ink);border-radius:50%;background:var(--mizu);font-size:17px;line-height:1;display:grid;place-items:center;padding:0}
+.nav{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(8,minmax(0,1fr)) 36px;gap:1px;padding:8px 4px;align-items:center}
+.refresh{width:34px;height:34px;border:3px solid var(--ink);border-radius:50%;background:var(--mizu);font-size:17px;line-height:1;display:grid;place-items:center;padding:0}
 .refresh:active{transform:rotate(90deg) scale(.92)}
 .nav a{white-space:nowrap}
-.nav a{text-decoration:none;text-align:center;font-size:16px;line-height:1;padding:11px 0;border:3px solid transparent;border-radius:999px}
+.nav a{text-decoration:none;text-align:center;font-size:clamp(13px,3.8vw,16px);line-height:1;padding:11px 0;border:3px solid transparent;border-radius:999px}
 .nav a.on{background:var(--yellow);border-color:var(--ink)}
 
 main{max-width:640px;margin:0 auto;padding:calc(82px + env(safe-area-inset-top)) 16px 40px}
@@ -214,6 +214,48 @@ section:first-child{margin-top:0}
 .call.line{background:var(--green)}
 .call{flex:none;text-decoration:none;font-size:18px;padding:8px 14px;border:3px solid var(--ink);border-radius:999px;background:var(--coral);box-shadow:3px 3px 0 var(--ink);white-space:nowrap}
 
+/* ── 首頁新功能 ── */
+.clocks{margin-top:18px;padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center}
+.clocks div{border:3px solid var(--ink);border-radius:var(--r-sm);padding:6px 4px}
+.clocks small{display:block;font-size:15px}
+.clocks b{display:block;font-size:30px;font-weight:400;font-variant-numeric:tabular-nums;line-height:1.2}
+.checkin,.routemap,.tool{margin-top:18px;padding:16px 18px}
+.ck-title{font-size:21px;font-weight:400}
+.ck-sub{font-size:16px;margin-top:2px}
+.ck-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.ck-btns button{font-size:17px;padding:12px 4px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--green);box-shadow:3px 3px 0 var(--ink);line-height:1.3}
+.ck-btns button:active{transform:translate(3px,3px);box-shadow:none}
+.ck-btns button:disabled{opacity:.5}
+.ck-msg{font-size:16px;margin-top:8px;min-height:1.4em}
+.ck-list{list-style:none;margin-top:4px;font-size:16px}
+.ck-list li{padding:6px 0;border-top:2px dotted var(--ink)}
+.routemap svg{width:100%;height:auto;margin-top:8px}
+.cur-pick{display:flex;gap:8px;margin-top:10px}
+.cur{flex:1;font-size:18px;padding:8px;border:3px solid var(--ink);border-radius:999px;background:var(--card)}
+.cur[aria-pressed="true"]{background:var(--yellow)}
+.cv-label,.tf-form label{display:block;font-size:15px;margin-top:12px}
+.cv-in,.tf-form input,.tf-form select{width:100%;font:inherit;font-size:22px;padding:8px 12px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
+.tf-form input,.tf-form select{font-size:18px}
+.cv-out{font-size:32px;margin-top:10px;font-variant-numeric:tabular-nums}
+.cv-rate{font-size:14px}
+.tf-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.tf-row > div{min-width:0}
+.tf-form .btn{width:100%;margin-top:12px}
+.tf-list{list-style:none;margin-top:8px}
+.tf-list li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:2px dotted var(--ink);font-size:17px}
+.tf-list li > span{flex:1;min-width:0}
+.tf-list small{display:block;font-size:14px}
+.tf-list input{width:28px;height:28px;flex:none;accent-color:#7FB069}
+.tf-list .del{flex:none;font-size:14px;padding:2px 10px;border:2px solid var(--ink);border-radius:999px;background:var(--paper)}
+.tf-total,.tf-note{font-size:15px;margin-top:8px}
+/* 每日照片 */
+.photos{margin-top:18px;padding:14px 16px}
+.ph-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.ph-grid a{display:block;aspect-ratio:1;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden;max-width:100%}
+.ph-grid img{width:100%;height:100%;object-fit:cover;display:block}
+.ph-up{display:block;text-align:center;margin-top:10px;font-size:18px;padding:10px;border:3px dashed var(--ink);border-radius:var(--r-sm);background:var(--paper);cursor:pointer}
+.ph-up input{position:absolute;opacity:0;width:1px;height:1px}
+
 /* ── 給櫃檯看 ── */
 .rooms{display:inline-block;margin-top:8px;font-size:17px;padding:2px 12px;border:2.5px solid var(--ink);border-radius:999px;background:var(--paper)}
 .btn.wide{grid-column:1 / -1}
@@ -283,6 +325,7 @@ footer svg{width:130px;margin:0 auto 6px}
     <a href="#flights">交通</a>
     <a href="#days">行程</a>
     <a href="#stay">住宿</a>
+    <a href="#tools">工具</a>
     <a href="#todo">準備</a>
     <a href="#help">求助</a>
     <button class="refresh" id="refreshBtn" aria-label="重新整理，取得最新行程"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="#3E3A39" stroke-width="2.8" stroke-linecap="round"/><path d="M20 3v5h-5" fill="none" stroke="#3E3A39" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -304,6 +347,21 @@ footer svg{width:130px;margin:0 auto 6px}
       </div>
     </div>
     <div class="card today" id="today"></div>
+
+    <div class="card clocks" id="clocks"></div>
+
+    <div class="card checkin">
+      <h3 class="ck-title">👍 報平安</h3>
+      <p class="ck-sub">每天按一下，讓 Ross 和家人知道你們平安</p>
+      <div class="ck-btns" id="ckBtns"></div>
+      <p class="ck-msg" id="ckMsg" role="status"></p>
+      <ul class="ck-list" id="ckList"></ul>
+    </div>
+
+    <div class="card routemap">
+      <h3 class="ck-title">🗺️ 我們在這裡</h3>
+      <div id="routeMap"></div>
+    </div>
   </section>
 
   <section id="vow">
@@ -351,6 +409,41 @@ footer svg{width:130px;margin:0 auto 6px}
   <section id="stay">
     <h2 class="h2"><i style="background:var(--yellow)">⌂</i>住宿</h2>
     <div class="stays" id="stayList"></div>
+  </section>
+
+  <section id="tools">
+    <h2 class="h2"><i style="background:var(--mizu)">€</i>旅行小工具</h2>
+
+    <div class="card tool">
+      <h3 class="ck-title">💶 價格換算成台幣</h3>
+      <div class="cur-pick" role="group" aria-label="選擇幣別">
+        <button class="cur" data-cur="EUR" aria-pressed="true">歐元 €</button>
+        <button class="cur" data-cur="KRW" aria-pressed="false">韓元 ₩</button>
+      </div>
+      <label class="cv-label" for="cvIn">標籤上的價格</label>
+      <input id="cvIn" class="cv-in" type="number" inputmode="decimal" placeholder="例如 250" min="0">
+      <div class="cv-out" id="cvOut">約 NT$ —</div>
+      <p class="cv-rate" id="cvRate"></p>
+    </div>
+
+    <div class="card tool">
+      <h3 class="ck-title">🧾 退稅清單</h3>
+      <p class="ck-sub">每買一件可以退稅的東西就記一筆，12/7 在巴塞隆納機場辦退稅時逐一打勾。</p>
+      <form id="tfForm" class="tf-form">
+        <label for="tfStore">店名</label>
+        <input id="tfStore" required placeholder="例如 Goyard 摩納哥">
+        <div class="tf-row">
+          <div><label for="tfAmt">金額</label><input id="tfAmt" type="number" inputmode="decimal" min="0" placeholder="1200"></div>
+          <div><label for="tfCur">幣別</label><select id="tfCur"><option value="EUR">歐元</option><option value="KRW">韓元</option></select></div>
+          <div><label for="tfCountry">國家</label><select id="tfCountry"><option>法國</option><option>摩納哥</option><option>葡萄牙</option><option>西班牙</option><option>韓國</option></select></div>
+        </div>
+        <button class="btn" type="submit" id="tfAdd">＋ 記一筆</button>
+      </form>
+      <p class="ck-msg" id="tfMsg" role="status"></p>
+      <ul class="tf-list" id="tfList"></ul>
+      <p class="tf-total" id="tfTotal"></p>
+      <p class="tf-note">💡 法國、摩納哥、葡萄牙買的東西，購物時請先問店員：從巴塞隆納離開歐洲時要怎麼辦退稅。</p>
+    </div>
   </section>
 
   <section id="todo">
@@ -1234,8 +1327,15 @@ function renderDay(i, animate){
           ${it.dad?`<div class="dad"><b>👴 爸爸可以考慮（自由選擇，不想去也沒關係）</b><ul>${it.dad.map(x=>`<li>・${esc(x)}</li>`).join("")}</ul><small>分開前跟 Sherry 約好會合地點和時間，手機保持有電 📱</small></div>`:""}
         </div>
       </li>`).join("")}
-    </ol>`;
+    </ol>
+    <div class="card photos">
+      <h3 class="ck-title">📸 今天的照片</h3>
+      <div class="ph-grid" id="phGrid"><p class="ck-sub">讀取中…</p></div>
+      <label class="ph-up">＋ 上傳照片<input type="file" accept="image/*" multiple id="phInput"></label>
+      <p class="ck-msg" id="phMsg" role="status"></p>
+    </div>`;
   loadWeather(i);
+  loadPhotos(i);
   if (animate){
     dayPanel.querySelector(".day-head").classList.add("bounce");
     dayPanel.querySelectorAll(".tl > li").forEach(li=>li.classList.add("bounce"));
@@ -1342,8 +1442,194 @@ $("sosList").innerHTML = SOS.map(h=>`
 /* ══════════════ 頁尾 ══════════════ */
 $("foot").innerHTML = `<svg viewBox="0 0 100 60" aria-hidden="true">${cloud(4,22,.9,"anim-drift")}<g class="anim-float">${sun(72,24,14)}</g></svg>一路平安，玩得開心`;
 
+/* ══════════════ Supabase 共用小工具 ══════════════ */
+function sbH(extra={}){ return Object.assign({apikey: SB_KEY}, extra); }
+async function sbGet(q){ const r = await fetch(`${SB_URL}/rest/v1/${q}`, {headers: sbH(), cache:"no-store"}); if(!r.ok) throw new Error(r.status); return r.json(); }
+async function sbSend(method, q, body){
+  const r = await fetch(`${SB_URL}/rest/v1/${q}`, {method, headers: sbH({"Content-Type":"application/json", Prefer:"return=minimal"}), body: body?JSON.stringify(body):undefined});
+  if(!r.ok) throw new Error(r.status);
+}
+const twTime = iso => new Date(iso).toLocaleString("zh-TW",{timeZone:"Asia/Taipei",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false});
+
+/* ══════════════ 雙時鐘 ══════════════ */
+const TZ = {"首爾":"Asia/Seoul","仁川":"Asia/Seoul","巴黎":"Europe/Paris","尼斯":"Europe/Paris","芒通":"Europe/Paris","摩納哥":"Europe/Monaco","格拉斯":"Europe/Paris","里斯本":"Europe/Lisbon","龍達":"Europe/Madrid","格拉納達":"Europe/Madrid","莊園":"Europe/Madrid","塞維亞":"Europe/Madrid","巴塞隆納":"Europe/Madrid","回家":"Asia/Taipei"};
+function hereCity(){
+  const i = todayIndex();
+  if (i >= 0) return DAYS[i].s;
+  return new Date() < new Date(TRIP.start) ? "首爾" : "回家";
+}
+function renderClocks(){
+  const c = hereCity(), tz = TZ[c] || "Asia/Taipei";
+  const f = z => new Date().toLocaleTimeString("zh-TW",{timeZone:z,hour:"2-digit",minute:"2-digit",hour12:false});
+  const before = new Date() < new Date(TRIP.start);
+  $("clocks").innerHTML = `<div style="background:var(--yellow)"><small>🇹🇼 台灣</small><b>${f("Asia/Taipei")}</b></div>
+    <div style="background:var(--mizu)"><small>${before?"第一站 ":"📍 "}${esc(c==="回家"?"高雄":c)}</small><b>${f(tz)}</b></div>`;
+}
+renderClocks(); setInterval(renderClocks, 30000);
+
+/* ══════════════ 報平安 ══════════════ */
+const CK_WHO = ["爸爸","媽媽","Sherry"];
+$("ckBtns").innerHTML = CK_WHO.map(w=>`<button data-who="${w}">${esc(w)}<br>報平安 👍</button>`).join("");
+async function loadCheckins(){
+  try{
+    const rows = await sbGet("checkins?select=who,city,created_at&order=created_at.desc&limit=6");
+    $("ckList").innerHTML = rows.length ? rows.map(r=>`<li>✅ ${esc(r.who)}${r.city?`（${esc(r.city)}）`:""}：今天平安 <small style="font-size:14px">・台灣時間 ${esc(twTime(r.created_at))}</small></li>`).join("")
+      : `<li>還沒有人報平安，出發後每天按一下吧！</li>`;
+  }catch(e){ $("ckList").innerHTML = `<li>暫時讀不到，有網路時會自動顯示</li>`; }
+}
+$("ckBtns").addEventListener("click", async e=>{
+  const b = e.target.closest("[data-who]"); if(!b) return;
+  b.disabled = true; $("ckMsg").textContent = "傳送中…";
+  try{
+    const c = hereCity();
+    await sbSend("POST","checkins",{who:b.dataset.who, city: c==="回家"?"高雄":c});
+    $("ckMsg").textContent = `👍 ${b.dataset.who}的平安已經送出，家人都看得到！`;
+    loadCheckins();
+  }catch(err){ $("ckMsg").textContent = "網路不太穩，沒有送出，請稍後再按一次。"; }
+  finally{ setTimeout(()=>b.disabled=false, 3000); }
+});
+loadCheckins(); setInterval(()=>{ if(!document.hidden) loadCheckins(); }, 30000);
+
+/* ══════════════ 路線地圖 ══════════════ */
+const STOPS = [
+  ["高雄","11/18","11/18"],["首爾","11/18","11/20"],["巴黎","11/20","11/21"],["尼斯","11/21","11/25"],
+  ["里斯本","11/25","11/28"],["龍達","11/28","11/29"],["莊園","11/29","12/1"],["塞維亞","12/1","12/3"],
+  ["巴塞隆納","12/3","12/7"],["仁川","12/8","12/9"],["回家","12/9","12/9"],
+];
+function renderRoute(){
+  const d2 = s => { const [m,d]=s.split("/").map(Number); return new Date(2026, m-1, d); };
+  const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let curI = -1;
+  STOPS.forEach((s,i)=>{ if (today >= d2(s[1])) curI = i; });
+  if (today > d2("12/9")) curI = STOPS.length-1;
+  // 三列蛇形路線
+  const pos = [[40,52],[130,52],[220,52],[310,52],[310,138],[220,138],[130,138],[40,138],[40,224],[175,224],[310,224]];
+  const path = "M40 52 H310 Q345 52 345 95 Q345 138 310 138 H40 Q5 138 5 181 Q5 224 40 224 H310";
+  const C = ["#F2A497","#F6D27A","#A8D3E6","#B9DAA5"];
+  let g = `<path d="${path}" fill="none" stroke="#3E3A39" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>`;
+  STOPS.forEach((s,i)=>{
+    const [x,y] = pos[i], done = curI >= 0 && i < curI, here = i === curI;
+    g += `<circle cx="${x}" cy="${y}" r="${here?15:12}" fill="${done?"#B9DAA5":here?"#F2A497":"#FFFFFF"}" ${INK}/>`;
+    if (done) g += `<path d="M${x-6} ${y} l4 4 l8 -9" fill="none" stroke="#3E3A39" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+    g += `<text x="${x}" y="${y+30}" text-anchor="middle" font-size="13" fill="#3E3A39" font-family="Huninn, sans-serif">${s[0]==="回家"?"高雄 🏠":s[0]}</text>`;
+    g += `<text x="${x}" y="${y+44}" text-anchor="middle" font-size="10" fill="#3E3A39" font-family="Huninn, sans-serif">${s[1]===s[2]?s[1]:s[1]+"–"+s[2]}</text>`;
+  });
+  const [hx,hy] = pos[Math.max(0,curI)];
+  const faces = HEADS.map(([n,src],k)=>{ const cx=hx-16+k*16, cy=hy-30; return `<clipPath id="rm${k}"><circle cx="${cx}" cy="${cy}" r="9"/></clipPath><image href="${src}" x="${cx-9}" y="${cy-9}" width="18" height="18" clip-path="url(#rm${k})" preserveAspectRatio="xMidYMid slice"/><circle cx="${cx}" cy="${cy}" r="9" fill="none" stroke="#3E3A39" stroke-width="2"/>`; }).join("");
+  g += `<g class="anim-hop">${faces}</g>`;
+  const label = curI < 0 ? "準備出發！" : curI === STOPS.length-1 && today > d2("12/9") ? "平安回到家 ♡" : `現在在：${STOPS[curI][0]==="回家"?"高雄":STOPS[curI][0]}`;
+  $("routeMap").innerHTML = `<p class="ck-sub">${label}</p><svg viewBox="0 0 350 280" role="img" aria-label="旅行路線圖，${label}">${g}</svg>`;
+}
+renderRoute();
+
+/* ══════════════ 價格換算 ══════════════ */
+let rates = {EUR:35, KRW:0.023}, rateNote = "（約略匯率，連上網路後自動更新）", cvCur = "EUR";
+function calcCv(){
+  const v = parseFloat($("cvIn").value);
+  $("cvOut").textContent = isFinite(v) && v>0 ? `約 NT$ ${Math.round(v*rates[cvCur]).toLocaleString("zh-TW")}` : "約 NT$ —";
+  $("cvRate").textContent = `1 ${cvCur==="EUR"?"歐元":"韓元"} ≈ ${cvCur==="EUR"?rates.EUR.toFixed(2):rates.KRW.toFixed(4)} 台幣 ${rateNote}`;
+}
+document.querySelector(".cur-pick").addEventListener("click", e=>{
+  const b = e.target.closest(".cur"); if(!b) return;
+  cvCur = b.dataset.cur;
+  document.querySelectorAll(".cur").forEach(x=>x.setAttribute("aria-pressed", x===b));
+  calcCv();
+});
+$("cvIn").addEventListener("input", calcCv);
+(function(){ const c = todayIndex()>=0 ? hereCity() : ""; if (c==="首爾"||c==="仁川"){ const kb=document.querySelector('[data-cur="KRW"]'); if(kb) kb.click(); } })();
+fetch("https://open.er-api.com/v6/latest/TWD").then(r=>r.json()).then(j=>{
+  if (j && j.rates && j.rates.EUR && j.rates.KRW){
+    rates = {EUR: 1/j.rates.EUR, KRW: 1/j.rates.KRW};
+    rateNote = `（${new Date(j.time_last_update_unix*1000).toLocaleDateString("zh-TW")} 匯率）`;
+  }
+  calcCv();
+}).catch(()=>calcCv());
+calcCv();
+
+/* ══════════════ 退稅清單 ══════════════ */
+async function loadTax(){
+  try{
+    const rows = await sbGet("taxfree?select=id,store,amount,currency,country,scanned&order=created_at.asc");
+    $("tfList").innerHTML = rows.map(r=>`<li><input type="checkbox" data-id="${r.id}" ${r.scanned?"checked":""} aria-label="${esc(r.store)} 已在機場掃描">
+      <span>${esc(r.store)}<small>${esc(r.country||"")}・${r.amount!=null?(r.currency==="KRW"?"₩":"€")+Number(r.amount).toLocaleString("zh-TW"):""}${r.scanned?"・✅ 已辦退稅":""}</small></span>
+      <button class="del" data-del="${r.id}">刪除</button></li>`).join("");
+    const eur = rows.filter(r=>r.currency!=="KRW").reduce((a,r)=>a+(+r.amount||0),0);
+    const left = rows.filter(r=>!r.scanned).length;
+    $("tfTotal").textContent = rows.length ? `共 ${rows.length} 筆（歐元合計 €${eur.toLocaleString("zh-TW")}）・還沒辦退稅：${left} 筆` : "還沒有記錄";
+  }catch(e){ $("tfTotal").textContent = "暫時讀不到，有網路時會自動顯示"; }
+}
+$("tfForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const store = $("tfStore").value.trim(); if(!store) return;
+  $("tfAdd").disabled = true;
+  try{
+    await sbSend("POST","taxfree",{store, amount: $("tfAmt").value?+$("tfAmt").value:null, currency:$("tfCur").value, country:$("tfCountry").value});
+    $("tfStore").value=""; $("tfAmt").value=""; $("tfMsg").textContent = "已記下 ✓";
+    loadTax();
+  }catch(err){ $("tfMsg").textContent = "網路不太穩，沒有存到，請再按一次。"; }
+  finally{ $("tfAdd").disabled = false; }
+});
+$("tfList").addEventListener("change", async e=>{
+  const id = e.target.dataset.id; if(!id) return;
+  try{ await sbSend("PATCH",`taxfree?id=eq.${id}`,{scanned:e.target.checked}); loadTax(); }catch(err){ $("tfMsg").textContent = "沒有存到，請再試一次。"; }
+});
+let delArm = null;
+$("tfList").addEventListener("click", async e=>{
+  const b = e.target.closest("[data-del]"); if(!b) return;
+  if (delArm !== b.dataset.del){ delArm = b.dataset.del; b.textContent = "確定刪除？"; return; }
+  try{ await sbSend("DELETE",`taxfree?id=eq.${b.dataset.del}`); delArm=null; loadTax(); }catch(err){ $("tfMsg").textContent = "沒有刪除成功，請再試一次。"; }
+});
+loadTax();
+
+/* ══════════════ 每日照片 ══════════════ */
+function phUrl(path){ return `${SB_URL}/storage/v1/object/public/trip-photos/${path}`; }
+async function loadPhotos(i){
+  const grid = $("phGrid"); if(!grid) return;
+  const day = DAYS[i].date;
+  try{
+    const rows = await sbGet(`photos?select=path&day=eq.${encodeURIComponent(day)}&order=created_at.asc`);
+    if (cur !== i) return;
+    grid.innerHTML = rows.length ? rows.map(r=>`<a href="${esc(phUrl(r.path))}" target="_blank" rel="noopener"><img src="${esc(phUrl(r.path))}" alt="${esc(day)} 的照片" loading="lazy"></a>`).join("")
+      : `<p class="ck-sub" style="grid-column:1/-1">這天還沒有照片，玩的時候拍幾張上傳吧！</p>`;
+  }catch(e){ grid.innerHTML = `<p class="ck-sub" style="grid-column:1/-1">照片暫時讀不到，有網路時會自動顯示</p>`; }
+  const inp = $("phInput");
+  if (inp) inp.onchange = ()=>uploadPhotos(i, [...inp.files]);
+}
+function shrink(file){
+  return new Promise((res,rej)=>{
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = ()=>{
+      const k = Math.min(1, 1600/Math.max(img.width,img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width*k); c.height = Math.round(img.height*k);
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(b=>b?res(b):rej(new Error("blob")),"image/jpeg",0.82);
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); rej(new Error("img")); };
+    img.src = url;
+  });
+}
+async function uploadPhotos(i, files){
+  if(!files.length) return;
+  const day = DAYS[i].date, msg = $("phMsg");
+  let ok = 0;
+  for (const [k,f] of files.entries()){
+    msg.textContent = `上傳中… ${k+1} / ${files.length}`;
+    try{
+      const blob = await shrink(f);
+      const path = `${day.replace("/","-")}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+      const r = await fetch(`${SB_URL}/storage/v1/object/trip-photos/${path}`, {method:"POST", headers: sbH({"Content-Type":"image/jpeg","x-upsert":"false"}), body: blob});
+      if(!r.ok) throw new Error(r.status);
+      await sbSend("POST","photos",{day, path});
+      ok++;
+    }catch(e){}
+  }
+  msg.textContent = ok===files.length ? `✅ ${ok} 張照片上傳好了！` : `上傳了 ${ok} 張，${files.length-ok} 張沒有成功，請再試一次。`;
+  if (cur === i) loadPhotos(i);
+}
+
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T14:06:40";
+const SITE_VERSION = "2026-10-09T16:15:07";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -1365,6 +1651,7 @@ const SITE_VERSION = "2026-10-09T14:06:40";
   }
   function onShow(){
     renderToday();                       // 「今天」卡片跟著時間更新
+    renderClocks(); renderRoute(); loadCheckins(); loadTax();
     if (typeof cur === "number") loadWeather(cur);
     checkUpdate();
   }
