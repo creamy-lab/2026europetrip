@@ -27,7 +27,7 @@ svg .ink{stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:r
 
 /* ── 頂端選單（7 格平均，字大不用滑） ── */
 .topbar{position:fixed;inset:0 0 auto 0;z-index:50;background:var(--paper);border-bottom:3px solid var(--ink);padding-top:env(safe-area-inset-top)}
-.nav{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(8,minmax(0,1fr)) 36px;gap:1px;padding:8px 4px;align-items:center}
+.nav{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(7,minmax(0,1fr)) 36px;gap:1px;padding:8px 4px;align-items:center}
 .refresh{width:34px;height:34px;border:3px solid var(--ink);border-radius:50%;background:var(--mizu);font-size:17px;line-height:1;display:grid;place-items:center;padding:0}
 .refresh:active{transform:rotate(90deg) scale(.92)}
 .nav a{white-space:nowrap}
@@ -379,7 +379,6 @@ footer svg{width:130px;margin:0 auto 6px}
     <a href="#stay">住宿</a>
     <a href="#tools">工具</a>
     <a href="#todo">準備</a>
-    <a href="#help">求助</a>
     <button class="refresh" id="refreshBtn" aria-label="重新整理，取得最新行程"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="#3E3A39" stroke-width="2.8" stroke-linecap="round"/><path d="M20 3v5h-5" fill="none" stroke="#3E3A39" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </nav>
   <div class="subbar" id="subbar" role="navigation" aria-label="這一頁的內容"></div>
@@ -467,6 +466,12 @@ footer svg{width:130px;margin:0 auto 6px}
 
   <section id="tools">
     <h2 class="h2"><i style="background:var(--mizu)">€</i>旅行小工具</h2>
+    <h3 class="h3" id="hpLine" style="margin-top:0">💬 用 LINE 找家人</h3>
+    <div class="card help" id="lineList"></div>
+    <p class="help-tip">按下按鈕會打開 LINE 聊天室，再按右上角的 📞 就能直接通話（用網路，不用通話方案）。</p>
+    <h3 class="h3" id="hpSos">🚨 緊急電話</h3>
+    <div class="card help" id="sosList"></div>
+    <p class="help-tip">報警、叫救護車的緊急號碼，一般不需要通話方案也能撥打。</p>
 
     <div class="card tool" id="cvCard">
       <h3 class="ck-title">💶 價格換算成台幣</h3>
@@ -512,22 +517,12 @@ footer svg{width:130px;margin:0 auto 6px}
 
   <section id="todo">
     <h2 class="h2"><i style="background:var(--green)">✓</i>出發前準備</h2>
-    <h3 class="h3" id="tdPack">🧳 行李清單</h3>
+    <h3 class="h3" id="tdPack" style="margin-top:0">🧳 行李清單</h3>
     <div class="card todo" id="packCard"></div>
     <h3 class="h3" id="tdGuard">🛡 防小偷小撇步</h3>
     <div class="card promise" id="guardCard" style="margin-top:0"></div>
     <h3 class="h3" id="tdBook">📌 重要預約（導遊備忘）</h3>
     <div class="card todo" id="bookCard"></div>
-  </section>
-
-  <section id="help">
-    <h2 class="h2"><i style="background:var(--coral)">☎</i>需要幫忙</h2>
-    <h3 class="h3" id="hpLine">💬 用 LINE 找家人</h3>
-    <div class="card help" id="lineList"></div>
-    <p class="help-tip">按下按鈕會打開 LINE 聊天室，再按右上角的 📞 就能直接通話（用網路，不用通話方案）。</p>
-    <h3 class="h3" id="hpSos">🚨 緊急電話</h3>
-    <div class="card help" id="sosList"></div>
-    <p class="help-tip">報警、叫救護車的緊急號碼，一般不需要通話方案也能撥打。</p>
   </section>
 
   <footer id="foot"></footer>
@@ -1831,7 +1826,7 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("album").hid
 if (location.hash === "#album") openAlbum();
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T16:48:50";
+const SITE_VERSION = "2026-10-09T16:53:16";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -1869,7 +1864,7 @@ const SITE_VERSION = "2026-10-09T16:48:50";
 })();
 
 /* ══════════════ 分頁＋子選單 ══════════════ */
-const PAGES = ["home","vow","flights","days","stay","tools","todo","help"];
+const PAGES = ["home","vow","flights","days","stay","tools","todo"];
 function subItems(page){
   const go = id => ({go:id});
   switch(page){
@@ -1884,9 +1879,8 @@ function subItems(page){
       return list.concat(CHAPTERS.map(c=>[c.name.replace("篇",""),{day:DAYS.findIndex(d=>d.date===c.days[0])}]));
     }
     case "stay": return STAYS.map((x,i)=>[x.city,go("st"+i)]);
-    case "tools": return [["💶 價格換算",go("cvCard")],["🧾 退稅清單",go("tfCard")]];
+    case "tools": return [["💬 LINE 找家人",go("hpLine")],["🚨 緊急電話",go("hpSos")],["💶 價格換算",go("cvCard")],["🧾 退稅清單",go("tfCard")]];
     case "todo": return [["🧳 行李清單",go("tdPack")],["🛡 防小偷",go("tdGuard")],["📌 重要預約",go("tdBook")]];
-    case "help": return [["💬 LINE 找家人",go("hpLine")],["🚨 緊急電話",go("hpSos")]];
   }
   return [];
 }
@@ -1965,7 +1959,7 @@ document.addEventListener("click", e=>{
   const id = a.getAttribute("href").slice(1);
   if (PAGES.includes(id)){ e.preventDefault(); showPage(id); }
 });
-showPage((location.hash||"#home").slice(1) === "album" ? "home" : (location.hash||"#home").slice(1));
+showPage((()=>{ const h=(location.hash||"#home").slice(1); return h==="album" ? "home" : h==="help" ? "tools" : h; })());
 </script>
 </body>
 </html>
