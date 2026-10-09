@@ -278,6 +278,7 @@ section:first-child{margin-top:0}
 .card-sum .cs small{display:block;font-size:14px}
 .card-sum .cs .tw{text-align:right;white-space:nowrap;font-size:17px}
 .card-sum .cs.all{background:var(--yellow)}
+.card-sum .cs small.rf{color:#2F6B2F;margin-top:2px}
 .tf-sum{font-size:17px;margin-top:8px;padding:10px 12px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--green);line-height:1.5}
 .tf-sum b{font-weight:400;font-size:20px}
 .tf-list{list-style:none;margin-top:8px}
@@ -575,6 +576,7 @@ footer svg{width:130px;margin:0 auto 6px}
       <div class="tf-wrap"><table class="tf-table" id="tfList"></table></div>
       <h3 class="ck-title" style="margin-top:18px;font-size:19px">💳 各張卡刷了多少</h3>
       <div class="card-sum" id="cardSum"></div>
+      <p class="tf-note">↩︎ 「預估可退稅」是大約金額：已扣退稅公司手續費（法國、摩納哥約 12%、西班牙約 13–16%、葡萄牙約 15%、韓國約 8–9%），並檢查同一家店同一天的最低消費（法國、摩納哥 €100.01、葡萄牙 €50、韓國 ₩15,000、西班牙不限）。實際金額以退稅單為準。</p>
       <p class="tf-total" id="tfTotal"></p>
       <p class="tf-note">💡 法國、摩納哥、葡萄牙買的東西，購物時請先問店員：從巴塞隆納離開歐洲時要怎麼辦退稅。</p>
       <p class="tf-note">💳 刷卡時如果機器問「Pay in TWD or EUR？」，請選 <b style="font-weight:400">當地貨幣（EUR／KRW）</b>。選台幣通常會被多收匯差。</p>
@@ -1710,6 +1712,28 @@ function toTWD(amount, cur){
   return null;
 }
 const fmt2 = v => Number(v).toLocaleString("zh-TW",{minimumFractionDigits:0, maximumFractionDigits:2});
+/* 預估可退稅（觀光客退 VAT，扣掉退稅公司手續費後的大約比例） */
+const REFUND_RULES = {
+  "法國":   {rate:0.12,  min:100.01, cur:"EUR"},
+  "摩納哥": {rate:0.12,  min:100.01, cur:"EUR"},   // 摩納哥用法國的 VAT 制度
+  "西班牙": {rate:0.145, min:0,      cur:"EUR"},
+  "葡萄牙": {rate:0.15,  min:50,     cur:"EUR"},
+  "韓國":   {rate:0.085, min:15000,  cur:"KRW"},
+};
+function refundFor(rows){
+  // 門檻是「同一家店、同一天」合計
+  const grp = {};
+  rows.forEach(r=>{ const k = `${r.store}|${r.captured_on||""}|${r.country||r.city||""}|${r.currency}`; grp[k] = (grp[k]||0) + (+r.amount||0); });
+  const out = {};
+  rows.forEach(r=>{
+    const rule = REFUND_RULES[r.country] || REFUND_RULES[CITY_COUNTRY[r.city]];
+    if (!rule || (r.currency && r.currency !== rule.cur)){ out[r.id] = {v:0, why:"不適用"}; return; }
+    const k = `${r.store}|${r.captured_on||""}|${r.country||r.city||""}|${r.currency}`;
+    if (grp[k] < rule.min){ out[r.id] = {v:0, why:"未達門檻"}; return; }
+    out[r.id] = {v: Math.round((+r.amount||0) * rule.rate * 100)/100, why:""};
+  });
+  return out;
+}
 async function loadTax(){
   try{
     let rows;
@@ -1719,8 +1743,9 @@ async function loadTax(){
       catch(e2){ rows = await sbGet("taxfree?select=id,store,amount,currency,country,scanned,created_at&order=created_at.asc"); } } }
     const val = v => v==null ? "" : v;
     const d = r => { const x = r.captured_on || (r.created_at||"").slice(0,10); if(!x) return ""; const [y,m,dd]=x.split("-"); return `${+m}/${+dd}`; };
+    const rf = refundFor(rows);
     const cell = (r,f,lab) => `<td class="num">${symOf(r.currency)}<input type="text" inputmode="decimal" data-edit="${f}" data-id="${r.id}" value="${esc(val(r[f]))}" placeholder="—" aria-label="${lab}" style="width:84px;display:inline-block"></td>`;
-    $("tfList").innerHTML = `<thead><tr><th>日期</th><th>城市</th><th>店名</th><th>商品</th><th>未稅</th><th>稅</th><th>含稅價格</th><th>付款卡</th><th>備註</th><th>收據</th><th></th></tr></thead>
+    $("tfList").innerHTML = `<thead><tr><th>日期</th><th>城市</th><th>店名</th><th>商品</th><th>未稅</th><th>稅</th><th>含稅價格</th><th>付款卡</th><th>備註</th><th>收據</th><th>預估可退稅</th><th></th></tr></thead>
       <tbody>${rows.map(r=>`<tr>
         <td>${esc(d(r))}</td><td>${esc(r.city||r.country||"")}</td>
         <td><input type="text" data-edit="store" data-id="${r.id}" value="${esc(r.store||"")}" aria-label="店名"></td>
@@ -1729,6 +1754,7 @@ async function loadTax(){
         <td><input type="text" data-edit="card" data-id="${r.id}" value="${esc(r.card||"")}" placeholder="—" aria-label="付款卡" list="tfCardList" style="min-width:110px"></td>
         <td class="rm"><input type="text" data-edit="remark" data-id="${r.id}" value="${esc(r.remark||"")}" placeholder="點這裡寫備註" aria-label="備註"></td>
         <td>${r.receipt?`<a href="${esc(phUrl(r.receipt))}" target="_blank" rel="noopener">🧾 看</a>`:"—"}</td>
+        <td class="num">${rf[r.id].v ? `<b style="font-weight:400;color:#2F6B2F">${symOf(r.currency)}${fmt2(rf[r.id].v)}</b>` : `<small style="font-size:13px">${rf[r.id].why}</small>`}</td>
         <td><button class="del" data-del="${r.id}">刪除</button></td></tr>`).join("")}</tbody>`;
     const byCur = {};
     rows.forEach(r=>{ const c = r.currency || "EUR"; const t = byCur[c] = byCur[c] || {amt:0, tax:0}; t.amt += +r.amount||0; t.tax += +r.tax||0; });
@@ -1739,13 +1765,16 @@ async function loadTax(){
     // 💳 各張卡合計（原幣＋台幣）
     const normCard = c => { const t = String(c||"").trim(); return t || "未填付款卡"; };
     const cards = {};
-    rows.forEach(r=>{ const k = normCard(r.card), c = r.currency || "EUR"; (cards[k] = cards[k] || {})[c] = (cards[k][c]||0) + (+r.amount||0); });
+    const cardRf = {};
+    rows.forEach(r=>{ const k = normCard(r.card), c = r.currency || "EUR"; (cards[k] = cards[k] || {})[c] = (cards[k][c]||0) + (+r.amount||0);
+      if (rf[r.id].v){ (cardRf[k] = cardRf[k] || {})[c] = (cardRf[k][c]||0) + rf[r.id].v; } });
+    const rfLine = byC => { let tw = 0; const o = Object.entries(byC||{}).map(([c,v])=>{ const n = toTWD(v,c); if(n!=null) tw+=n; return `${symOf(c)}${fmt2(v)}`; }); return o.length ? `<small class="rf">↩︎ 預估可退稅 ${o.join("・")}（約 NT$ ${Math.round(tw).toLocaleString("zh-TW")}）</small>` : `<small class="rf">↩︎ 預估可退稅：無</small>`; };
     const cardHtml = Object.entries(cards).sort((a,b)=>a[0]==="未填付款卡"?1:b[0]==="未填付款卡"?-1:a[0].localeCompare(b[0])).map(([k,byC])=>{
       let tw = 0, okTw = true;
       const orig = Object.entries(byC).map(([c,v])=>{ const n = toTWD(v,c); if(n==null) okTw=false; else tw+=n; return `${symOf(c)}${fmt2(v)}`; }).join("・");
-      return `<div class="cs"><div><b>💳 ${esc(k)}</b><small>${orig}</small></div><div class="tw">約 NT$ ${Math.round(tw).toLocaleString("zh-TW")}${okTw?"":"＋"}</div></div>`;
+      return `<div class="cs"><div><b>💳 ${esc(k)}</b><small>${orig}</small>${rfLine(cardRf[k])}</div><div class="tw">約 NT$ ${Math.round(tw).toLocaleString("zh-TW")}${okTw?"":"＋"}</div></div>`;
     }).join("");
-    $("cardSum").innerHTML = rows.length ? cardHtml + `<div class="cs all"><div><b>全部合計</b><small>${Object.entries(byCur).map(([c,t])=>`${symOf(c)}${fmt2(t.amt)}`).join("・")}</small></div><div class="tw">約 NT$ ${Math.round(twd).toLocaleString("zh-TW")}</div></div>` : `<p class="ck-sub">記錄後這裡會自動統計每張卡刷了多少。</p>`;
+    $("cardSum").innerHTML = rows.length ? cardHtml + `<div class="cs all"><div><b>全部合計</b><small>${Object.entries(byCur).map(([c,t])=>`${symOf(c)}${fmt2(t.amt)}`).join("・")}</small>${rfLine(Object.values(cardRf).reduce((a,o)=>{ Object.entries(o).forEach(([c,v])=>a[c]=(a[c]||0)+v); return a; },{}))}</div><div class="tw">約 NT$ ${Math.round(twd).toLocaleString("zh-TW")}</div></div>` : `<p class="ck-sub">記錄後這裡會自動統計每張卡刷了多少。</p>`;
     $("tfCardList").innerHTML = Object.keys(cards).filter(k=>k!=="未填付款卡").map(k=>`<option value="${esc(k)}">`).join("");
     $("tfTotal").textContent = "";
   }catch(e){ $("tfList").innerHTML = ""; $("tfTotal").textContent = "暫時讀不到，有網路時會自動顯示"; }
@@ -2075,7 +2104,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T18:25:19";
+const SITE_VERSION = "2026-10-09T18:28:32";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
