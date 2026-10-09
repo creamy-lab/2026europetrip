@@ -47,6 +47,11 @@ main [id]{scroll-margin-top:136px}
 .chip{flex:none;font-size:15px;padding:4px 12px;border:2.5px solid var(--ink);border-radius:999px;background:var(--card);white-space:nowrap;line-height:1.4}
 .chip:active{transform:scale(.95)}
 .chip.on{background:var(--coral)}
+.now-mark{outline:4px solid var(--coral);outline-offset:3px;scroll-margin-top:160px;margin-top:14px}
+.now-badge{position:absolute;top:-20px;left:14px;z-index:2;font-size:15px;padding:1px 12px;border:3px solid var(--ink);border-radius:999px;background:var(--coral);transform:rotate(-3deg)}
+.flight,.stay{position:relative}
+.stay{overflow:visible}
+.stay .stay-top{border-radius:calc(var(--r) - 3px) calc(var(--r) - 3px) 0 0}
 section:first-child{margin-top:0}
 .h2{display:inline-flex;align-items:center;gap:10px;font-size:24px;font-weight:400;background:var(--card);border:3px solid var(--ink);border-radius:999px;padding:4px 20px 4px 8px;box-shadow:var(--shadow);margin-bottom:18px}
 .h2 i{display:grid;place-items:center;width:34px;height:34px;border:3px solid var(--ink);border-radius:50%;font-style:normal;font-size:17px}
@@ -1826,7 +1831,7 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("album").hid
 if (location.hash === "#album") openAlbum();
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T16:44:01";
+const SITE_VERSION = "2026-10-09T16:48:50";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -1902,6 +1907,43 @@ function showPage(page, opts={}){
   if (location.hash !== "#"+page && location.hash !== "#album") history.replaceState(null, "", "#"+page);
   if (!opts.keepScroll) window.scrollTo({top:0, behavior:"auto"});
   if (page === "days") { const b = dayBtns.children[cur]; if (b) dayBtns.scrollTo({left: b.offsetLeft - 8}); }
+  if (!opts.noAuto) autoToday(page);
+}
+/* 旅行期間：打開行程／交通／住宿時，自動帶到「今天」 */
+function inTrip(){ const n = Date.now(); return n >= new Date(TRIP.start).getTime() - 864e5 && n <= new Date(TRIP.end).getTime() + 864e5; }
+const keyMD = (m,d) => (+m)*100 + (+d);
+function todayKey(){ const n = new Date(); return keyMD(n.getMonth()+1, n.getDate()); }
+function markNow(el, label){
+  document.querySelectorAll(".now-mark").forEach(x=>x.classList.remove("now-mark"));
+  document.querySelectorAll(".now-badge").forEach(x=>x.remove());
+  if (!el) return;
+  el.classList.add("now-mark");
+  el.insertAdjacentHTML("afterbegin", `<span class="now-badge">${esc(label)}</span>`);
+  setTimeout(()=>el.scrollIntoView({behavior: reduce?"auto":"smooth", block:"start"}), 120);
+}
+function autoToday(page){
+  if (!inTrip()) return;
+  const t = todayKey();
+  if (page === "days"){
+    const i = todayIndex();
+    if (i >= 0 && i !== cur) selectDay(i, true);
+    const chip = [...$("subbar").querySelectorAll(".chip")].find(c=>c.textContent.includes("今天"));
+    if (chip) chip.classList.add("on");
+  }
+  if (page === "flights"){
+    const k = FLIGHTS.findIndex(f=>{ const m = f.date.match(/(\d+)月(\d+)日/); return m && keyMD(m[1],m[2]) >= t; });
+    if (k >= 0){
+      const m = FLIGHTS[k].date.match(/(\d+)月(\d+)日/);
+      markNow($("fl"+k), keyMD(m[1],m[2]) === t ? "今天" : "下一段");
+    }
+  }
+  if (page === "stay"){
+    const k = STAYS.findIndex(st=>{ const [a,b] = st.dates.split("–").map(x=>x.trim().split("/")); return keyMD(a[0],a[1]) <= t && t < keyMD(b[0],b[1]); });
+    if (k >= 0){
+      markNow($("st"+k), "今晚住這裡");
+      const chip = $("subbar").querySelectorAll(".chip")[k]; if (chip) chip.classList.add("on");
+    }
+  }
 }
 document.querySelector(".nav").addEventListener("click", e=>{
   const a = e.target.closest("a[href^='#']"); if(!a) return;
