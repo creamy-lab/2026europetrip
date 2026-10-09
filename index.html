@@ -194,6 +194,8 @@ section:first-child{margin-top:0}
 .stay .addr{font-size:16px;margin-top:6px}
 .stay-row{display:flex;gap:8px;margin-top:10px;font-size:16px;flex-wrap:wrap}
 .stay-row span{border:2px solid var(--ink);border-radius:10px;padding:1px 10px;background:var(--paper)}
+.stay-row .bf-yes{background:var(--green)}
+.stay .cancel{font-size:14px;margin-top:8px}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .btn{display:block;text-align:center;text-decoration:none;font-size:18px;padding:9px 6px;border:3px solid var(--ink);border-radius:999px;background:var(--yellow);box-shadow:3px 3px 0 var(--ink);transition:transform .15s,box-shadow .15s}
 .btn.alt{background:var(--card)}
@@ -417,28 +419,28 @@ const PROMISES = [
 ];
 
 const FLIGHTS = [
-  {type:"plane", no:"TW 652", term:["國際線航廈","國際線航廈"], air:"德威航空（9 月已更名 Trinity Airways）", date:"11月18日（三）", from:["高雄","KHH 小港"], to:["首爾","GMP 金浦"], dep:"14:05", arr:"17:55", meta:["3 位旅客"],
+  {type:"plane", no:"TW 652", term:["國際線航廈","國際線航廈"], air:"德威航空（9 月已更名 Trinity Airways）", date:"11月18日（三）", from:["高雄","KHH 小港"], to:["首爾","GMP 金浦"], dep:"14:05", arr:"17:55", meta:["需線上報到","3 位旅客"],
     bk:[{label:"機票（與首爾飯店同一筆訂單）", id:"1658115641095043", name:"YANG/HAN YING +2"}]},
-  {type:"plane", no:"OZ 501", term:["第二航廈 T2","第一航廈 T1"], air:"韓亞航空", date:"11月20日（五）", from:["首爾","ICN 仁川"], to:["巴黎","CDG 戴高樂"], dep:"10:05", arr:"16:25", meta:["商務艙・全平躺","3 位旅客"],
+  {type:"plane", no:"OZ 501", term:["第二航廈 T2","第一航廈 T1"], air:"韓亞航空", date:"11月20日（五）", from:["首爾","ICN 仁川"], to:["巴黎","CDG 戴高樂"], dep:"10:05", arr:"16:25", meta:["需線上報到","商務艙・全平躺","3 位旅客"],
     bk:[{label:"去回程商務艙機票", id:"1658115268345219", name:"HAN YING YANG +2"}]},
-  {type:"plane", no:"AF 7300", term:["第二航廈 2F","第二航廈 T2"], air:"法國航空", date:"11月21日（六）", from:["巴黎","CDG 戴高樂"], to:["尼斯","NCE"], dep:"07:10", arr:"08:50", meta:["3 位旅客"],
+  {type:"plane", no:"AF 7300", term:["第二航廈 2F","第二航廈 T2"], air:"法國航空", date:"11月21日（六）", from:["巴黎","CDG 戴高樂"], to:["尼斯","NCE"], dep:"07:10", arr:"08:50", meta:["需線上報到","3 位旅客"],
     bk:[{label:"機票（與尼斯飯店同一筆訂單）", id:"1658115628670083", name:"YANG/HAN YING +2"}]},
   {type:"car", no:"Sixt 租車", air:"經濟型轎車・自排（Audi A1／Mini Cooper 或同級）", date:"11月23日 – 11月24日", from:["取車","尼斯火車站"], to:["還車","尼斯火車站"], dep:"11/23 09:00", arr:"11/24 19:00", meta:["4 座・3 件行李","取車：12 Avenue Thiers","還車：14 Avenue Thiers"],
     bk:[{label:"Sixt 租車（尼斯）", idLabel:"Reservation No.", id:"9740275606", name:"HAN YING YANG", room:"Pick-up: Nice Train Station, 12 Avenue Thiers"}],
     live:"https://www.google.com/maps/search/?api=1&query=Sixt+Nice+Train+Station+12+Avenue+Thiers+06000+Nice", liveLabel:"📍 取車地點"},
-  {type:"plane", no:"TP 481", term:["第一航廈 T1","第一航廈 T1"], air:"葡萄牙航空", date:"11月25日（三）", from:["尼斯","NCE"], to:["里斯本","LIS"], dep:"11:55", arr:"13:40", meta:["Portugalia 實際執飛","3 位旅客"],
+  {type:"plane", no:"TP 481", term:["第一航廈 T1","第一航廈 T1"], air:"葡萄牙航空", date:"11月25日（三）", from:["尼斯","NCE"], to:["里斯本","LIS"], dep:"11:55", arr:"13:40", meta:["需線上報到","Portugalia 實際執飛","3 位旅客"],
     bk:[{label:"機票", id:"1658115635030083", name:"TSAI/CHING JUNG +2"}]},
-  {type:"plane", no:"TP 1136", term:["第一航廈 T1","主航廈"], air:"葡萄牙航空", date:"11月28日（六）", from:["里斯本","LIS"], to:["馬拉加","AGP"], dep:"11:55", arr:"14:10", meta:["Portugalia 實際執飛","3 位旅客"],
+  {type:"plane", no:"TP 1136", term:["第一航廈 T1","主航廈"], air:"葡萄牙航空", date:"11月28日（六）", from:["里斯本","LIS"], to:["馬拉加","AGP"], dep:"11:55", arr:"14:10", meta:["需線上報到","Portugalia 實際執飛","3 位旅客"],
     bk:[{label:"機票（與龍達飯店同一筆訂單）", id:"1658115664366723", name:"YUNG/TSUNG HUANG +2"}]},
   {type:"car", no:"Sixt 租車", air:"豪華休旅車・自排（Skoda Kodiaq／Peugeot 5008 或同級）", date:"11月28日 – 12月1日", from:["取車","馬拉加機場"], to:["還車","塞維亞火車站"], dep:"11/28 15:30", arr:"12/1 15:30", meta:["7 座・5 件行李","取車：航廈內租車區 -1 樓","還車：Santa Justa 站 3 號停車場"],
     bk:[{label:"Sixt 租車（馬拉加 → 塞維亞）", idLabel:"Reservation No.", id:"9739764971", name:"HAN YING YANG", room:"Pick-up: Málaga Airport, car rental area, floor -1"}],
     live:"https://www.google.com/maps/search/?api=1&query=Sixt+Malaga+Airport", liveLabel:"📍 取車地點"},
   {type:"train", no:"AVE 03943", term:["Sevilla-Santa Justa","Barcelona-Sants"], air:"西班牙國鐵 Renfe・Trainline 訂票", date:"12月3日（四）", from:["塞維亞","Santa Justa 站"], to:["巴塞隆納","Sants 站"], dep:"08:37", arr:"14:54", meta:["22 車","座位 7A・7B・7C","約 6 小時 17 分","帶護照"],
-    bk:[{label:"火車票（Trainline）", idLabel:"Ticket PNR", id:"MJCZDU", name:"3 位旅客", room:"Carriage 22, Seats 7A・7B・7C"}],
+    bk:[{label:"火車票（Trainline）", idLabel:"Ticket PNR", id:"MJCZDU", name:"3 位旅客", room:"Carriage 22, Seats 7A・7B・7C", info:[["Renfe booking number","054601577154"]]}],
     live:"https://www.google.com/search?hl=zh-TW&q=Renfe+AVE+03943+Sevilla+Barcelona+tiempo+real"},
-  {type:"plane", no:"OZ 512", term:["第一航廈 T1","第二航廈 T2"], air:"韓亞航空", date:"12月7日（一）", from:["巴塞隆納","BCN"], to:["仁川","ICN"], dep:"20:40", arr:"隔天 17:00", meta:["商務艙・全平躺","3 位旅客"],
+  {type:"plane", no:"OZ 512", term:["第一航廈 T1","第二航廈 T2"], air:"韓亞航空", date:"12月7日（一）", from:["巴塞隆納","BCN"], to:["仁川","ICN"], dep:"20:40", arr:"隔天 17:00", meta:["需線上報到","商務艙・全平躺","3 位旅客"],
     bk:[{label:"去回程商務艙機票", id:"1658115268345219", name:"HAN YING YANG +2"}]},
-  {type:"plane", no:"TW 671", term:["第一航廈 T1","國際線航廈"], air:"德威航空（9 月已更名 Trinity Airways）", date:"12月9日（三）", from:["仁川","ICN"], to:["高雄","KHH 小港"], dep:"13:25", arr:"15:55", meta:["分兩筆訂單"],
+  {type:"plane", no:"TW 671", term:["第一航廈 T1","國際線航廈"], air:"德威航空（9 月已更名 Trinity Airways）", date:"12月9日（三）", from:["仁川","ICN"], to:["高雄","KHH 小港"], dep:"13:25", arr:"15:55", meta:["需線上報到","分兩筆訂單","Sherry、媽媽 35kg／爸爸 25kg","座位已選好"],
     bk:[{label:"爸爸的機票", id:"1658115905035459", name:"YUNG/TSUNG HUANG"},{label:"Sherry 與媽媽的機票", id:"1658115905057475", name:"YANG/HAN YING +1"}]},
 ];
 
@@ -453,7 +455,7 @@ const DAYS = [
     {t:"21:00", n:"飯店天然溫泉大浴場放鬆", note:"舒緩雙腿，早點睡調時差"},
   ]},
   {date:"11/19", wk:"四", s:"首爾", city:"韓國首爾", art:"seoul", title:"媽媽醫美茶歇・爸爸古剎茶香", walk:2, meet:"10:00 飯店大廳出發", bring:"", items:[
-    {t:"07:45", e:"09:45", n:"飯店養生早餐", note:"溫熱白粥、烤魚、韓式熱時蔬"},
+    {t:"07:45", e:"09:45", n:"早餐", note:["☕ 飯店沒有含早餐：可以在飯店加購，或到附近麵包店、咖啡館","多米旅館的早餐（粥、烤魚、熱時蔬）可以現場加購"]},
     {t:"10:00", e:"12:30", n:"狎鷗亭・清潭洞名品街散步", tr:["計程車"], note:"Galleria 百貨與旗艦店，路面寬敞平坦"},
     {t:"13:00", e:"17:30", n:"媽媽與 Sherry：江南醫美保濕＋光療", note:"療程後在貴賓室喝紅棗人參熱茶"},
     {t:"13:15", e:"15:15", n:"爸爸：千年古剎奉恩寺", tr:["計程車"], must:true, note:["計程車 8 分鐘","看 23 公尺彌勒大佛","在木造茶坊「蓮會堂」喝雙和茶配米菓"]},
@@ -480,7 +482,7 @@ const DAYS = [
     {t:"19:30", n:"Sentimi 黑松露野菇燉飯晚餐"},
   ]},
   {date:"11/22", wk:"日", s:"芒通", city:"法國芒通", art:"menton", title:"海線火車・檸檬小鎮市集", walk:2, meet:"10:00 出發", bring:"", items:[
-    {t:"07:30", e:"09:45", n:"飯店頂樓咖啡早餐"},
+    {t:"07:30", e:"09:45", n:"早餐", note:"☕ 飯店沒有含早餐：可以在飯店加購，或到附近麵包店、咖啡館"},
     {t:"10:15", e:"10:50", n:"搭雙層景觀火車到芒通", tr:["火車"], note:"35 分鐘，沿著海岸行駛"},
     {t:"10:50", n:"計程車到海邊市集", tr:["計程車"], note:"5 分鐘，避開車站斜坡"},
     {t:"11:00", e:"12:45", n:"芒通百年市集", must:true, note:["彩色磁磚老市場，買檸檬果醬、橄欖油","🥬 爸爸：現炸純素菠菜餃、熱鷹嘴豆餅"]},
@@ -490,7 +492,7 @@ const DAYS = [
     {t:"18:30", n:"熱蔬菜濃湯、海鮮義大利麵晚餐"},
   ]},
   {date:"11/23", wk:"一", s:"摩納哥", city:"摩納哥", art:"monaco", title:"Mini Cooper 兜風・摩納哥購物", walk:2, meet:"08:40 計程車到尼斯火車站取車", bring:"護照（退稅用）", items:[
-    {t:"07:30", e:"08:30", n:"悠閒早餐"},
+    {t:"07:30", e:"08:30", n:"早餐", note:"☕ 飯店沒有含早餐：可以在飯店加購，或到附近麵包店、咖啡館"},
     {t:"08:40", n:"計程車到尼斯火車站", tr:["計程車"], note:"約 10 分鐘"},
     {t:"09:00", e:"09:30", n:"🚗 圓夢時刻：坐上 Mini Cooper！", tr:["自駕"], must:true, note:["第一次坐 Mini Cooper 兜風蔚藍海岸，記得在車旁合照！","📌 Sixt 租車訂單 9740275606，尼斯火車站 12 Avenue Thiers"]},
     {t:"09:30", e:"10:15", n:"開車看埃茲古堡全景", tr:["自駕"], note:"在平坦觀景台遠眺，不爬坡"},
@@ -501,7 +503,7 @@ const DAYS = [
     {t:"18:00", e:"19:30", n:"熱越南河粉晚餐", note:["鮮雞湯河粉、鮮蝦海鮮河粉","🥬 爸爸：純素豆腐蔬菜河粉（全素湯頭）"]},
   ]},
   {date:"11/24", wk:"二", s:"格拉斯", city:"法國格拉斯", art:"grasse", title:"香水小鎮・古樹莊園午宴", walk:1, meet:"10:00 開車出發", bring:"", items:[
-    {t:"07:45", e:"09:45", n:"悠閒早餐"},
+    {t:"07:45", e:"09:45", n:"早餐", note:"☕ 飯店沒有含早餐：可以在飯店加購，或到附近麵包店、咖啡館"},
     {t:"10:00", n:"開車前往香水之都格拉斯", tr:["自駕"]},
     {t:"10:45", e:"12:00", n:"花宮娜歷史香水工坊", map:[["香水工坊停車場", "https://www.google.com/maps/search/?api=1&query=Fragonard+Usine+Historique+20+Boulevard+Fragonard+Grasse"]], must:true, note:"停車場直達，沒有台階；可買橙花手工皂、擴香瓶"},
     {t:"12:30", e:"14:30", n:"古樹莊園午宴", note:["La Bastide Saint-Antoine，米其林名廚、17 世紀古樹下用餐","香煎海鱸魚","🥬 爸爸：羊肚菌時蔬熱燉飯"]},
@@ -511,7 +513,7 @@ const DAYS = [
     {t:"18:30", n:"熱披薩、熱蔬菜湯晚餐"},
   ]},
   {date:"11/25", wk:"三", s:"里斯本", city:"葡萄牙里斯本", art:"lisbon", title:"飛抵里斯本・自由大道", walk:1, meet:"09:45 計程車去機場", bring:"護照", items:[
-    {t:"07:30", e:"09:30", n:"早餐、退房"},
+    {t:"07:30", e:"09:30", n:"早餐、退房", note:"☕ 飯店沒有含早餐：可以在飯店加購，或到附近麵包店、咖啡館"},
     {t:"09:45", n:"計程車到尼斯機場第一航廈（T1）", tr:["計程車"], note:"約 20 分鐘"},
     {t:"11:55", e:"13:40", n:"葡萄牙航空 TP481 飛里斯本", tr:["飛機"]},
     {t:"13:40", n:"計程車到 My Story Hotel Tejo 入住", tr:["計程車"]},
@@ -535,7 +537,7 @@ const DAYS = [
     {t:"18:30", e:"20:30", n:"Cervejaria Ramiro 海鮮晚宴", must:true, note:["深海紅魔蝦、白酒蛤蜊","🥬 爸爸：蒜油蘑菇、番茄熱燉飯"]},
   ]},
   {date:"11/28", wk:"六", s:"龍達", city:"西班牙龍達", art:"ronda", title:"飛馬拉加・龍達懸崖看晚霞", walk:1, meet:"09:15 計程車去機場", bring:"護照、駕照（取車用）", items:[
-    {t:"07:30", e:"09:00", n:"早餐、退房"},
+    {t:"07:30", e:"09:00", n:"飯店早餐、退房", note:"🍳 已含早餐"},
     {t:"09:15", n:"計程車到里斯本機場第一航廈（T1）", tr:["計程車"]},
     {t:"11:55", e:"14:10", n:"葡萄牙航空 TP1136 飛馬拉加", tr:["飛機"], note:"機上吃點東西墊胃"},
     {t:"14:10", e:"15:15", n:"出關領行李，機場坐著休息、吃點熱食"},
@@ -546,7 +548,7 @@ const DAYS = [
     {t:"19:00", e:"20:30", n:"新橋第一排晚餐 Don Miguel", note:["慢燉伊比利豬頰肉、香煎海魚","🥬 爸爸：熱時蔬燉飯","飯後看新橋夜景"]},
   ]},
   {date:"11/29", wk:"日", s:"格拉納達", city:"西班牙格拉納達", art:"alhambra", title:"莊園放行李・阿爾罕布拉宮", walk:3, meet:"10:00 開車出發", bring:"護照（入宮會查證件）", items:[
-    {t:"07:30", e:"09:45", n:"早餐、退房"},
+    {t:"07:30", e:"09:45", n:"國營旅館早餐、退房", note:"🍳 已含早餐"},
     {t:"10:00", e:"11:25", n:"開車前往橄欖莊園", map:[["Finca La Bobadilla", "https://www.google.com/maps/search/?api=1&query=La+Bobadilla+Royal+Hideaway+Hotel+Loja+Granada"]], tr:["自駕"]},
     {t:"11:25", e:"12:15", n:"先到莊園放行李", note:["Finca La Bobadilla，行李送進花園套房，車上清空防盜","爸媽在大廳喝迎賓熱茶"]},
     {t:"12:15", e:"13:15", n:"開車到阿爾罕布拉宮", map:[["阿爾罕布拉宮官方停車場", "https://www.google.com/maps/search/?api=1&query=Parking+Alhambra+Granada"]], tr:["自駕"]},
@@ -575,7 +577,7 @@ const DAYS = [
   {date:"12/2", wk:"三", s:"塞維亞", city:"西班牙塞維亞", art:"carriage", title:"塞維亞王宮・白馬車遊老城", walk:2, meet:"10:00 計程車出發", bring:"護照", items:[
     {t:"07:45", e:"09:45", n:"起床準備"},
     {t:"10:00", n:"計程車到王宮", tr:["計程車"]},
-    {t:"10:15", e:"12:00", n:"塞維亞王宮", must:true, note:["📌 已預約 10:15 入場","少女中庭水池、皇家花園"]},
+    {t:"10:30", e:"12:00", n:"塞維亞王宮", must:true, note:["⚠️ 門票還沒訂（預計 10:30 入場）","少女中庭水池、皇家花園"]},
     {t:"12:15", e:"13:45", n:"KingDo 中餐廳午餐", note:"鮮蝦雲吞湯、炒青菜、煎豆腐、蛋炒飯"},
     {t:"14:00", e:"15:30", n:"☕ 阿方索十三世酒店下午茶", note:"彩色磁磚中庭，三層茶點配熱茶"},
     {t:"15:45", e:"16:45", n:"白馬車遊老城", tr:["馬車"], must:true, note:"坐著逛橘子樹老街，不用走路"},
@@ -584,7 +586,7 @@ const DAYS = [
   ]},
   {date:"12/3", wk:"四", s:"巴塞隆納", city:"西班牙巴塞隆納", art:"train", title:"搭高鐵到巴塞隆納", walk:1, meet:"07:00 計程車出發（今天比較早）", bring:"護照、行李", items:[
     {t:"07:00", e:"08:15", n:"計程車到塞維亞 Santa Justa 火車站", tr:["計程車"], note:"抵達巴塞隆納 Sants 車站"},
-    {t:"08:37", e:"14:54", n:"AVE 03943 高鐵到巴塞隆納", tr:["高鐵"], note:["🎫 22 車，座位 7A、7B、7C","訂位代號 MJCZDU（Trainline）","帶護照，上車可能查證件"]},
+    {t:"08:37", e:"14:54", n:"AVE 03943 高鐵到巴塞隆納", tr:["高鐵"], note:["🎫 22 車，座位 7A、7B、7C","訂位代號 MJCZDU（Trainline）／Renfe 訂票號 054601577154","帶護照，上車可能查證件"]},
     {t:"15:15", e:"15:45", n:"計程車到 Hotel Casa Luz 入住", tr:["計程車"], note:"家庭連通房"},
     {t:"16:00", e:"17:30", n:"加泰隆尼亞廣場、英國宮百貨", dad:["英國宮百貨頂樓咖啡廳：喝熱茶看加泰隆尼亞廣場，就在同一棟樓裡等，溫暖又方便"], tr:["步行"]},
     {t:"18:00", e:"19:30", n:"Ciutat Condal 熱 Tapas 晚餐", tr:["步行"], note:["飯店走 3 分鐘，伊比利豬肋條、蒜油鮮蝦","🥬 爸爸：炒野菇、香煎甜椒"]},
@@ -594,7 +596,7 @@ const DAYS = [
     {t:"10:30", e:"12:30", n:"加泰隆尼亞廣場、El Triangle 逛街", dad:["巴塞隆納主教座堂和迴廊：迴廊裡養了 13 隻白鵝，平路走約 10 分鐘"], tr:["步行"]},
     {t:"13:00", e:"13:50", n:"Pho Hanoi 暖胃午餐", tr:["步行"], note:["鮮雞河粉、鮮蝦河粉","🥬 爸爸：純素豆腐蔬菜河粉（全素湯頭）"]},
     {t:"13:55", e:"14:15", n:"計程車到聖家堂", tr:["計程車"]},
-    {t:"14:30", e:"16:30", n:"聖家堂＋搭電梯登塔", must:true, note:["📌 已預約 14:30 受難立面＋登塔","下午陽光照進彩繪玻璃，坐在長椅靜靜欣賞"]},
+    {t:"14:30", e:"16:30", n:"聖家堂＋搭電梯登塔", must:true, note:["📌 預計 14:30 受難立面＋登塔（訂票確認信待補）","下午陽光照進彩繪玻璃，坐在長椅靜靜欣賞"]},
     {t:"16:40", e:"17:40", n:"回飯店躺平休息", tr:["計程車"]},
     {t:"17:45", e:"18:00", n:"計程車到蘭布拉大道", tr:["計程車"]},
     {t:"18:00", e:"20:30", n:"自助晚餐＋佛朗明哥表演", must:true, note:["Tablao Cordobes（蘭布拉大道 35 號）","📌 Klook 訂單 SRY792479，3 位成人，已確認","18:00 自助晚餐＋飲料，素食有清楚標示","19:15 表演，優先座位","入場時 Sherry 打開 Klook App 的憑證"]},
@@ -642,25 +644,25 @@ const DAYS = [
 
 // 住宿（地址待從訂房確認信補上）
 const STAYS = [
-  {city:"首爾", color:"coral", name:"首爾江南多米旅館", local:"도미인 서울 강남", en:"Dormy Inn Seoul Gangnam", addr:"서울특별시 강남구 봉은사로 134", dates:"11/18 – 11/20", nights:2, lang:"ko", rooms:"兩間：爸媽一間・Sherry 一間", note:"地下室有天然溫泉大浴場・飯店電話 +82 2-2548-5489",
+  {city:"首爾", color:"coral", name:"首爾江南多米旅館", local:"도미인 서울 강남", en:"Dormy Inn Seoul Gangnam", addr:"서울특별시 강남구 봉은사로 134", dates:"11/18 – 11/20", nights:2, lang:"ko", rooms:"兩間：爸媽一間・Sherry 一間", breakfast:false, cancel:"11/16 前可免費取消", note:"地下室有天然溫泉大浴場・飯店電話 +82 2-2548-5489",
     bk:[{label:"兩間房（高級雙床房 × 2）", idLabel:"Hotel Booking No.", id:"1658115642313219", name:"TSAI/CHING JUNG +2", room:"Superior Twin × 2 rooms, 18–20 Nov (2 nights). Request: one double-bed room and one twin room, quiet high floor, away from elevator",
       info:[["Hotel Confirmation No.","1658114888647464"],["Trip order (with flight)","1658115641095043"],["Hotel phone","+82 2-2548-5489"]]}]},
-  {city:"巴黎", color:"mizu", name:"巴黎戴高樂機場美居酒店", local:"Mercure Paris CDG Airport & Convention", en:"", addr:"Route de la Commune, Roissypôle Ouest, 95700 Roissy-en-France", dates:"11/20 – 11/21", nights:1, lang:"fr", rooms:"兩間：爸媽一間・Sherry 一間", note:"搭機場電車 CDGVAL 到「Parking PR」站，再走約 200 公尺",
+  {city:"巴黎", color:"mizu", name:"巴黎戴高樂機場美居酒店", local:"Mercure Paris CDG Airport & Convention", en:"", addr:"Route de la Commune, Roissypôle Ouest, 95700 Roissy-en-France", dates:"11/20 – 11/21", nights:1, lang:"fr", rooms:"兩間：爸媽一間・Sherry 一間", breakfast:false, cancel:"不可取消", note:"搭機場電車 CDGVAL 到「Parking PR」站，再走約 200 公尺",
     bk:[{label:"爸媽的房間", id:"1658114872221264", name:"TSUNG HUANG YUNG +1", room:"高級雙床房"},{label:"Sherry 的房間", id:"1658114872221270", name:"HAN YING YANG", room:"經典房"}]},
-  {city:"尼斯", color:"yellow", name:"尼斯 Le Soleia 精品酒店", local:"Hôtel Le Soleia by Inwood", en:"", addr:"48 Boulevard Victor Hugo, 06000 Nice", dates:"11/21 – 11/25", nights:4, lang:"fr", rooms:"三人同房・高級房", note:"飯店有停車位",
-    bk:[{label:"訂房（與巴黎→尼斯機票同一筆）", id:"1658115628670083", name:"TSAI/CHING JUNG +2", room:"高級房"}]},
-  {city:"里斯本", color:"green", name:"里斯本 My Story Hotel Tejo", local:"My Story Hotel Tejo", en:"", addr:"Rua dos Condes de Monsanto 2, 1100-159 Lisboa", dates:"11/25 – 11/28", nights:3, lang:"pt", rooms:"三人同房・家庭房", note:"市中心平坦街區",
-    bk:[{label:"訂房", id:"1658115104323511", name:"HAN YING YANG", room:"家庭房"}]},
-  {city:"龍達", color:"coral", name:"龍達國營旅館", local:"Parador de Ronda", en:"", addr:"Plaza España s/n, 29400 Ronda", dates:"11/28 – 11/29", nights:1, lang:"es", rooms:"三人同房・標準雙人房", note:"就在新橋旁的懸崖邊，房間外就是峽谷美景",
-    bk:[{label:"訂房（與里斯本→馬拉加機票同一筆）", id:"1658115664366723", name:"TSAI/CHING JUNG +2", room:"標準雙人房"}]},
-  {city:"橄欖莊園", color:"yellow", name:"Finca La Bobadilla 百年橄欖莊園", local:"La Bobadilla, a Royal Hideaway Hotel", en:"", addr:"Carretera Salinas – Villanueva de Tapia, km 65,5 (A-333), 18300 Loja, Granada", dates:"11/29 – 12/1", nights:2, lang:"es", rooms:"三人同房・花園套房（Residence Double Suite Garden）", note:"含自助早餐、SPA 水療區（09:00–20:00）、€100 酒吧／SPA 抵用額",
+  {city:"尼斯", color:"yellow", name:"尼斯 Le Soleia 精品酒店", local:"Hôtel Le Soleia by Inwood", en:"", addr:"48 Boulevard Victor Hugo, 06000 Nice", dates:"11/21 – 11/25", nights:4, lang:"fr", rooms:"兩間：爸媽一間・Sherry 一間", breakfast:false, cancel:"不可取消", note:"飯店有停車位",
+    bk:[{label:"訂房（與巴黎→尼斯機票同一筆）", id:"1658115628670083", name:"TSAI/CHING JUNG +2", room:"2 rooms (requested: one twin, one double bed)"}]},
+  {city:"里斯本", color:"green", name:"里斯本 My Story Hotel Tejo", local:"My Story Hotel Tejo", en:"", addr:"Rua dos Condes de Monsanto 2, 1100-159 Lisboa", dates:"11/25 – 11/28", nights:3, lang:"pt", rooms:"連通房：一間大床＋一間雙床，中間有門相通", breakfast:true, cancel:"不可取消", note:"市中心平坦街區",
+    bk:[{label:"訂房", id:"1658115104323511", name:"HAN YING YANG", room:"Connecting rooms (1 double + 1 twin), breakfast included"}]},
+  {city:"龍達", color:"coral", name:"龍達國營旅館", local:"Parador de Ronda", en:"", addr:"Plaza España s/n, 29400 Ronda", dates:"11/28 – 11/29", nights:1, lang:"es", rooms:"兩間：爸媽一間・Sherry 一間（都是雙床房）", breakfast:true, cancel:"11/26 前可免費取消", note:"就在新橋旁的懸崖邊，房間外就是峽谷美景",
+    bk:[{label:"訂房（與里斯本→馬拉加機票同一筆）", id:"1658115664366723", name:"TSAI/CHING JUNG +2", room:"2 Twin rooms, breakfast included"}]},
+  {city:"橄欖莊園", color:"yellow", name:"Finca La Bobadilla 百年橄欖莊園", local:"La Bobadilla, a Royal Hideaway Hotel", en:"", addr:"Carretera Salinas – Villanueva de Tapia, km 65,5 (A-333), 18300 Loja, Granada", dates:"11/29 – 12/1", nights:2, lang:"es", rooms:"三人同房・花園套房（Residence Double Suite Garden）", breakfast:true, cancel:"10/29 前可免費取消", note:"含自助早餐、SPA 水療區（09:00–20:00）、€100 酒吧／SPA 抵用額",
     bk:[{label:"直接向飯店訂房（沒有訂單編號，報名字即可）", id:"", name:"YANG HAN YING (Sherry)", room:"Residence Double Suite Garden",
       info:[["Dates","29 Nov – 1 Dec 2026 (2 nights), 3 guests, breakfast included"],["Booked with","Maria José Ortiz, Reservations Manager"],["Hotel phone","+34 958 32 18 61"]]}]},
-  {city:"塞維亞", color:"mizu", name:"塞維亞美利亞酒店", local:"Hotel Meliá Sevilla", en:"", addr:"Calle Doctor Pedro de Castro 1, 41004 Sevilla", dates:"12/1 – 12/3", nights:2, lang:"es", rooms:"三人同房・家庭房", note:"在西班牙廣場附近",
-    bk:[{label:"訂房", id:"1658114986055677", name:"HAN YING YANG +2", room:"家庭房"}]},
-  {city:"巴塞隆納", color:"green", name:"巴塞隆納卡薩盧茲酒店", local:"Hotel Casa Luz", en:"", addr:"Ronda de la Universitat 1, 08007 Barcelona", dates:"12/3 – 12/7", nights:4, lang:"es", rooms:"三人同房・連通房（最多 3 人）", note:"在大學廣場旁",
-    bk:[{label:"訂房（與 Sherry、媽媽回程機票同一筆）", id:"1658115905057475", name:"TSAI/CHING JUNG +1", room:"連通房（最多 3 人）"}]},
-  {city:"仁川", color:"coral", name:"仁川機場金色鬱金香酒店", local:"골든튤립 인천공항 호텔", en:"Golden Tulip Incheon Airport Hotel & Suites", addr:"인천광역시 중구 흰바위로59번길 8", dates:"12/8 – 12/9", nights:1, lang:"ko", rooms:"兩間：爸媽一間・Sherry 一間", note:"12/7 晚上在飛機上過夜",
+  {city:"塞維亞", color:"mizu", name:"塞維亞美利亞酒店", local:"Hotel Meliá Sevilla", en:"", addr:"Calle Doctor Pedro de Castro 1, 41004 Sevilla", dates:"12/1 – 12/3", nights:2, lang:"es", rooms:"三人同房・家庭房（兩張單人床＋沙發床）", breakfast:true, cancel:"11/24 15:00 前可免費取消", note:"在西班牙廣場附近",
+    bk:[{label:"訂房", id:"1658114986055677", name:"HAN YING YANG +2", room:"Family room (2 twin beds + sofa bed), breakfast included"}]},
+  {city:"巴塞隆納", color:"green", name:"巴塞隆納卡薩盧茲酒店", local:"Hotel Casa Luz", en:"", addr:"Ronda de la Universitat 1, 08007 Barcelona", dates:"12/3 – 12/7", nights:4, lang:"es", rooms:"連通家庭房（兩張單人床＋一張單人床）", breakfast:true, cancel:"不可取消", note:"在大學廣場旁",
+    bk:[{label:"訂房（與 Sherry、媽媽回程機票同一筆）", id:"1658115905057475", name:"TSAI/CHING JUNG +1", room:"Connecting family room (2 twin + 1 single bed), breakfast included"}]},
+  {city:"仁川", color:"coral", name:"仁川機場金色鬱金香酒店", local:"골든튤립 인천공항 호텔", en:"Golden Tulip Incheon Airport Hotel & Suites", addr:"인천광역시 중구 흰바위로59번길 8", dates:"12/8 – 12/9", nights:1, lang:"ko", rooms:"兩間：爸媽一間・Sherry 一間", breakfast:false, cancel:"爸媽房 12/6 前、Sherry 房 12/4 前可免費取消", note:"12/7 晚上在飛機上過夜",
     bk:[{label:"爸媽的房間（與爸爸回程機票同一筆）", id:"1658115905035459", name:"YUNG/TSUNG HUANG", room:"標準雙床房"},{label:"Sherry 的房間", id:"1658115124192706", name:"HAN YING YANG", room:"住宅大床房"}]},
 ];
 
@@ -728,10 +730,10 @@ const PACK = [
 const BOOK = [
   ["阿爾罕布拉宮","✅ 已訂好：訂單 1631400MYXWB，11/29 14:30，3 位成人"],
   ["聖家堂","12/4 14:30 受難立面＋登塔電梯・出發前 60 天"],
-  ["塞維亞王宮","12/2 10:15 免排隊票・出發前 60 天"],
+  ["塞維亞王宮","⚠️ 還沒訂：12/2 10:30 入場"],
   ["El Rinconcillo 晚餐","✅ 已訂好：12/2 20:00，3 位"],
   ["Finca La Bobadilla 莊園","等飯店回信確認 11/30 12:00 橄欖油品鑑、19:30 El Cortijo 晚餐（爸爸素食）"],
-  ["Finca 免費取消期限","10/30 前可免費取消，之後就確定入住"],
+  ["Finca 免費取消期限","10/29 前可免費取消，之後就確定入住"],
   ["Tablao Cordobes 佛朗明哥","✅ 已訂好：Klook SRY792479，12/4 18:00，3 位成人"],
   ["米拉之家","12/5 10:00 日間門票・出發前 30 天"],
   ["7 Portes 百年燉飯","✅ 已訂好：12/5 19:00，3 位"],
@@ -1242,7 +1244,8 @@ $("stayList").innerHTML = STAYS.map((s,i)=>`
       ${s.rooms?`<span class="rooms">🛏 ${esc(s.rooms)}</span>`:""}
       <p class="addr">📮 ${esc(s.addr)}</p>
       ${s.note?`<p class="addr">💡 ${esc(s.note)}</p>`:""}
-      <div class="stay-row"><span>🗓 ${esc(s.dates)}</span></div>
+      <div class="stay-row"><span>🗓 ${esc(s.dates)}</span><span class="${s.breakfast?"bf-yes":"bf-no"}">${s.breakfast?"🍳 含早餐":"☕ 不含早餐"}</span></div>
+      ${s.cancel?`<p class="cancel">📅 ${esc(s.cancel)}</p>`:""}
       <div class="btn-row">
         <button class="btn" data-drv="${i}">給司機看</button>
         ${s.bk&&s.bk.length?`<button class="btn" data-bks="${i}">給櫃檯看</button>`:`<span class="btn off">訂單待補</span>`}
