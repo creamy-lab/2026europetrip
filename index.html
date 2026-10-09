@@ -465,7 +465,7 @@ footer svg{width:130px;margin:0 auto 6px}
 
     <div class="card tool">
       <h3 class="ck-title">🧾 退稅清單</h3>
-      <p class="ck-sub">每買一件可以退稅的東西就記一筆，12/7 在巴塞隆納機場辦退稅時逐一打勾。</p>
+      <p class="ck-sub">每買一件可以退稅的東西就記一筆，12/7 在巴塞隆納機場辦退稅時拿出來對照。</p>
       <label class="ph-up" style="background:var(--yellow)">📷 拍收據自動填寫<input type="file" accept="image/*" capture="environment" id="tfCam"></label>
       <p class="ck-msg" id="ocrMsg" role="status"></p>
       <img id="ocrPrev" alt="收據預覽" hidden style="max-width:100%;max-height:220px;border:3px solid var(--ink);border-radius:12px;margin-top:6px">
@@ -1608,9 +1608,8 @@ async function loadTax(){
     const money = r => r.amount==null ? "" : r.amount;
     const sym = r => r.currency==="KRW" ? "₩" : "€";
     const d = r => { const x = r.captured_on || (r.created_at||"").slice(0,10); if(!x) return ""; const [y,m,dd]=x.split("-"); return `${+m}/${+dd}`; };
-    $("tfList").innerHTML = `<thead><tr><th>已退稅</th><th>日期</th><th>城市</th><th>店名</th><th>商品</th><th>價格</th><th>備註</th><th>收據</th><th></th></tr></thead>
-      <tbody>${rows.map(r=>`<tr class="${r.scanned?"done":""}">
-        <td><input type="checkbox" data-id="${r.id}" ${r.scanned?"checked":""} aria-label="${esc(r.store)} 已辦退稅"></td>
+    $("tfList").innerHTML = `<thead><tr><th>日期</th><th>城市</th><th>店名</th><th>商品</th><th>價格</th><th>備註</th><th>收據</th><th></th></tr></thead>
+      <tbody>${rows.map(r=>`<tr>
         <td>${esc(d(r))}</td><td>${esc(r.city||r.country||"")}</td>
         <td><input type="text" data-edit="store" data-id="${r.id}" value="${esc(r.store||"")}" aria-label="店名"></td>
         <td><input type="text" data-edit="item" data-id="${r.id}" value="${esc(r.item||"")}" placeholder="—" aria-label="商品"></td>
@@ -1620,8 +1619,7 @@ async function loadTax(){
         <td><button class="del" data-del="${r.id}">刪除</button></td></tr>`).join("")}</tbody>`;
     const eur = rows.filter(r=>r.currency!=="KRW").reduce((a,r)=>a+(+r.amount||0),0);
     const krw = rows.filter(r=>r.currency==="KRW").reduce((a,r)=>a+(+r.amount||0),0);
-    const left = rows.filter(r=>!r.scanned).length;
-    $("tfSum").innerHTML = rows.length ? `共 <b>${rows.length}</b> 筆・歐元合計 <b>€${eur.toLocaleString("zh-TW",{maximumFractionDigits:2})}</b>（約 NT$ ${Math.round(eur*rates.EUR).toLocaleString("zh-TW")}）${krw?`・韓元合計 ₩${krw.toLocaleString("zh-TW")}`:""}<br>還沒辦退稅：<b>${left}</b> 筆` : "還沒有記錄，買到可以退稅的東西時記一筆吧！";
+    $("tfSum").innerHTML = rows.length ? `共 <b>${rows.length}</b> 筆・歐元合計 <b>€${eur.toLocaleString("zh-TW",{maximumFractionDigits:2})}</b>（約 NT$ ${Math.round(eur*rates.EUR).toLocaleString("zh-TW")}）${krw?`・韓元合計 ₩${krw.toLocaleString("zh-TW")}`:""}` : "還沒有記錄，買到可以退稅的東西時記一筆吧！";
     $("tfTotal").textContent = "";
   }catch(e){ $("tfList").innerHTML = ""; $("tfTotal").textContent = "暫時讀不到，有網路時會自動顯示"; }
 }
@@ -1816,7 +1814,7 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("album").hid
 if (location.hash === "#album") openAlbum();
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T16:34:05";
+const SITE_VERSION = "2026-10-09T16:37:57";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
