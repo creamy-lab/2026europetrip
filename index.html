@@ -1775,7 +1775,7 @@ function blobToB64(blob){ return new Promise((res,rej)=>{ const r = new FileRead
 async function aiRead(blob){
   const r = await fetch(`${SB_URL}/functions/v1/read-receipt`, {method:"POST", headers: sbH({"Content-Type":"application/json"}), body: JSON.stringify({image: await blobToB64(blob)})});
   const j = await r.json().catch(()=>({}));
-  if (!r.ok || j.error) throw new Error(j.error || r.status);
+  if (!r.ok || j.error) throw new Error(`${r.status} ${j.error || j.message || j.msg || ""}`.trim());
   return j;
 }
 function showAiReview(d){
@@ -1839,7 +1839,9 @@ $("tfCam").addEventListener("change", async e=>{
       msg.textContent = "";
       showAiReview(d);
     }catch(err){
+      const why = String(err && err.message || err).slice(0,160);
       await basicOcr(blob);
+      $("ocrMsg").textContent += `（AI 沒有讀到，原因：${why}）`;
     }
   }catch(err){
     msg.textContent = "讀取失敗（可能網路不穩），請手動輸入店名和金額。";
@@ -2003,7 +2005,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-09T17:21:00";
+const SITE_VERSION = "2026-10-09T17:54:29";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
