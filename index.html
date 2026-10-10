@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T01:44:48").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T01:56:42").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -565,6 +565,7 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 .tclock b{font-weight:400;font-size:19px;margin-left:4px}
 .tclock .tw{background:none;opacity:.85}
 .tclock:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+.titlebar .back:not([hidden]) + h1{font-size:21px}
 .titlebar h1{font-size:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .titlebar .back{flex:none;font-size:18px;padding:5px 11px 5px 8px;border:3px solid var(--ink);border-radius:999px;background:var(--card);box-shadow:2px 2px 0 var(--ink)}
 .titlebar .back:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
@@ -616,6 +617,10 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 .lost-when{text-align:center;font-size:17px;margin-top:4px}
 .lost-box .loc-map{background:var(--paper)}
 .lost-box .loc-more button{background:var(--paper)}
+.lost-page .loc-map{height:230px;margin-top:14px}
+.lost-page .loc-who button{font-size:18px;padding:5px 13px}
+.lost-page .loc-who{gap:6px}
+.lost-page .loc-who{justify-content:flex-start;margin-top:12px}
 .loc-top{display:flex;align-items:center;gap:10px}
 .loc-top h3{flex:1;text-align:left}
 .loc-top .back{flex:none;font-size:18px;padding:5px 11px 5px 8px;border:3px solid var(--ink);border-radius:999px;background:var(--card);box-shadow:2px 2px 0 var(--ink)}
@@ -766,6 +771,19 @@ html[lang=ja] .tg small,html[lang=en] .tg small{font-size:12.5px}
     </div>
     <h2 class="h2"><i style="background:var(--mizu)">€</i>旅行小工具</h2>
 
+    <div class="card tool lost-page" id="lostCard">
+      <p class="ck-sub">傳出去之後，有開著網站的家人手機會馬上跳出你的位置；也可以用 LINE 傳。</p>
+      <div class="loc-who" id="locWho" role="group" aria-label="我是誰"></div>
+      <p class="loc-msg" id="locMsg" role="status"></p>
+      <div class="loc-sent" id="locSent" hidden></div>
+      <a class="big-btn" id="locLine" href="#" target="_blank" rel="noopener" aria-disabled="true" style="background:var(--green)">💬 用 LINE 傳給家人</a>
+      <div class="loc-more">
+        <button id="locShare" disabled>📤 用其他 App 傳</button>
+        <button id="locRetry">🔄 重新定位</button>
+      </div>
+      <div class="loc-map" id="locMap">正在找你的位置…</div>
+    </div>
+
     <div class="card tool" id="mnCard">
       <h3 class="ck-title">🍽️ 菜單翻譯</h3>
       <p class="ck-sub">拍下菜單，AI 會先介紹這家店和當地最有名的菜，依全家口味配好點法，再逐道翻成中文。</p>
@@ -885,20 +903,6 @@ html[lang=ja] .tg small,html[lang=en] .tg small{font-size:12.5px}
       <button data-lang="zh">🇹🇼 繁體中文<span class="ck"></span></button>
       <button data-lang="en">🇬🇧 English<span class="ck"></span></button>
       <button data-lang="ja">🇯🇵 日本語<span class="ck"></span></button>
-    </div>
-  </div>
-</div>
-<div class="loc-pop" id="locPop" role="dialog" aria-modal="true" aria-labelledby="locTtl">
-  <div class="loc-sheet">
-    <div class="loc-top"><button class="back" id="locBack" aria-label="回上一頁">‹ 返回</button><h3 id="locTtl">📍 走散了？</h3></div>
-    <div class="loc-who" id="locWho" role="group" aria-label="我是誰"></div>
-    <div class="loc-map" id="locMap">正在找你的位置…</div>
-    <p class="loc-msg" id="locMsg" role="status"></p>
-    <div class="loc-sent" id="locSent" hidden></div>
-    <a class="big-btn" id="locLine" href="#" target="_blank" rel="noopener" aria-disabled="true" style="background:var(--green)">💬 用 LINE 傳給家人</a>
-    <div class="loc-more">
-      <button id="locShare" disabled>📤 用其他 App 傳</button>
-      <button id="locRetry">🔄 重新定位</button>
     </div>
   </div>
 </div>
@@ -2528,7 +2532,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T01:44:48";
+const SITE_VERSION = "2026-10-11T01:56:42";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -2776,7 +2780,7 @@ document.addEventListener("click", e=>{
 /* ════════ 新版樣板：底部分頁列＋返回鍵 ════════ */
 const TAB_OF = {home:"home", album:"home", days:"days", orders:"orders", flights:"orders", stay:"orders", tools:"tools", more:"more", vow:"more", todo:"more", help:"more"};
 const TITLES = {home:"☀️ 今天", days:"📅 行程", orders:"🎫 訂單", album:"📷 旅行相簿", more:"☰ 更多", tools:"🧰 工具", vow:"♡ 家庭守則", todo:"🧳 出發準備", help:"🆘 求助"};
-const TOOLS = {mn:["mnCard","🍽️ 菜單翻譯"], tf:["tfCard","🧾 退稅清單"], cv:["cvCard","💶 價格換算"]};
+const TOOLS = {lost:["lostCard","📍 走散了？"], mn:["mnCard","🍽️ 菜單翻譯"], tf:["tfCard","🧾 退稅清單"], cv:["cvCard","💶 價格換算"]};
 const ORDERS = {go:["flights","✈️ 機票・火車・租車"], hotel:["stay","🏨 酒店"], tk:["flights","🎟 門票・預約"]};
 const TAB_ROOTS = ["home","days","orders","tools","more"];
 PAGES.push("orders","more");
@@ -2985,8 +2989,9 @@ function locate(){
     $("locMsg").textContent = err.code === 1 ? "請到「設定 › 隱私權 › 定位服務 › Safari」選「使用 App 期間」，再按重新定位" : "請走到空曠一點的地方，再按重新定位";
   }, {enableHighAccuracy:true, timeout:20000, maximumAge:30000});
 }
-function openLoc(){ locRenderWho(); $("locPop").classList.add("open"); $("locSent").hidden = true; locate(); }
-function closeLoc(){ $("locPop").classList.remove("open"); $("locMap").innerHTML = ""; }
+function lostOpen(){ return curPage === "tools" && navTool === "lost"; }
+function openLoc(){ locRenderWho(); $("locSent").hidden = true; go("tools", {tool:"lost", noAuto:true}); locate(); }
+function closeLoc(){ if (lostOpen()) history.back(); }
 $("locWho").addEventListener("click", e=>{ const b = e.target.closest("[data-w]"); if (!b) return; locWho = b.dataset.w; try{ localStorage.setItem("locWho", locWho); }catch(_){} locRenderWho(); locBuild(); if (pendingPing) pingSend(...pendingPing); });
 
 /* ── 網站內即時通知：存到 Supabase lost_pings，其他開著網站的手機每 15 秒檢查一次 ── */
@@ -3047,7 +3052,7 @@ setInterval(pollLost, 15000);
 document.addEventListener("visibilitychange", ()=>{ if (!document.hidden) pollLost(); });
 pollLost();
 // 走散的人畫面開著時，每 30 秒自動更新位置，家人看到的是最新的
-setInterval(()=>{ if ($("locPop").classList.contains("open") && myPingId && navigator.geolocation){
+setInterval(()=>{ if (lostOpen() && myPingId && navigator.geolocation){
   navigator.geolocation.getCurrentPosition(p=>pingSend(p.coords.latitude, p.coords.longitude, p.coords.accuracy), ()=>{}, {enableHighAccuracy:true, timeout:15000, maximumAge:10000});
 } }, 30000);
 $("locShare").onclick = async ()=>{
@@ -3058,8 +3063,7 @@ $("locShare").onclick = async ()=>{
   }catch(e){ if (e && e.name !== "AbortError") window.open($("locLine").href, "_blank"); }
 };
 $("locRetry").onclick = locate;
-$("locBack").onclick = closeLoc;
-$("locPop").addEventListener("click", e=>{ if (e.target.id === "locPop") closeLoc(); });
+
 /* ════════ 右上角時鐘：當地時間＋台灣時間；時區一變就自動重新整理 ════════ */
 const ZONE_NAME = {"Asia/Seoul":"首爾","Europe/Paris":"法國","Europe/Monaco":"摩納哥","Europe/Lisbon":"里斯本","Europe/Madrid":"西班牙","Asia/Taipei":"台灣"};
 const LOAD_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -3209,7 +3213,7 @@ if (window.LANG !== "zh" && window.I18N_P) window.I18N_P.then(dict=>{
   document.documentElement.classList.remove("i18n-wait");
   setHeaderH();
 });
-(function(){ const [p, t] = (location.hash||"#home").slice(1).split("/"); history.replaceState({p, t:t||null, d:0}, "", location.search + location.hash); renderPage(p, t); })();
+(function(){ const [p, t] = (location.hash||"#home").slice(1).split("/"); history.replaceState({p, t:t||null, d:0}, "", location.search + location.hash); renderPage(p, t); if (lostOpen()){ locRenderWho(); locate(); } })();
 
 </script>
 </body>
