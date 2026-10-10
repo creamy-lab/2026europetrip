@@ -580,7 +580,7 @@ footer svg{width:130px;margin:0 auto 6px}
 
     <div class="card tool" id="mnCard">
       <h3 class="ck-title">🍽️ 菜單翻譯</h3>
-      <p class="ck-sub">拍下菜單，AI 翻成中文，並幫忙標出含牛肉、爸爸可以吃的全素熱食。</p>
+      <p class="ck-sub">拍下菜單，AI 翻成中文，並幫忙標出含牛肉、爸爸可以吃的素食熱食。</p>
       <div class="mn-up">
         <label class="ph-up" style="background:var(--yellow)">📷 拍菜單<input type="file" accept="image/*" capture="environment" id="mnCam"></label>
         <label class="ph-up">🖼 從相簿選<input type="file" accept="image/*" id="mnPick"></label>
@@ -588,7 +588,7 @@ footer svg{width:130px;margin:0 auto 6px}
       <p class="ck-msg" id="mnMsg" role="status"></p>
       <div id="mnOut"></div>
       <details class="mn-say" id="mnSay">
-        <summary>🙋 給服務生看：我們不吃牛肉、爸爸吃全素</summary>
+        <summary>🙋 給服務生看：我們不吃牛肉、爸爸吃素</summary>
         <div class="mn-langs" role="group" aria-label="選擇語言"></div>
         <p class="mn-say-text" id="mnSayText" lang="es"></p>
       </details>
@@ -724,7 +724,7 @@ const SIGNERS = ["爸爸","媽媽","Sherry"];
 const PROMISES = [
   {t:"⏰ 早上從容不趕", d:"每天 07:30–08:00 起床，留將近 2 小時悠閒吃早餐、梳洗換裝，09:45–10:00 才出門。"},
   {t:"☕ 媽媽專屬購物與下午茶", d:"每一站都安排地標級百年茶座與林蔭名品街，買得開心、坐得優雅。"},
-  {t:"🍲 飲食嚴格把關", d:"全員零牛肉（不吃牛肉、牛腩、牛骨湯）；爸爸每天全素熱食：熱湯、熱燉飯、現炒熱青菜，不吃生冷沙拉。"},
+  {t:"🍲 飲食嚴格把關", d:"全員零牛肉（不吃牛肉、牛腩、牛骨湯）；爸爸每天蛋奶素熱食（不吃肉和海鮮，可以吃蛋、喝牛奶）：熱湯、熱燉飯、現炒熱青菜，不吃生冷沙拉。"},
   {t:"🚗 不爬坡、搭電梯、行李不離身", d:"摩納哥和西班牙莊園都走電梯與平路；長途移動先到飯店放行李，絕不把行李留在車上。"},
 ];
 
@@ -815,7 +815,7 @@ const DAYS = [
     {t:"12:30", e:"14:15", n:"☕ 巴黎咖啡館露台午餐", note:"看賭場廣場噴泉，海鮮酥盒、松露寬麵、千層派"},
     {t:"14:30", e:"16:00", n:"親王宮廣場看遊艇港", map:[["漁夫停車場", "https://www.google.com/maps/search/?api=1&query=Parking+des+Pêcheurs+Monaco"]], tr:["自駕"], must:true, note:["車停漁夫停車場，搭大電梯直上，全程沒有樓梯","俯瞰停滿遊艇的赫庫勒斯港"]},
     {t:"16:30", e:"17:15", n:"開車回尼斯", map:[["飯店", "https://www.google.com/maps/search/?api=1&query=Hôtel+Le+Soleia+48+Boulevard+Victor+Hugo+Nice"]], tr:["自駕"], note:"車停飯店停車位"},
-    {t:"18:00", e:"19:30", n:"熱越南河粉晚餐", note:["鮮雞湯河粉、鮮蝦海鮮河粉","🥬 爸爸：純素豆腐蔬菜河粉（全素湯頭）"]},
+    {t:"18:00", e:"19:30", n:"熱越南河粉晚餐", note:["鮮雞湯河粉、鮮蝦海鮮河粉","🥬 爸爸：素食豆腐蔬菜河粉（素湯頭）"]},
   ]},
   {date:"11/24", wk:"二", s:"格拉斯", city:"法國格拉斯", art:"grasse", title:"香水小鎮・古樹莊園午宴", walk:1, meet:"10:00 開車出發", bring:"", items:[
     {t:"07:45", e:"09:45", n:"早餐", note:"☕ 飯店沒有含早餐：可以在飯店加購，或到附近麵包店、咖啡館"},
@@ -914,7 +914,7 @@ const DAYS = [
   {date:"12/4", wk:"五", s:"巴塞隆納", city:"西班牙巴塞隆納", art:"barcelona", title:"聖家堂・佛朗明哥之夜", walk:2, meet:"10:30 出發", bring:"護照", items:[
     {t:"07:45", e:"10:00", n:"頂樓露台熱早餐"},
     {t:"10:30", e:"12:30", n:"加泰隆尼亞廣場、El Triangle 逛街", dad:["巴塞隆納主教座堂和迴廊：迴廊裡養了 13 隻白鵝，平路走約 10 分鐘"], tr:["步行"]},
-    {t:"13:00", e:"13:50", n:"Pho Hanoi 暖胃午餐", tr:["步行"], note:["鮮雞河粉、鮮蝦河粉","🥬 爸爸：純素豆腐蔬菜河粉（全素湯頭）"]},
+    {t:"13:00", e:"13:50", n:"Pho Hanoi 暖胃午餐", tr:["步行"], note:["鮮雞河粉、鮮蝦河粉","🥬 爸爸：素食豆腐蔬菜河粉（素湯頭）"]},
     {t:"13:55", e:"14:15", n:"計程車到聖家堂", tr:["計程車"]},
     {t:"14:30", e:"16:30", n:"聖家堂＋搭電梯登塔", must:true, note:["📌 預計 14:30 受難立面＋登塔（訂票確認信待補）","下午陽光照進彩繪玻璃，坐在長椅靜靜欣賞"]},
     {t:"16:40", e:"17:40", n:"回飯店躺平休息", tr:["計程車"]},
@@ -931,7 +931,7 @@ const DAYS = [
     {t:"15:00", e:"16:00", n:"☕ Majestic 酒店下午茶"},
     {t:"16:15", e:"18:15", n:"回房補眠將近 2 小時"},
     {t:"18:35", e:"18:55", n:"計程車到舊港口", tr:["計程車"]},
-    {t:"19:00", e:"20:45", n:"1836 年老店 7 Portes 晚餐", map:[["7 Portes","https://www.google.com/maps/search/?api=1&query=Restaurant+7+Portes+Passeig+d%27Isabel+II+14+Barcelona"]], must:true, note:["📌 已訂位 19:00，3 位（Sherry Yang），已確認","Passeig d'Isabel II 14","媽媽：大鐵鍋海鮮燉飯","🥬 爸爸：一整鍋全素蔬菜燉飯（入座時再提醒一次）"]},
+    {t:"19:00", e:"20:45", n:"1836 年老店 7 Portes 晚餐", map:[["7 Portes","https://www.google.com/maps/search/?api=1&query=Restaurant+7+Portes+Passeig+d%27Isabel+II+14+Barcelona"]], must:true, note:["📌 已訂位 19:00，3 位（Sherry Yang），已確認","Passeig d'Isabel II 14","媽媽：大鐵鍋海鮮燉飯","🥬 爸爸：一整鍋素食蔬菜燉飯（入座時再提醒一次）"]},
     {t:"21:00", n:"計程車回飯店", tr:["計程車"]},
   ]},
   {date:"12/6", wk:"日", s:"巴塞隆納", city:"西班牙巴塞隆納", art:"sea", title:"港邊看海・海灘燉飯", walk:2, meet:"10:15 計程車出發", bring:"", items:[
@@ -991,7 +991,7 @@ const STAYS = [
 // 門票與活動
 const TICKETS = [
   {name:"百年老店大鐵鍋飯晚餐", local:"Restaurant 7 Portes", date:"12月5日（六）19:00", addr:"Passeig d'Isabel II 14, 08003 Barcelona",
-    meta:["3 位","爸爸：全素蔬菜燉飯","入座時提醒不要牛肉"],
+    meta:["3 位","爸爸：素食蔬菜燉飯","入座時提醒不要牛肉"],
     bk:[{label:"餐廳訂位（已確認）", idLabel:"Reservation", id:"", name:"Sherry Yang", room:"05/12/2026 19:00, 3 people – one vegetarian paella please, no beef"}]},
   {name:"阿爾罕布拉宮門票", local:"Alhambra y Generalife", date:"11月29日（日）14:30", addr:"Calle Real de la Alhambra s/n, 18009 Granada",
     meta:["14:30 準時進納斯里德宮殿","3 位成人","入口查護照","電子票在 Sherry 信箱（PDF／Passbook）"],
@@ -2276,7 +2276,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-10T12:59:20";
+const SITE_VERSION = "2026-10-10T14:26:19";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -2316,11 +2316,11 @@ const SITE_VERSION = "2026-10-10T12:59:20";
 
 /* ══════════════ 菜單翻譯（Claude Haiku，經 Supabase Edge Function read-menu） ══════════════ */
 const MN_SAY = {
-  es:["西班牙文","No comemos nada de ternera, vaca ni buey (tampoco caldo de ternera). Una persona es vegana estricta: sin carne, pescado, marisco, huevo ni lácteos, y prefiere platos calientes. ¿Qué nos recomienda? Gracias."],
-  fr:["法文","Nous ne mangeons pas de bœuf ni de veau (ni bouillon de bœuf). Une personne est végétalienne stricte : pas de viande, poisson, fruits de mer, œufs ni produits laitiers, et préfère les plats chauds. Que nous conseillez-vous ? Merci."],
-  pt:["葡萄牙文","Não comemos carne de vaca nem vitela (nem caldo de carne de vaca). Uma pessoa é vegana estrita: sem carne, peixe, marisco, ovos nem lacticínios, e prefere pratos quentes. O que nos recomenda? Obrigado."],
-  ko:["韓文","저희는 소고기를 먹지 않습니다 (소고기 육수도 안 됩니다). 한 분은 완전 채식(비건)이라 고기, 생선, 해산물, 달걀, 유제품을 드시지 않고 따뜻한 음식을 원하십니다. 추천해 주시겠어요? 감사합니다."],
-  en:["英文","We do not eat beef or veal (no beef stock either). One person is strictly vegan: no meat, fish, seafood, eggs or dairy, and prefers hot dishes. What would you recommend? Thank you."],
+  es:["西班牙文","No comemos nada de ternera, vaca ni buey (tampoco caldo de ternera). Una persona es vegetariana: no come carne, pescado ni marisco (ni caldo de carne o pescado), pero sí huevos y lácteos, y prefiere platos calientes. ¿Qué nos recomienda? Gracias."],
+  fr:["法文","Nous ne mangeons pas de bœuf ni de veau (ni bouillon de bœuf). Une personne est végétarienne : pas de viande, poisson ni fruits de mer (ni bouillon de viande ou de poisson), mais les œufs et les produits laitiers sont acceptés, et elle préfère les plats chauds. Que nous conseillez-vous ? Merci."],
+  pt:["葡萄牙文","Não comemos carne de vaca nem vitela (nem caldo de carne de vaca). Uma pessoa é vegetariana: não come carne, peixe nem marisco (nem caldo de carne ou peixe), mas come ovos e lacticínios, e prefere pratos quentes. O que nos recomenda? Obrigado."],
+  ko:["韓文","저희는 소고기를 먹지 않습니다 (소고기 육수도 안 됩니다). 한 분은 채식주의자라 고기, 생선, 해산물(고기·멸치 육수 포함)은 드시지 않지만 달걀과 유제품은 드실 수 있고, 따뜻한 음식을 원하십니다. 추천해 주시겠어요? 감사합니다."],
+  en:["英文","We do not eat beef or veal (no beef stock either). One person is vegetarian: no meat, fish or seafood (no meat or fish stock), but eggs and dairy are fine, and he prefers hot dishes. What would you recommend? Thank you."],
 };
 function mnDefaultLang(){
   if (todayIndex() < 0) return "es";
@@ -2352,8 +2352,8 @@ function mnRender(){
     if (isDad) tags.push(`<span class="mn-tag t-dad">👴 推薦給爸爸</span>`);
     if (it.beef==="yes") tags.push(`<span class="mn-tag t-beef">🐄 含牛肉</span>`);
     else if (it.beef==="maybe") tags.push(`<span class="mn-tag t-maybe">❓ 可能有牛肉，請問店員</span>`);
-    if (it.vegan==="yes") tags.push(`<span class="mn-tag t-veg">🥬 全素</span>`);
-    else if (it.vegan==="maybe") tags.push(`<span class="mn-tag t-maybe">🥬？可能可以做全素</span>`);
+    if (it.vegan==="yes") tags.push(`<span class="mn-tag t-veg">🥬 素食（蛋奶可）</span>`);
+    else if (it.vegan==="maybe") tags.push(`<span class="mn-tag t-maybe">🥬？可以請店家做成素的</span>`);
     if (it.hot===true) tags.push(`<span class="mn-tag">🔥 熱的</span>`);
     else if (it.hot===false) tags.push(`<span class="mn-tag">🧊 冷的</span>`);
     const sec = it.section && it.section!==lastSec ? `<h4 class="mn-sec">${esc(it.section)}</h4>` : "";
@@ -2374,7 +2374,7 @@ function mnRender(){
       <button class="chip" data-f="nobeef" aria-pressed="${mnFilter==="nobeef"}">🚫 隱藏含牛肉${nBeef?`（${nBeef}）`:""}</button>
     </div>`:""}
     ${rows || (items.length?`<p class="ck-sub" style="margin-top:10px">這一類沒有找到，可以點「全部」看看，或問店員。</p>`:"")}
-    ${items.length?`<p class="tf-note">⚠️ AI 翻譯可能有誤，牛肉和全素請再跟店員確認（可用下面的卡片）。</p>`:""}`;
+    ${items.length?`<p class="tf-note">⚠️ AI 翻譯可能有誤，牛肉和素食請再跟店員確認（可用下面的卡片）。</p>`:""}`;
 }
 $("mnOut").addEventListener("click", e=>{ const b = e.target.closest("[data-f]"); if (b){ mnFilter = b.dataset.f; mnRender(); } });
 async function mnRead(file){
