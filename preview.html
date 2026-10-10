@@ -545,6 +545,11 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 #tools.one .tool.show{display:block}
 #tools.one .tool-pick{display:none}
 .quick.six .qbtn{min-height:96px}
+#clocks{display:none!important}
+#home .quick + .hero{margin-top:18px}
+.topbar{transition:transform .28s ease}
+.topbar.away{transform:translateY(-100%)}
+@media (prefers-reduced-motion: reduce){.topbar{transition:none}}
 </style>
 </head>
 <body>
@@ -2834,6 +2839,23 @@ $("tClock").onclick = ()=>location.reload();
 document.addEventListener("visibilitychange", ()=>{ if (!document.hidden && !checkZone()) renderTClock(); });
 setInterval(()=>{ if (!checkZone()) renderTClock(); }, 20000);
 renderTClock();
+/* ════════ 往下滑：頂端列藏起來；往上滑：再出現 ════════ */
+(function(){
+  const bar = document.querySelector(".topbar");
+  let lastY = Math.max(0, scrollY), ticking = false;
+  function onScroll(){
+    const y = Math.max(0, scrollY), hh = bar.offsetHeight;
+    if (y < hh) bar.classList.remove("away");                 // 在最上面：一定顯示
+    else if (y > lastY + 8) bar.classList.add("away");        // 往下滑
+    else if (y < lastY - 8) bar.classList.remove("away");     // 往上滑
+    if (Math.abs(y - lastY) > 8) lastY = y;
+    ticking = false;
+  }
+  addEventListener("scroll", ()=>{ if (!ticking){ ticking = true; requestAnimationFrame(onScroll); } }, {passive:true});
+  // 換頁、按返回時先把頂端列叫回來
+  const _render = renderPage;
+  renderPage = function(...a){ bar.classList.remove("away"); _render(...a); lastY = Math.max(0, scrollY); };
+})();
 (function(){ const [p, t] = (location.hash||"#home").slice(1).split("/"); history.replaceState({p, t:t||null, d:0}, "", location.search + location.hash); renderPage(p, t); })();
 
 </script>
