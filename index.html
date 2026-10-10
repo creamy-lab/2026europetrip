@@ -302,6 +302,17 @@ section:first-child{margin-top:0}
 /* ── 菜單翻譯 ── */
 .mn-up{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .mn-up .ph-up{margin-top:10px}
+.mn-prefs{margin-top:10px}
+.mn-prefs summary{font-size:17px;cursor:pointer}
+.mn-prefs textarea{width:100%;margin-top:8px;font:inherit;font-size:17px;line-height:1.5;padding:8px 10px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
+.mn-rec{margin-top:12px;padding:12px 14px;background:var(--paper);border:3px solid var(--ink);border-radius:var(--r-sm)}
+.mn-rec h4{font-size:20px;font-weight:400;margin:0 0 6px}
+.mn-rec .r{padding:7px 0;border-top:2px dashed #d8d0c8}
+.mn-rec .r:first-of-type{border-top:0}
+.mn-rec .who{display:inline-block;font-size:14px;padding:0 8px;border:2px solid var(--ink);border-radius:999px;background:var(--mizu);margin-right:6px;vertical-align:2px}
+.mn-rec .nm{font-size:20px}
+.mn-rec .why{font-size:16px;line-height:1.5;color:#5b5450}
+.mn-intro{margin-top:12px;font-size:18px;line-height:1.55}
 .mn-tip{margin-top:12px;padding:10px 14px;background:var(--paper);border:3px solid var(--ink);border-radius:var(--r-sm);font-size:18px;line-height:1.5}
 .mn-filter{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
 .mn-filter .chip{font-size:16px}
@@ -580,7 +591,13 @@ footer svg{width:130px;margin:0 auto 6px}
 
     <div class="card tool" id="mnCard">
       <h3 class="ck-title">🍽️ 菜單翻譯</h3>
-      <p class="ck-sub">拍下菜單，AI 翻成中文，並幫忙標出含牛肉、爸爸可以吃的素食熱食。</p>
+      <p class="ck-sub">拍下菜單，AI 會先介紹這家店和當地最有名的菜，依全家口味配好點法，再逐道翻成中文。</p>
+      <details class="mn-prefs" id="mnPrefs">
+        <summary>👪 全家口味（AI 每次都會照這個推薦）</summary>
+        <textarea id="mnPrefText" rows="5" aria-label="全家口味"></textarea>
+        <div class="btn-row"><button class="btn" id="mnPrefSave" type="button">儲存</button><button class="btn" id="mnPrefReset" type="button">恢復預設</button></div>
+        <p class="ck-msg" id="mnPrefMsg" role="status"></p>
+      </details>
       <div class="mn-up">
         <label class="ph-up" style="background:var(--yellow)">📷 拍菜單<input type="file" accept="image/*" capture="environment" id="mnCam"></label>
         <label class="ph-up">🖼 從相簿選<input type="file" accept="image/*" id="mnPick"></label>
@@ -2276,7 +2293,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-10T14:26:19";
+const SITE_VERSION = "2026-10-10T14:31:03";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -2337,6 +2354,13 @@ function mnSetLang(l){
   mnSetLang(mnDefaultLang());
 })();
 
+const FAMILY_PREFS = `媽媽、Sherry：完全不吃牛肉（包括牛肉湯底、牛骨湯）。
+爸爸：蛋奶素，不吃肉、魚、海鮮，也不要肉或魚熬的湯底；可以吃蛋、喝牛奶、吃起司。
+全家：喜歡喝熱湯；不吃辣；每一餐都需要有米飯或麵。`;
+function mnPrefs(){ try{ return localStorage.getItem("mnPrefs") || FAMILY_PREFS; }catch(e){ return FAMILY_PREFS; } }
+$("mnPrefText").value = mnPrefs();
+$("mnPrefSave").onclick = ()=>{ try{ localStorage.setItem("mnPrefs", $("mnPrefText").value.trim() || FAMILY_PREFS); $("mnPrefMsg").textContent = "✅ 已儲存（只存在這支手機）"; }catch(e){ $("mnPrefMsg").textContent = "這支手機無法儲存，這次照畫面上的內容推薦"; } };
+$("mnPrefReset").onclick = ()=>{ try{ localStorage.removeItem("mnPrefs"); }catch(e){} $("mnPrefText").value = FAMILY_PREFS; $("mnPrefMsg").textContent = "已恢復預設"; };
 let mnData = null, mnFilter = "all";
 function mnRender(){
   const out = $("mnOut"), d = mnData; if (!d) { out.innerHTML = ""; return; }
@@ -2354,6 +2378,8 @@ function mnRender(){
     else if (it.beef==="maybe") tags.push(`<span class="mn-tag t-maybe">❓ 可能有牛肉，請問店員</span>`);
     if (it.vegan==="yes") tags.push(`<span class="mn-tag t-veg">🥬 素食（蛋奶可）</span>`);
     else if (it.vegan==="maybe") tags.push(`<span class="mn-tag t-maybe">🥬？可以請店家做成素的</span>`);
+    if (it.spicy===true) tags.push(`<span class="mn-tag t-beef">🌶️ 辣</span>`);
+    if (it.staple===true) tags.push(`<span class="mn-tag">🍚 有飯／麵</span>`);
     if (it.hot===true) tags.push(`<span class="mn-tag">🔥 熱的</span>`);
     else if (it.hot===false) tags.push(`<span class="mn-tag">🧊 冷的</span>`);
     const sec = it.section && it.section!==lastSec ? `<h4 class="mn-sec">${esc(it.section)}</h4>` : "";
@@ -2366,8 +2392,19 @@ function mnRender(){
     </div>`;
   }).join("");
   const nBeef = items.filter(i=>i.beef==="yes").length;
+  const byOrig = new Map(items.map(it=>[String(it.orig), it]));
+  const recRow = (r, who) => { const it = byOrig.get(String(r.orig)) || {}; return `<div class="r">
+      ${who?`<span class="who">${esc(r.who||"大家分享")}</span>`:""}<span class="nm">${esc(it.zh || r.orig || "")}</span>${it.price!=null?` <span class="mn-price" style="font-size:16px">${esc(money(it.price))}</span>`:""}
+      ${it.zh && r.orig ? `<div class="mn-orig">${esc(r.orig)}</div>` : ""}
+      ${r.why?`<div class="why">${esc(r.why)}</div>`:""}</div>`; };
+  const famous = (Array.isArray(d.famous) ? d.famous : []).filter(r=>r && r.orig);
+  const set = (Array.isArray(d.set) ? d.set : []).filter(r=>r && r.orig);
   out.innerHTML = `
+    ${d.intro?`<p class="mn-intro">${esc(d.intro)}</p>`:""}
+    ${famous.length?`<div class="mn-rec"><h4>⭐ 這裡最有名、值得一試</h4>${famous.map(r=>recRow(r,false)).join("")}</div>`:""}
+    ${set.length?`<div class="mn-rec" style="background:#EEF6E8"><h4>🍽️ 依全家口味配好的點法</h4>${set.map(r=>recRow(r,true)).join("")}</div>`:""}
     ${d.tip?`<div class="mn-tip">💡 ${esc(d.tip)}</div>`:""}
+    ${items.length?`<h4 class="mn-sec" style="margin-top:18px">📜 整份菜單翻譯</h4>`:""}
     ${items.length?`<div class="mn-filter" role="group" aria-label="篩選">
       <button class="chip" data-f="all" aria-pressed="${mnFilter==="all"}">全部 ${items.length}</button>
       <button class="chip" data-f="dad" aria-pressed="${mnFilter==="dad"}">👴 爸爸可以吃</button>
@@ -2383,7 +2420,7 @@ async function mnRead(file){
   msg.textContent = "✨ AI 正在看菜單，大約 10–30 秒…"; $("mnOut").innerHTML = "";
   try{
     const blob = await shrink(file, 2000);
-    const r = await fetch(`${SB_URL}/functions/v1/read-menu`, {method:"POST", headers: sbH({"Content-Type":"application/json"}), body: JSON.stringify({image: await blobToB64(blob)})});
+    const r = await fetch(`${SB_URL}/functions/v1/read-menu`, {method:"POST", headers: sbH({"Content-Type":"application/json"}), body: JSON.stringify({image: await blobToB64(blob), prefs: $("mnPrefText").value.trim() || mnPrefs(), city: todayIndex()>=0 ? `${hereCity()}，${tripCountry()}` : ""})});
     const j = await r.json().catch(()=>({}));
     if (!r.ok || j.error) throw new Error(`${r.status} ${j.error || j.message || ""}`.trim());
     mnData = j; mnFilter = "all";
