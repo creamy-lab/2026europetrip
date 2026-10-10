@@ -2495,7 +2495,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T00:22:50";
+const SITE_VERSION = "2026-10-11T00:30:29";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -2830,7 +2830,20 @@ function tonightStay(){
   const t = todayKey();
   return STAYS.findIndex(st=>{ const [a,b] = st.dates.split("–").map(x=>x.trim().split("/")); return keyMD(a[0],a[1]) <= t && t < keyMD(b[0],b[1]); });
 }
-document.querySelector(".tabbar").addEventListener("click", e=>{ const b = e.target.closest("[data-tab]"); if (b) go(b.dataset.tab, {reset:true}); });
+// 按底部按鈕：一定回到那一頁的第一層、最上面（像 iPhone App）
+function toTop(smooth){
+  const go0 = ()=>window.scrollTo({top:0, left:0, behavior: smooth && !reduce ? "smooth" : "instant"});
+  go0();
+  if (!smooth){ requestAnimationFrame(go0); setTimeout(go0, 60); }      // iPhone 慣性捲動中也要停在最上面
+}
+document.querySelector(".tabbar").addEventListener("click", e=>{
+  const b = e.target.closest("[data-tab]"); if (!b) return;
+  const tab = b.dataset.tab, st = history.state || {};
+  const atRoot = curPage === tab && !st.t && !(st.d > 0);
+  if (atRoot){ toTop(true); return; }                                  // 已經在這一頁的第一層：平滑捲回最上面
+  go(tab, {reset:true, noAuto: tab !== "days"});
+  toTop(false);
+});
 document.querySelector(".titlebar").addEventListener("click", e=>{
   const a = e.target.closest("a[href^='#']"); if (a){ e.preventDefault(); go(a.getAttribute("href").slice(1)); }
 });
