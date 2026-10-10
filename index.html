@@ -21,7 +21,9 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;touch-action:manipulation}
+/* 不要連點兩下就放大（像 App 一樣）；雙指放大仍然可以 */
+body,button,a,input,select,textarea,label,.tab,.qbtn,.tg,.tg-sos,.chip{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 body{background:var(--paper);color:var(--ink);font-family:"Huninn","PingFang TC","Noto Sans TC",system-ui,sans-serif;line-height:1.6;font-size:19px}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 a{color:inherit}
@@ -266,7 +268,7 @@ section:first-child{margin-top:0}
 .tf-table{border-collapse:collapse;min-width:1080px;width:100%;font-size:15px}
 .tf-table th,.tf-table td{border-bottom:2px dotted var(--ink);padding:6px 6px;text-align:left;vertical-align:middle;white-space:nowrap}
 .tf-table th{background:var(--yellow);font-weight:400;position:sticky;top:0}
-.tf-table td input[type=text]{font:inherit;font-size:15px;width:100%;min-width:90px;padding:4px 6px;border:2px solid transparent;border-radius:8px;background:transparent;color:var(--ink)}
+.tf-table td input[type=text]{font:inherit;font-size:16px;width:100%;min-width:90px;padding:4px 6px;border:2px solid transparent;border-radius:8px;background:transparent;color:var(--ink)}
 .tf-table td input[type=text]:focus{border-color:var(--ink);background:var(--paper);outline:none}
 .tf-table td.num input{min-width:80px;text-align:right;font-variant-numeric:tabular-nums}
 .tf-table td.rm input{min-width:150px}
@@ -374,7 +376,7 @@ section:first-child{margin-top:0}
 .ai-it-top input[type=checkbox]{width:24px;height:24px;accent-color:#7FB069}
 .ai-it-nums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px;padding-left:36px}
 .ai-it-nums label{margin-top:0;font-size:13px}
-.ai-it-nums input{text-align:right;font-variant-numeric:tabular-nums;font-size:15px !important;padding:5px 6px !important}
+.ai-it-nums input{text-align:right;font-variant-numeric:tabular-nums;font-size:16px !important;padding:5px 6px !important}
 .ai-item{display:grid;grid-template-columns:28px 1fr 96px;gap:8px;align-items:center;margin-top:8px}
 .ai-item > *{min-width:0}
 .ai-item input[type=checkbox]{width:24px;height:24px;accent-color:#7FB069}
@@ -2493,7 +2495,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T00:13:46";
+const SITE_VERSION = "2026-10-11T00:22:50";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
