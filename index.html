@@ -487,9 +487,10 @@ footer svg{width:130px;margin:0 auto 6px}
 .chip{font-size:17px;padding:6px 14px}
 main{padding-top:calc(var(--hh,120px) + 14px);padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
-.tabbar{position:fixed;inset:auto 0 0 0;z-index:60;background:var(--paper);border-top:3px solid var(--ink);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.tabbar{position:fixed;inset:auto 0 0 0;z-index:60;background:var(--paper);border-top:3px solid var(--ink);padding:2px 2px calc(10px + env(safe-area-inset-bottom));cursor:pointer}
 .tabbar .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
-.tab{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 0 2px;font-size:15px;line-height:1.2;border-radius:16px}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:68px;padding:6px 0 4px;font-size:15px;line-height:1.2;border-radius:16px}
+.tab *{pointer-events:none}
 .tab .ic{font-size:25px;line-height:1;width:54px;height:36px;display:grid;place-items:center;border-radius:999px;border:3px solid transparent}
 .tab.on .ic{background:var(--yellow);border-color:var(--ink)}
 .tab:active{transform:scale(.94)}
@@ -2495,7 +2496,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T00:30:29";
+const SITE_VERSION = "2026-10-11T00:34:48";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -2837,7 +2838,12 @@ function toTop(smooth){
   if (!smooth){ requestAnimationFrame(go0); setTimeout(go0, 60); }      // iPhone 慣性捲動中也要停在最上面
 }
 document.querySelector(".tabbar").addEventListener("click", e=>{
-  const b = e.target.closest("[data-tab]"); if (!b) return;
+  let b = e.target.closest("[data-tab]");
+  if (!b){                                                             // 點到按鈕旁邊的空白：算最近的那一個
+    const tabs = [...document.querySelectorAll(".tab")];
+    b = tabs.reduce((best, t)=>{ const r = t.getBoundingClientRect(), d = Math.abs(e.clientX - (r.left + r.width/2)); return !best || d < best.d ? {t, d} : best; }, null)?.t;
+  }
+  if (!b) return;
   const tab = b.dataset.tab, st = history.state || {};
   const atRoot = curPage === tab && !st.t && !(st.d > 0);
   if (atRoot){ toTop(true); return; }                                  // 已經在這一頁的第一層：平滑捲回最上面
