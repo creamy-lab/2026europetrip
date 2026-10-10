@@ -574,7 +574,20 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 #tools.pick .tool{display:none}
 #tools.one .tool{display:none}
 #tools.one .tool.show{display:block}
-#tools.one .tool-pick{display:none}
+#tools.one .tool-grid{display:none}
+.tool-grid{display:flex;flex-direction:column;gap:12px}
+.tg-sos{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;background:var(--coral);border:3px solid var(--ink);border-radius:var(--r);box-shadow:var(--shadow)}
+.tg-sos .e{font-size:44px;line-height:1;width:66px;height:66px;display:grid;place-items:center;background:var(--paper);border:3px solid var(--ink);border-radius:50%;flex:none}
+.tg-sos b{display:block;font-weight:400;font-size:26px;line-height:1.2}
+.tg-sos small{display:block;font-size:16px;line-height:1.4}
+.tg-sos .go{margin-left:auto;font-size:34px;opacity:.6}
+.tg-sos:active,.tg:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.tg-h{font-size:17px;margin:10px 4px 0;opacity:.75}
+.tg-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tg{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 4px 12px;border:3px solid var(--ink);border-radius:var(--r);box-shadow:var(--shadow);text-align:center;min-height:150px}
+.tg .e{font-size:40px;line-height:1.1}
+.tg b{font-weight:400;font-size:19px;line-height:1.25}
+.tg small{font-size:14px;line-height:1.35;opacity:.85}
 .quick.six .qbtn{min-height:96px}
 #clocks{display:none!important}
 #ckCard{display:none!important}
@@ -601,7 +614,7 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 <body>
 
 <header class="topbar">
-  <div class="demo-bar">🧪 樣板・日期
+  <div class="demo-bar">🧪 新版樣板・模擬日期
     <select id="demoSel" aria-label="模擬日期">
       <option value="real">出發前</option>
       <option value="2026-11-18T09:00">11/18 出發日</option>
@@ -609,12 +622,6 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
       <option value="2026-11-26T10:00">11/26 里斯本</option>
       <option value="2026-11-30T10:00">11/30 橄欖莊園</option>
       <option value="2026-12-04T10:00">12/4 巴塞隆納</option>
-    </select>
-    時鐘<select id="clockSel" aria-label="時鐘樣式">
-      <option value="d">D 原版</option>
-      <option value="e">E 一行</option>
-      <option value="f">F 精簡</option>
-      <option value="g">G 細卡</option>
     </select>
   </div>
   <div class="titlebar"><button class="back" id="backBtn" hidden aria-label="回上一頁">‹ 返回</button><h1 id="pgTitle">☀️ 今天</h1><button class="tclock" id="tClock" aria-label="現在時間，按一下重新整理"></button></div>
@@ -731,11 +738,14 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
   </section>
 
   <section id="tools">
-    <div class="tool-pick">
-      <p class="lead">要用哪一個？</p>
-      <button class="card more-row" data-tool="mn"><span class="e" style="background:var(--yellow)">🍽️</span><span><b>菜單翻譯</b><small>拍菜單，AI 介紹招牌菜、依全家口味配好點法</small></span></button>
-      <button class="card more-row" data-tool="tf"><span class="e" style="background:var(--green)">🧾</span><span><b>退稅清單</b><small>拍收據自動記帳、算可退多少</small></span></button>
-      <button class="card more-row" data-tool="cv"><span class="e" style="background:var(--mizu)">💶</span><span><b>價格換算</b><small>歐元、韓元換成台幣</small></span></button>
+    <div class="tool-grid">
+      <button class="tg-sos" data-q="loc"><span class="e">📍</span><span class="tx"><b>走散了？</b><small>一按就把我的位置傳給家人</small></span><span class="go">›</span></button>
+      <p class="tg-h">旅行小幫手</p>
+      <div class="tg-row">
+        <button class="tg" data-tool="mn" style="background:var(--green)"><span class="e">🍽️</span><b>菜單翻譯</b><small>拍菜單<br>AI 幫你點</small></button>
+        <button class="tg" data-tool="tf" style="background:var(--yellow)"><span class="e">🧾</span><b>退稅清單</b><small>拍收據<br>自動記帳</small></button>
+        <button class="tg" data-tool="cv" style="background:var(--mizu)"><span class="e">💶</span><b>價格換算</b><small>歐元韓元<br>換台幣</small></button>
+      </div>
     </div>
     <h2 class="h2"><i style="background:var(--mizu)">€</i>旅行小工具</h2>
 
@@ -824,7 +834,6 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
   <section id="more">
     <div class="more-list">
       <p class="more-h">需要幫忙</p>
-      <button class="card more-row" data-q="loc"><span class="e" style="background:var(--coral)">📍</span><span><b>走散了？傳我的位置</b><small>一按就把 Google 地圖位置傳給家人</small></span></button>
       <a class="card more-row" href="#help"><span class="e" style="background:var(--coral)">🆘</span><span><b>求助</b><small>LINE 找家人、當地緊急電話</small></span></a>
       <p class="more-h">回憶</p>
       <a class="card more-row" href="#album"><span class="e" style="background:var(--mizu)">📷</span><span><b>旅行相簿</b><small>每個城市一本，上傳、放大、分享</small></span></a>
@@ -2941,9 +2950,8 @@ function localZone(){
   return {tz: plan || "Asia/Taipei", name: c==="回家" ? "仁川" : c};
 }
 function tzOffsetMin(tz, d){ const p = Object.fromEntries(new Intl.DateTimeFormat("en-US",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).formatToParts(d).map(x=>[x.type,x.value])); return (Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute) - Math.floor(d.getTime()/60000)*60000)/60000; }
-function clockStyle(){ const c = new URLSearchParams(location.search).get("clock"); return ["a","b","c","d","e","f","g"].includes(c) ? c : "f"; }
-$("clockSel").value = clockStyle();
-$("clockSel").onchange = ()=>{ const q = new URLSearchParams(location.search); q.set("clock", $("clockSel").value); history.replaceState(history.state, "", "?" + q.toString() + location.hash); renderTClock(); };
+function clockStyle(){ return "f"; }   // 決定用 F 精簡款
+
 function renderTClock(){
   let f = z => new Date().toLocaleTimeString("zh-TW",{timeZone:z,hour:"2-digit",minute:"2-digit",hour12:false});
   const L = localZone();
