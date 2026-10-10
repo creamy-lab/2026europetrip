@@ -526,6 +526,19 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 .more-row::after{content:"›";margin-left:auto;font-size:30px;opacity:.5}
 .now-mark{scroll-margin-top:calc(var(--hh,120px) + 40px)!important}
 .more-h{font-size:17px;margin:20px 4px 2px;opacity:.75}
+.titlebar .back{flex:none;font-size:19px;padding:6px 14px 6px 10px;border:3px solid var(--ink);border-radius:999px;background:var(--card);box-shadow:2px 2px 0 var(--ink)}
+.titlebar .back:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+.tool-pick{display:flex;flex-direction:column;gap:14px}
+.tool-pick .more-row{min-height:96px}
+.tool-pick .more-row .e{width:62px;height:62px;font-size:38px}
+.tool-pick .more-row b{font-size:24px}
+.tool-pick .lead{font-size:19px;margin:0 4px 2px}
+#tools > .h2{display:none}
+#tools.pick .tool{display:none}
+#tools.one .tool{display:none}
+#tools.one .tool.show{display:block}
+#tools.one .tool-pick{display:none}
+.quick.six .qbtn{min-height:96px}
 </style>
 </head>
 <body>
@@ -541,7 +554,7 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
       <option value="2026-12-04T10:00">12/4 巴塞隆納</option>
     </select>
   </div>
-  <div class="titlebar"><h1 id="pgTitle">☀️ 今天</h1><a class="sos-btn" href="#help">🆘 求助</a></div>
+  <div class="titlebar"><button class="back" id="backBtn" hidden aria-label="回上一頁">‹ 返回</button><h1 id="pgTitle">☀️ 今天</h1><a class="sos-btn" href="#help">🆘 求助</a></div>
   <nav class="nav" aria-label="主選單">
     <button class="navbtn" id="refreshBtn" aria-label="重新整理，取得最新行程"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="#3E3A39" stroke-width="2.6" stroke-linecap="round"/><path d="M20 3v5h-5" fill="none" stroke="#3E3A39" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <a href="#home" class="on">首頁</a>
@@ -653,6 +666,12 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
   </section>
 
   <section id="tools">
+    <div class="tool-pick">
+      <p class="lead">要用哪一個？</p>
+      <button class="card more-row" data-tool="mn"><span class="e" style="background:var(--yellow)">🍽️</span><span><b>菜單翻譯</b><small>拍菜單，AI 介紹招牌菜、依全家口味配好點法</small></span></button>
+      <button class="card more-row" data-tool="tf"><span class="e" style="background:var(--green)">🧾</span><span><b>退稅清單</b><small>拍收據自動記帳、算可退多少</small></span></button>
+      <button class="card more-row" data-tool="cv"><span class="e" style="background:var(--mizu)">💶</span><span><b>價格換算</b><small>歐元、韓元換成台幣</small></span></button>
+    </div>
     <h2 class="h2"><i style="background:var(--mizu)">€</i>旅行小工具</h2>
 
     <div class="card tool" id="mnCard">
@@ -741,10 +760,8 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
     <div class="more-list">
       <p class="more-h">需要幫忙</p>
       <a class="card more-row" href="#help"><span class="e" style="background:var(--coral)">🆘</span><span><b>求助</b><small>LINE 找家人、當地緊急電話</small></span></a>
-      <p class="more-h">旅行工具</p>
-      <button class="card more-row" data-more="tools:mnCard"><span class="e" style="background:var(--yellow)">🍽️</span><span><b>菜單翻譯</b><small>拍菜單，AI 介紹招牌菜、依全家口味配好點法</small></span></button>
-      <button class="card more-row" data-more="tools:cvCard"><span class="e" style="background:var(--mizu)">💶</span><span><b>價格換算</b><small>歐元、韓元換成台幣</small></span></button>
-      <button class="card more-row" data-more="tools:tfCard"><span class="e" style="background:var(--green)">🧾</span><span><b>退稅清單</b><small>拍收據自動記帳、算可退多少</small></span></button>
+      <p class="more-h">回憶</p>
+      <a class="card more-row" href="#album"><span class="e" style="background:var(--mizu)">📷</span><span><b>旅行相簿</b><small>每個城市一本，上傳、放大、分享</small></span></a>
       <p class="more-h">出發前</p>
       <a class="card more-row" href="#vow"><span class="e" style="background:var(--yellow)">♡</span><span><b>家庭守則・宣誓</b><small>九大幸福守則、蓋章</small></span></a>
       <a class="card more-row" href="#todo"><span class="e" style="background:var(--mizu)">🧳</span><span><b>出發準備</b><small>行李清單、防小偷、重要預約</small></span></a>
@@ -760,7 +777,7 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
   <button class="tab" data-tab="home"><span class="ic">☀️</span>今天</button>
   <button class="tab" data-tab="days"><span class="ic">📅</span>行程</button>
   <button class="tab" data-tab="orders"><span class="ic">🎫</span>訂單</button>
-  <button class="tab" data-tab="album"><span class="ic">📷</span>相簿</button>
+  <button class="tab" data-tab="tools"><span class="ic">🧰</span>工具</button>
   <button class="tab" data-tab="more"><span class="ic">☰</span>更多</button>
 </div></nav>
 
@@ -2627,40 +2644,65 @@ document.addEventListener("click", e=>{
   if (PAGES.includes(id)){ e.preventDefault(); showPage(id); }
 });
 
-/* ════════ 新版樣板：底部分頁列 ════════ */
-const TAB_OF = {home:"home", days:"days", orders:"orders", flights:"orders", stay:"orders", album:"album", more:"more", tools:"more", vow:"more", todo:"more", help:"more"};
-const TITLES = {home:"☀️ 今天", days:"📅 行程", orders:"🎫 訂單", album:"📷 相簿", more:"☰ 更多", tools:"🧰 旅行工具", vow:"♡ 家庭守則", todo:"🧳 出發準備", help:"🆘 求助"};
-const SUBPAGE = {tools:1, vow:1, todo:1, help:1};
+/* ════════ 新版樣板：底部分頁列＋返回鍵 ════════ */
+const TAB_OF = {home:"home", album:"home", days:"days", orders:"orders", flights:"orders", stay:"orders", tools:"tools", more:"more", vow:"more", todo:"more", help:"more"};
+const TITLES = {home:"☀️ 今天", days:"📅 行程", orders:"🎫 訂單", album:"📷 旅行相簿", more:"☰ 更多", tools:"🧰 工具", vow:"♡ 家庭守則", todo:"🧳 出發準備", help:"🆘 求助"};
+const TOOLS = {mn:["mnCard","🍽️ 菜單翻譯"], tf:["tfCard","🧾 退稅清單"], cv:["cvCard","💶 價格換算"]};
+const TAB_ROOTS = ["home","days","orders","tools","more"];
 PAGES.push("orders","more");
 const _subItems = subItems;
 subItems = function(page){
   const go = id => ({go:id});
-  if (page === "home") return [];
+  if (page === "home" || page === "more" || page === "tools") return [];
   if (page === "orders") return [["✈️ 交通",go("flights")],["🏨 住宿",go("stay")],["🎟 門票",go("tkHead")]];
-  if (page === "more") return [];
   return _subItems(page);
 };
 function setHeaderH(){ document.documentElement.style.setProperty("--hh", document.querySelector(".topbar").offsetHeight + "px"); }
-showPage = function(page, opts={}){
+let navTool = null;
+// 畫出某一頁（不動瀏覽紀錄）
+function renderPage(page, tool, opts={}){
   if (page === "flights" || page === "stay") page = "orders";
   if (!PAGES.includes(page)) page = "home";
+  navTool = page === "tools" && TOOLS[tool] ? tool : null;
   const show = page === "orders" ? ["flights","stay"] : [page];
   document.querySelectorAll("main > section").forEach(sec=>sec.classList.toggle("active", show.includes(sec.id)));
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on", t.dataset.tab === TAB_OF[page]));
-  $("pgTitle").innerHTML = (SUBPAGE[page] ? `<button class="back" data-back>‹ 更多</button>` : "") + esc(TITLES[page] || "");
+  const tl = $("tools");
+  tl.classList.toggle("pick", page==="tools" && !navTool);
+  tl.classList.toggle("one", page==="tools" && !!navTool);
+  tl.querySelectorAll(".tool").forEach(c=>c.classList.toggle("show", !!navTool && c.id === TOOLS[navTool][0]));
+  $("pgTitle").textContent = navTool ? TOOLS[navTool][1] : (TITLES[page] || "");
+  $("backBtn").hidden = !(history.state && history.state.d > 0);
   document.querySelector(".sos-btn").hidden = page === "help";
   if (page !== curPage) renderSubbar(page);
   curPage = page;
-  if (location.hash !== "#"+page) history.replaceState(null, "", location.search + "#" + page);
   if (page === "album") renderAlbum();
   if (page === "home") arrangeHome();
   setHeaderH();
-  if (!opts.keepScroll) window.scrollTo({top:0, behavior:"auto"});
+  window.scrollTo({top: opts.y || 0, behavior:"auto"});
   if (page === "days") { const b = dayBtns.children[cur]; if (b) dayBtns.scrollTo({left: b.offsetLeft - 8}); }
-  if (!opts.noAuto){
+  if (!opts.noAuto && !opts.y){
     if (page === "orders") autoOrders(); else autoToday(page);
   }
-};
+}
+// 換頁：按底部分頁＝從頭開始；其他（點按鈕、連結）＝往下一層，可以按「返回」
+function go(page, opts={}){
+  const st = history.state || {d:0};
+  const url = location.search + "#" + page + (opts.tool ? "/" + opts.tool : "");
+  if (opts.reset){
+    history.replaceState({p:page, t:opts.tool||null, d:0}, "", url);
+  } else {
+    history.replaceState(Object.assign({}, st, {y: window.scrollY}), "");   // 記住目前捲到哪裡，返回時回到原位
+    history.pushState({p:page, t:opts.tool||null, d:(st.d||0)+1}, "", url);
+  }
+  renderPage(page, opts.tool, opts);
+}
+showPage = function(page, opts={}){ go(page, opts); };
+addEventListener("popstate", e=>{
+  const st = e.state || {p:"home", d:0};
+  renderPage(st.p, st.t, {y: st.y || 0, noAuto: true});
+});
+$("backBtn").onclick = ()=>history.back();
 // 訂單頁：今天有搭飛機／火車就標那一段，否則標今晚住的飯店
 function autoOrders(){
   if (!inTrip()) return;
@@ -2674,20 +2716,17 @@ function tonightStay(){
   const t = todayKey();
   return STAYS.findIndex(st=>{ const [a,b] = st.dates.split("–").map(x=>x.trim().split("/")); return keyMD(a[0],a[1]) <= t && t < keyMD(b[0],b[1]); });
 }
-document.querySelector(".tabbar").addEventListener("click", e=>{ const b = e.target.closest("[data-tab]"); if (b) showPage(b.dataset.tab); });
+document.querySelector(".tabbar").addEventListener("click", e=>{ const b = e.target.closest("[data-tab]"); if (b) go(b.dataset.tab, {reset:true}); });
 document.querySelector(".titlebar").addEventListener("click", e=>{
-  if (e.target.closest("[data-back]")) showPage("more");
-  const a = e.target.closest("a[href^='#']"); if (a){ e.preventDefault(); showPage(a.getAttribute("href").slice(1)); }
+  const a = e.target.closest("a[href^='#']"); if (a){ e.preventDefault(); go(a.getAttribute("href").slice(1)); }
 });
 function openTool(card, cam){
-  showPage("tools", {noAuto:true});
-  const el = $(card); if (el) setTimeout(()=>el.scrollIntoView({block:"start"}), 30);
+  const key = Object.keys(TOOLS).find(k=>TOOLS[k][0]===card);
+  go("tools", {tool:key, noAuto:true});
   if (cam) $(cam).click();          // 直接打開相機（同一次點擊內才允許）
 }
-$("more").addEventListener("click", e=>{
-  const b = e.target.closest("[data-more]"); if (b){ const [, card] = b.dataset.more.split(":"); openTool(card); }
-  if (e.target.closest("#moreReload")) location.reload();
-});
+$("tools").addEventListener("click", e=>{ const b = e.target.closest("[data-tool]"); if (b) go("tools", {tool:b.dataset.tool}); });
+$("more").addEventListener("click", e=>{ if (e.target.closest("#moreReload")) location.reload(); });
 
 /* ════════ 今天頁：今天的卡片＋四個大按鈕放最上面 ════════ */
 function arrangeHome(){
@@ -2700,9 +2739,13 @@ function arrangeHome(){
     <button class="qbtn" style="background:var(--yellow)" data-q="taxi"><span class="e">🚕</span>給司機看<small>${h>=0?esc(STAYS[h].name):"回飯店"}</small></button>
     <button class="qbtn" style="background:var(--mizu)" data-q="orders"><span class="e">🎫</span>今天的訂單<small>給櫃檯看</small></button>
     <button class="qbtn" style="background:var(--green)" data-q="menu"><span class="e">🍽️</span>翻譯菜單<small>拍一下就好</small></button>
-    <button class="qbtn" style="background:var(--coral)" data-q="ck"><span class="e">👍</span>報平安<small>讓家人放心</small></button>` : `
+    <button class="qbtn" style="background:var(--coral)" data-q="ck"><span class="e">👍</span>報平安<small>讓家人放心</small></button>
+    <button class="qbtn" style="background:var(--card)" data-q="album"><span class="e">📷</span>旅行相簿<small>上傳今天的照片</small></button>
+    <button class="qbtn" style="background:var(--card)" data-q="tax"><span class="e">🧾</span>記退稅<small>拍收據就好</small></button>` : `
     <button class="qbtn" style="background:var(--yellow)" data-q="vow"><span class="e">♡</span>家庭守則<small>出發前一起宣誓</small></button>
-    <button class="qbtn" style="background:var(--mizu)" data-q="todo"><span class="e">🧳</span>行李清單<small>出發前準備</small></button>`;
+    <button class="qbtn" style="background:var(--mizu)" data-q="todo"><span class="e">🧳</span>行李清單<small>出發前準備</small></button>
+    <button class="qbtn" style="background:var(--green)" data-q="album"><span class="e">📷</span>旅行相簿<small>每個城市一本</small></button>
+    <button class="qbtn" style="background:var(--coral)" data-q="help"><span class="e">💬</span>找家人<small>LINE、緊急電話</small></button>`;
   const today = $("today"), hero = home.querySelector(".hero");
   if (trip){ home.prepend(q); home.prepend(today); today.after(q); q.after(hero); }
   else { home.prepend(hero); hero.after(today); today.after(q); }
@@ -2711,7 +2754,10 @@ document.addEventListener("click", e=>{
   const b = e.target.closest("[data-q]"); if (!b) return;
   const k = b.dataset.q, h = tonightStay();
   if (k === "taxi"){ const btn = document.querySelector(`#stayList [data-drv="${h>=0?h:0}"]`); if (btn) btn.click(); }
-  if (k === "orders") showPage("orders");
+  if (k === "orders") go("orders");
+  if (k === "album") go("album");
+  if (k === "tax") openTool("tfCard", "tfCam");
+  if (k === "help") go("help");
   if (k === "menu") openTool("mnCard", "mnCam");
   if (k === "ck") $("ckCard").scrollIntoView({behavior: reduce?"auto":"smooth", block:"start"});
   if (k === "vow") showPage("vow");
@@ -2745,7 +2791,8 @@ dayPanel.addEventListener("click", e=>{
 })();
 addEventListener("resize", setHeaderH);
 addCtx();
-showPage((location.hash||"#home").slice(1));
+(function(){ const [p, t] = (location.hash||"#home").slice(1).split("/"); history.replaceState({p, t:t||null, d:0}, "", location.search + location.hash); renderPage(p, t); })();
+
 </script>
 </body>
 </html>
