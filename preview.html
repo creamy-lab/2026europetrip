@@ -487,7 +487,7 @@ footer svg{width:130px;margin:0 auto 6px}
 
 /* ════════ 新版樣板 ════════ */
 .nav{display:none!important}
-.demo-bar{background:var(--yellow);border-bottom:3px solid var(--ink);font-size:15px;padding:5px 12px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.demo-bar{white-space:nowrap;background:var(--yellow);border-bottom:3px solid var(--ink);font-size:15px;padding:5px 12px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:nowrap}
 .demo-bar select{font:inherit;font-size:15px;border:2px solid var(--ink);border-radius:999px;padding:1px 8px;background:var(--paper);color:var(--ink)}
 .titlebar{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 14px 8px}
 .titlebar h1{flex:1;font-size:26px;font-weight:400;line-height:1.2;display:flex;align-items:center;gap:8px;min-width:0}
@@ -526,6 +526,20 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 .more-row::after{content:"›";margin-left:auto;font-size:30px;opacity:.5}
 .now-mark{scroll-margin-top:calc(var(--hh,120px) + 40px)!important}
 .more-h{font-size:17px;margin:20px 4px 2px;opacity:.75}
+.tclock.cs-b{flex-direction:row;gap:6px;padding:0;border:0;background:none;box-shadow:none;align-items:center}
+.tclock.cs-b .pill{display:flex;flex-direction:column;align-items:center;padding:3px 10px;border:3px solid var(--ink);border-radius:999px;line-height:1.1;box-shadow:2px 2px 0 var(--ink)}
+.tclock.cs-b .pill small{font-size:13px}
+.tclock.cs-b .pill b{font-size:19px;margin:0;font-weight:400}
+.tclock.cs-c{border:0;background:none;box-shadow:none;padding:0 2px;gap:0}
+.tclock.cs-c .big{font-size:30px;line-height:1;letter-spacing:.5px}
+.tclock.cs-c .big small{font-size:14px;margin-right:4px;vertical-align:4px}
+.tclock.cs-c .sm{font-size:14px;opacity:.75;margin-top:3px}
+.tclock.cs-d{flex-direction:row;gap:0;padding:0;overflow:hidden;align-items:stretch}
+.tclock.cs-d .half{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 9px;line-height:1.1}
+.tclock.cs-d .half small{font-size:13px}
+.tclock.cs-d .half b{font-size:20px;margin:0;font-weight:400}
+.tclock.cs-d .half + .half{border-left:3px solid var(--ink);background:var(--yellow)}
+.tclock.cs-d .diff{display:block;font-size:11px;opacity:.8}
 .tclock{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:1px;padding:4px 10px;border:3px solid var(--ink);border-radius:14px;background:var(--mizu);box-shadow:2px 2px 0 var(--ink);line-height:1.15;font-variant-numeric:tabular-nums}
 .tclock span{font-size:15px;white-space:nowrap}
 .tclock b{font-weight:400;font-size:19px;margin-left:4px}
@@ -546,6 +560,10 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 #tools.one .tool-pick{display:none}
 .quick.six .qbtn{min-height:96px}
 #clocks{display:none!important}
+#flights.only-go #tkHead,#flights.only-go #ticketList{display:none}
+#flights.only-tk > .h2,#flights.only-tk #flightList{display:none}
+#flights > .h2,#stay > .h2{display:none}
+#flights.only-tk #tkHead{display:none}
 #home .quick + .hero{margin-top:18px}
 .topbar{transition:transform .28s ease}
 .topbar.away{transform:translateY(-100%)}
@@ -555,14 +573,20 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 <body>
 
 <header class="topbar">
-  <div class="demo-bar">🧪 新版樣板・模擬日期
+  <div class="demo-bar">🧪 樣板・日期
     <select id="demoSel" aria-label="模擬日期">
-      <option value="real">今天（出發前）</option>
+      <option value="real">出發前</option>
       <option value="2026-11-18T09:00">11/18 出發日</option>
       <option value="2026-11-22T10:00">11/22 尼斯</option>
       <option value="2026-11-26T10:00">11/26 里斯本</option>
       <option value="2026-11-30T10:00">11/30 橄欖莊園</option>
       <option value="2026-12-04T10:00">12/4 巴塞隆納</option>
+    </select>
+    時鐘<select id="clockSel" aria-label="時鐘樣式">
+      <option value="a">A</option>
+      <option value="b">B</option>
+      <option value="c">C</option>
+      <option value="d">D</option>
     </select>
   </div>
   <div class="titlebar"><button class="back" id="backBtn" hidden aria-label="回上一頁">‹ 返回</button><h1 id="pgTitle">☀️ 今天</h1><button class="tclock" id="tClock" aria-label="現在時間，按一下重新整理"></button></div>
@@ -655,6 +679,8 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
     <div id="dayPanel"></div>
     <div class="day-nav"><button id="prevDay">◀ 前一天</button><button id="nextDay">下一天 ▶</button></div>
   </section>
+
+  <section id="orders"><div class="tool-pick" id="orderPick"></div></section>
 
   <section id="stay">
     <h2 class="h2"><i style="background:var(--yellow)">⌂</i>住宿</h2>
@@ -2659,31 +2685,31 @@ document.addEventListener("click", e=>{
 const TAB_OF = {home:"home", album:"home", days:"days", orders:"orders", flights:"orders", stay:"orders", tools:"tools", more:"more", vow:"more", todo:"more", help:"more"};
 const TITLES = {home:"☀️ 今天", days:"📅 行程", orders:"🎫 訂單", album:"📷 旅行相簿", more:"☰ 更多", tools:"🧰 工具", vow:"♡ 家庭守則", todo:"🧳 出發準備", help:"🆘 求助"};
 const TOOLS = {mn:["mnCard","🍽️ 菜單翻譯"], tf:["tfCard","🧾 退稅清單"], cv:["cvCard","💶 價格換算"]};
+const ORDERS = {go:["flights","✈️ 機票・火車・租車"], hotel:["stay","🏨 酒店"], tk:["flights","🎟 門票・預約"]};
 const TAB_ROOTS = ["home","days","orders","tools","more"];
 PAGES.push("orders","more");
-const _subItems = subItems;
-subItems = function(page){
-  const go = id => ({go:id});
-  if (page === "home" || page === "more" || page === "tools") return [];
-  if (page === "orders") return [["✈️ 交通",go("flights")],["🏨 住宿",go("stay")],["🎟 門票",go("tkHead")]];
-  return _subItems(page);
-};
+subItems = function(){ return []; };   // 不再顯示國家／分類快捷鍵
 function setHeaderH(){ document.documentElement.style.setProperty("--hh", document.querySelector(".topbar").offsetHeight + "px"); }
 let navTool = null;
 // 畫出某一頁（不動瀏覽紀錄）
 function renderPage(page, tool, opts={}){
-  if (page === "flights" || page === "stay") page = "orders";
+  if (page === "flights") { page = "orders"; tool = tool || "go"; }
+  if (page === "stay") { page = "orders"; tool = tool || "hotel"; }
   if (!PAGES.includes(page)) page = "home";
   navTool = page === "tools" && TOOLS[tool] ? tool : null;
-  const show = page === "orders" ? ["flights","stay"] : [page];
+  const ord = page === "orders" && ORDERS[tool] ? tool : null;
+  const show = page === "orders" ? [ord ? ORDERS[ord][0] : "orders"] : [page];
   document.querySelectorAll("main > section").forEach(sec=>sec.classList.toggle("active", show.includes(sec.id)));
+  $("flights").classList.toggle("only-go", ord === "go");
+  $("flights").classList.toggle("only-tk", ord === "tk");
+  if (page === "orders" && !ord) renderOrderPick();
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on", t.dataset.tab === TAB_OF[page]));
   const tl = $("tools");
   tl.classList.toggle("pick", page==="tools" && !navTool);
   tl.classList.toggle("one", page==="tools" && !!navTool);
   tl.querySelectorAll(".tool").forEach(c=>c.classList.toggle("show", !!navTool && c.id === TOOLS[navTool][0]));
   const canBack = !!(history.state && history.state.d > 0);
-  let ttl = navTool ? TOOLS[navTool][1] : (TITLES[page] || "");
+  let ttl = navTool ? TOOLS[navTool][1] : ord ? ORDERS[ord][1] : (TITLES[page] || "");
   if (canBack) ttl = ttl.replace(/^\S+\s/, "");          // 有返回鍵時拿掉圖示，標題才放得下
   $("pgTitle").textContent = ttl;
   $("backBtn").hidden = !canBack;
@@ -2695,7 +2721,7 @@ function renderPage(page, tool, opts={}){
   window.scrollTo({top: opts.y || 0, behavior:"auto"});
   if (page === "days") { const b = dayBtns.children[cur]; if (b) dayBtns.scrollTo({left: b.offsetLeft - 8}); }
   if (!opts.noAuto && !opts.y){
-    if (page === "orders") autoOrders(); else autoToday(page);
+    if (page === "orders") { if (ord) autoOrders(ord); } else autoToday(page);
   }
 }
 // 換頁：按底部分頁＝從頭開始；其他（點按鈕、連結）＝往下一層，可以按「返回」
@@ -2717,13 +2743,29 @@ addEventListener("popstate", e=>{
 });
 $("backBtn").onclick = ()=>history.back();
 // 訂單頁：今天有搭飛機／火車就標那一段，否則標今晚住的飯店
-function autoOrders(){
-  if (!inTrip()) return;
+function todayFlight(){
   const t = todayKey();
-  const k = FLIGHTS.findIndex(f=>{ const m = f.date.match(/(\d+)月(\d+)日/); return m && keyMD(m[1],m[2]) === t; });
-  if (k >= 0) return markNow($("fl"+k), "今天");
-  const h = tonightStay();
-  if (h >= 0) markNow($("st"+h), "今晚住這裡");
+  return FLIGHTS.findIndex(f=>{ const m = f.date.match(/(\d+)月(\d+)日/); return m && keyMD(m[1],m[2]) === t; });
+}
+function nextFlight(){
+  const t = todayKey();
+  return FLIGHTS.findIndex(f=>{ const m = f.date.match(/(\d+)月(\d+)日/); return m && keyMD(m[1],m[2]) >= t; });
+}
+function autoOrders(kind){
+  if (!inTrip()) return;
+  if (kind === "go"){ const k = todayFlight(), n = k >= 0 ? k : nextFlight(); if (n >= 0) markNow($("fl"+n), k >= 0 ? "今天" : "下一段"); }
+  if (kind === "hotel"){ const h = tonightStay(); if (h >= 0) markNow($("st"+h), "今晚住這裡"); }
+}
+function renderOrderPick(){
+  const trip = todayIndex() >= 0, k = todayFlight(), n = nextFlight(), h = tonightStay();
+  const f = FLIGHTS[k >= 0 ? k : n], fs = f ? `${f.no}　${f.from[0]} → ${f.to[0]}` : "";
+  const goSub = trip && f ? `${k>=0?"📌 今天":"下一段"}：${fs}` : `飛機 ${FLIGHTS.filter(x=>x.type==="plane").length} 段・火車 ${FLIGHTS.filter(x=>x.type==="train").length} 段・租車 ${FLIGHTS.filter(x=>x.type==="car").length} 次`;
+  const hoSub = trip && h >= 0 ? `📌 今晚：${STAYS[h].name}` : `${STAYS.length} 間，含訂房編號、早餐、取消規定`;
+  $("orderPick").innerHTML = `
+    <p class="lead">要看哪一種？每一筆都有「給櫃檯看」</p>
+    <button class="card more-row" data-ord="go"><span class="e" style="background:var(--mizu)">✈️</span><span><b>機票・火車・租車</b><small>${esc(goSub)}</small></span></button>
+    <button class="card more-row" data-ord="hotel"><span class="e" style="background:var(--yellow)">🏨</span><span><b>酒店</b><small>${esc(hoSub)}</small></span></button>
+    <button class="card more-row" data-ord="tk"><span class="e" style="background:var(--green)">🎟</span><span><b>門票・預約</b><small>${TICKETS.length} 筆：景點門票、表演、餐廳訂位</small></span></button>`;
 }
 function tonightStay(){
   const t = todayKey();
@@ -2738,6 +2780,7 @@ function openTool(card, cam){
   go("tools", {tool:key, noAuto:true});
   if (cam) $(cam).click();          // 直接打開相機（同一次點擊內才允許）
 }
+$("orders").addEventListener("click", e=>{ const b = e.target.closest("[data-ord]"); if (b) go("orders", {tool:b.dataset.ord}); });
 $("tools").addEventListener("click", e=>{ const b = e.target.closest("[data-tool]"); if (b) go("tools", {tool:b.dataset.tool}); });
 $("more").addEventListener("click", e=>{ if (e.target.closest("#moreReload")) location.reload(); });
 
@@ -2767,7 +2810,7 @@ document.addEventListener("click", e=>{
   const b = e.target.closest("[data-q]"); if (!b) return;
   const k = b.dataset.q, h = tonightStay();
   if (k === "taxi"){ const btn = document.querySelector(`#stayList [data-drv="${h>=0?h:0}"]`); if (btn) btn.click(); }
-  if (k === "orders") go("orders");
+  if (k === "orders") go("orders", {tool: todayFlight() >= 0 ? "go" : "hotel"});
   if (k === "album") go("album");
   if (k === "tax") openTool("tfCard", "tfCam");
   if (k === "help") go("help");
@@ -2800,7 +2843,7 @@ dayPanel.addEventListener("click", e=>{
 (function(){
   const sel = $("demoSel"); sel.value = window.__DEMO || "real";
   if (!sel.value) sel.value = "real";
-  sel.onchange = ()=>{ location.href = location.pathname + "?demo=" + encodeURIComponent(sel.value) + location.hash; };
+  sel.onchange = ()=>{ const q = new URLSearchParams(location.search); q.set("demo", sel.value); location.href = location.pathname + "?" + q.toString() + location.hash; };
 })();
 addEventListener("resize", setHeaderH);
 addCtx();
@@ -2817,6 +2860,9 @@ function localZone(){
   return {tz: plan || "Asia/Taipei", name: c==="回家" ? "仁川" : c};
 }
 function tzOffsetMin(tz, d){ const p = Object.fromEntries(new Intl.DateTimeFormat("en-US",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).formatToParts(d).map(x=>[x.type,x.value])); return (Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute) - Math.floor(d.getTime()/60000)*60000)/60000; }
+function clockStyle(){ const c = new URLSearchParams(location.search).get("clock"); return ["a","b","c","d"].includes(c) ? c : "a"; }
+$("clockSel").value = clockStyle();
+$("clockSel").onchange = ()=>{ const q = new URLSearchParams(location.search); q.set("clock", $("clockSel").value); history.replaceState(history.state, "", "?" + q.toString() + location.hash); renderTClock(); };
 function renderTClock(){
   let f = z => new Date().toLocaleTimeString("zh-TW",{timeZone:z,hour:"2-digit",minute:"2-digit",hour12:false});
   const L = localZone();
@@ -2827,7 +2873,15 @@ function renderTClock(){
     const tw = new Date(now.getTime() + (tzOffsetMin(phone, now) - tzOffsetMin(L.tz, now))*60000);   // 當地牆上時間 → 換算台灣時間
     f = z => z === "Asia/Taipei" ? tw.toLocaleTimeString("zh-TW",{timeZone:"Asia/Taipei",hour:"2-digit",minute:"2-digit",hour12:false}) : local;
   }
-  $("tClock").innerHTML = `<span>📍${esc(L.name)}<b>${f(L.tz)}</b></span><span class="tw">🇹🇼台灣<b>${f("Asia/Taipei")}</b></span>`;
+  const lt = f(L.tz), tt = f("Asia/Taipei"), nm = esc(L.name);
+  const dh = (()=>{ const [a,b] = [lt,tt].map(x=>{const [h,m]=x.split(":").map(Number);return h*60+m;}); let d = Math.round(((b-a+1440)%1440)/60); return d>12?d-24:d; })();
+  const cs = clockStyle(), el = $("tClock");
+  el.className = "tclock cs-" + cs;
+  el.innerHTML =
+    cs === "b" ? `<span class="pill" style="background:var(--mizu)"><small>📍${nm}</small><b>${lt}</b></span><span class="pill" style="background:var(--yellow)"><small>🇹🇼台灣</small><b>${tt}</b></span>` :
+    cs === "c" ? `<span class="big"><small>📍${nm}</small>${lt}</span><span class="sm">🇹🇼 台灣 ${tt}</span>` :
+    cs === "d" ? `<span class="half"><small>📍${nm}</small><b>${lt}</b></span><span class="half"><small>🇹🇼台灣</small><b>${tt}</b><span class="diff">${dh===0?"同時間":(dh>0?"快 ":"慢 ")+Math.abs(dh)+" 小時"}</span></span>` :
+    `<span>📍${nm}<b>${lt}</b></span><span class="tw">🇹🇼台灣<b>${tt}</b></span>`;
   setHeaderH();
 }
 function checkZone(){
@@ -2842,9 +2896,10 @@ renderTClock();
 /* ════════ 往下滑：頂端列藏起來；往上滑：再出現 ════════ */
 (function(){
   const bar = document.querySelector(".topbar");
-  let lastY = Math.max(0, scrollY), ticking = false;
+  let lastY = Math.max(0, scrollY), ticking = false, holdUntil = 0;
   function onScroll(){
     const y = Math.max(0, scrollY), hh = bar.offsetHeight;
+    if (Date.now() < holdUntil){ lastY = y; ticking = false; return; }   // 程式自動捲到「今天」時，不要把頂端列藏起來
     if (y < hh) bar.classList.remove("away");                 // 在最上面：一定顯示
     else if (y > lastY + 8) bar.classList.add("away");        // 往下滑
     else if (y < lastY - 8) bar.classList.remove("away");     // 往上滑
@@ -2854,7 +2909,7 @@ renderTClock();
   addEventListener("scroll", ()=>{ if (!ticking){ ticking = true; requestAnimationFrame(onScroll); } }, {passive:true});
   // 換頁、按返回時先把頂端列叫回來
   const _render = renderPage;
-  renderPage = function(...a){ bar.classList.remove("away"); _render(...a); lastY = Math.max(0, scrollY); };
+  renderPage = function(...a){ bar.classList.remove("away"); holdUntil = Date.now() + 1500; _render(...a); lastY = Math.max(0, scrollY); };
 })();
 (function(){ const [p, t] = (location.hash||"#home").slice(1).split("/"); history.replaceState({p, t:t||null, d:0}, "", location.search + location.hash); renderPage(p, t); })();
 
