@@ -603,6 +603,16 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 .loc-msg{font-size:17px;text-align:center;margin-top:8px;min-height:1.5em}
 .loc-sheet .big-btn{margin-top:12px}
 .loc-sheet .big-btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.loc-sent{margin-top:10px;padding:10px 14px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--green);font-size:17px;line-height:1.5;text-align:center}
+.loc-sent button{margin-top:8px;font-size:17px;padding:6px 16px;border:2.5px solid var(--ink);border-radius:999px;background:var(--card)}
+.lost-alert{position:fixed;inset:0;z-index:150;background:rgba(62,58,57,.6);display:none;align-items:center;justify-content:center;padding:16px}
+.lost-alert.open{display:flex}
+.lost-box{background:var(--coral);border:3px solid var(--ink);border-radius:var(--r);width:100%;max-width:520px;padding:18px 16px;box-shadow:var(--shadow);animation:lostIn .35s cubic-bezier(.3,1.4,.5,1)}
+@keyframes lostIn{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+.lost-box h3{font-size:28px;font-weight:400;text-align:center;line-height:1.3}
+.lost-when{text-align:center;font-size:17px;margin-top:4px}
+.lost-box .loc-map{background:var(--paper)}
+.lost-box .loc-more button{background:var(--paper)}
 .loc-top{display:flex;align-items:center;gap:10px}
 .loc-top h3{flex:1;text-align:left}
 .loc-top .back{flex:none;font-size:18px;padding:5px 11px 5px 8px;border:3px solid var(--ink);border-radius:999px;background:var(--card);box-shadow:2px 2px 0 var(--ink)}
@@ -854,12 +864,25 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
   <footer id="foot"></footer>
   <p class="ver" id="verLine"></p>
 </main>
+<div class="lost-alert" id="lostAlert" role="alertdialog" aria-modal="true" aria-labelledby="lostTtl">
+  <div class="lost-box">
+    <h3 id="lostTtl"></h3>
+    <p class="lost-when" id="lostWhen"></p>
+    <div class="loc-map" id="lostMap"></div>
+    <a class="big-btn" id="lostGo" target="_blank" rel="noopener" style="background:var(--yellow)">🧭 帶我走過去</a>
+    <div class="loc-more">
+      <button id="lostFound">✅ 已經找到了</button>
+      <button id="lostLater">稍後再看</button>
+    </div>
+  </div>
+</div>
 <div class="loc-pop" id="locPop" role="dialog" aria-modal="true" aria-labelledby="locTtl">
   <div class="loc-sheet">
     <div class="loc-top"><button class="back" id="locBack" aria-label="回上一頁">‹ 返回</button><h3 id="locTtl">📍 走散了？</h3></div>
     <div class="loc-who" id="locWho" role="group" aria-label="我是誰"></div>
     <div class="loc-map" id="locMap">正在找你的位置…</div>
     <p class="loc-msg" id="locMsg" role="status"></p>
+    <div class="loc-sent" id="locSent" hidden></div>
     <a class="big-btn" id="locLine" href="#" target="_blank" rel="noopener" aria-disabled="true" style="background:var(--green)">💬 用 LINE 傳給家人</a>
     <div class="loc-more">
       <button id="locShare" disabled>📤 用其他 App 傳</button>
@@ -2926,14 +2949,77 @@ function locate(){
     $("locMap").innerHTML = `<iframe title="我的位置" loading="lazy" src="https://maps.google.com/maps?q=${q}&z=17&output=embed"></iframe>`;
     $("locMsg").textContent = `✅ 找到了（誤差約 ${Math.round(ac)} 公尺）`;
     $("locShare").disabled = false; $("locLine").setAttribute("aria-disabled","false"); locBuild();
+    pingSend(la, lo, ac);
   }, err=>{
     $("locMap").textContent = err.code === 1 ? "沒有開啟定位權限" : "暫時找不到位置";
     $("locMsg").textContent = err.code === 1 ? "請到「設定 › 隱私權 › 定位服務 › Safari」選「使用 App 期間」，再按重新定位" : "請走到空曠一點的地方，再按重新定位";
   }, {enableHighAccuracy:true, timeout:20000, maximumAge:30000});
 }
-function openLoc(){ locRenderWho(); $("locPop").classList.add("open"); locate(); }
+function openLoc(){ locRenderWho(); $("locPop").classList.add("open"); $("locSent").hidden = true; locate(); }
 function closeLoc(){ $("locPop").classList.remove("open"); $("locMap").innerHTML = ""; }
-$("locWho").addEventListener("click", e=>{ const b = e.target.closest("[data-w]"); if (!b) return; locWho = b.dataset.w; try{ localStorage.setItem("locWho", locWho); }catch(_){} locRenderWho(); locBuild(); });
+$("locWho").addEventListener("click", e=>{ const b = e.target.closest("[data-w]"); if (!b) return; locWho = b.dataset.w; try{ localStorage.setItem("locWho", locWho); }catch(_){} locRenderWho(); locBuild(); if (pendingPing) pingSend(...pendingPing); });
+
+/* ── 網站內即時通知：存到 Supabase lost_pings，其他開著網站的手機每 15 秒檢查一次 ── */
+let myPingId = null, pendingPing = null;
+const myPings = new Set((()=>{ try{ return JSON.parse(localStorage.getItem("myPings")||"[]"); }catch(e){ return []; } })());
+async function pingSend(la, lo, ac){
+  if (!locWho){ pendingPing = [la, lo, ac]; $("locSent").hidden = false; $("locSent").innerHTML = "👆 請先按上面「我是誰」，家人才知道是誰走散了"; return; }
+  pendingPing = null;
+  const body = {who: locWho, lat: la, lng: lo, acc: Math.round(ac)};
+  try{
+    if (myPingId){
+      await sbSend("PATCH", `lost_pings?id=eq.${myPingId}`, Object.assign(body, {created_at: new Date().toISOString()}));
+    } else {
+      const r = await fetch(`${SB_URL}/rest/v1/lost_pings`, {method:"POST", headers: sbH({"Content-Type":"application/json", Prefer:"return=representation"}), body: JSON.stringify(body)});
+      if (!r.ok) throw new Error(r.status);
+      const [row] = await r.json(); myPingId = row && row.id;
+      if (myPingId){ myPings.add(myPingId); try{ localStorage.setItem("myPings", JSON.stringify([...myPings].slice(-20))); }catch(e){} }
+    }
+    $("locSent").hidden = false;
+    $("locSent").innerHTML = `🚨 已經通知家人了！<br>有開著網站的家人，手機會馬上跳出你的位置。<br><button id="locDone">✅ 我們已經會合了</button>`;
+  }catch(e){
+    $("locSent").hidden = false;
+    $("locSent").innerHTML = String(e.message).startsWith("4") ? "網站通知還沒開通，請先用下面的 LINE 傳" : "網路不穩，網站通知沒送出，請用下面的 LINE 傳";
+  }
+}
+document.addEventListener("click", async e=>{
+  if (!e.target.closest("#locDone")) return;
+  try{ if (myPingId) await sbSend("PATCH", `lost_pings?id=eq.${myPingId}`, {done:true}); }catch(_){}
+  myPingId = null; $("locSent").innerHTML = "👍 太好了！已經通知大家會合了"; setTimeout(closeLoc, 1200);
+});
+const seenLost = new Set();
+let lostShown = null;
+async function pollLost(){
+  if (document.hidden) return;
+  try{
+    const since = new Date(Date.now() - 60*60*1000).toISOString();
+    const rows = await sbGet(`lost_pings?select=id,who,lat,lng,acc,created_at&done=eq.false&created_at=gt.${since}&order=created_at.desc&limit=5`);
+    const r = rows.find(x => !myPings.has(x.id) && x.who !== locWho && !seenLost.has(x.id + "|" + x.created_at));
+    if (r) showLost(r);
+    else if (lostShown && !rows.some(x=>x.id===lostShown)) hideLost();
+  }catch(e){}
+}
+function showLost(r){
+  lostShown = r.id;
+  const q = `${(+r.lat).toFixed(6)},${(+r.lng).toFixed(6)}`, mins = Math.max(0, Math.round((Date.now() - new Date(r.created_at).getTime())/60000));
+  $("lostTtl").textContent = `🚨 ${r.who}走散了！`;
+  $("lostWhen").textContent = `${mins ? mins + " 分鐘前" : "剛剛"}傳來的位置（誤差約 ${r.acc||"?"} 公尺）`;
+  $("lostMap").innerHTML = `<iframe title="${esc(r.who)}的位置" loading="lazy" src="https://maps.google.com/maps?q=${q}&z=17&output=embed"></iframe>`;
+  $("lostGo").href = `https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=walking`;
+  $("lostAlert").dataset.key = r.id + "|" + r.created_at;
+  $("lostAlert").classList.add("open");
+  try{ navigator.vibrate && navigator.vibrate([300,150,300]); }catch(e){}
+}
+function hideLost(){ $("lostAlert").classList.remove("open"); $("lostMap").innerHTML = ""; lostShown = null; }
+$("lostLater").onclick = ()=>{ seenLost.add($("lostAlert").dataset.key); hideLost(); };   // 位置更新時會再跳出來
+$("lostFound").onclick = async ()=>{ try{ await sbSend("PATCH", `lost_pings?id=eq.${lostShown}`, {done:true}); }catch(_){} hideLost(); };
+setInterval(pollLost, 15000);
+document.addEventListener("visibilitychange", ()=>{ if (!document.hidden) pollLost(); });
+pollLost();
+// 走散的人畫面開著時，每 30 秒自動更新位置，家人看到的是最新的
+setInterval(()=>{ if ($("locPop").classList.contains("open") && myPingId && navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(p=>pingSend(p.coords.latitude, p.coords.longitude, p.coords.accuracy), ()=>{}, {enableHighAccuracy:true, timeout:15000, maximumAge:10000});
+} }, 30000);
 $("locShare").onclick = async ()=>{
   if (!locUrl) return;
   try{
