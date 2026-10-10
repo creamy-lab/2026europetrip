@@ -526,6 +526,23 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 .more-row::after{content:"›";margin-left:auto;font-size:30px;opacity:.5}
 .now-mark{scroll-margin-top:calc(var(--hh,120px) + 40px)!important}
 .more-h{font-size:17px;margin:20px 4px 2px;opacity:.75}
+.tclock.cs-e{flex-direction:row;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--card)}
+.tclock.cs-e .l{font-size:19px}
+.tclock.cs-e .l small{display:none}
+.tclock.cs-e .sep{width:2px;height:20px;background:var(--ink);opacity:.3}
+.tclock.cs-e .t{font-size:15px}
+.tclock.cs-e .dd{font-size:12px;padding:0 6px;border:2px solid var(--ink);border-radius:999px;background:var(--yellow);margin-left:2px}
+.tclock.cs-f{position:relative;flex-direction:row;gap:0;padding:0;align-items:stretch;border-radius:14px;overflow:visible}
+.tclock.cs-f .half{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 8px;line-height:1.1}
+.tclock.cs-f .half small{font-size:12px}
+.tclock.cs-f .half b{font-size:18px;margin:0;font-weight:400}
+.tclock.cs-f .half:first-child{border-radius:11px 0 0 11px}
+.tclock.cs-f .half + .half{border-left:3px solid var(--ink);background:var(--yellow);border-radius:0 11px 11px 0}
+.tclock.cs-f .badge{position:absolute;bottom:-11px;right:4px;font-size:11px;line-height:1;padding:3px 6px;border:2px solid var(--ink);border-radius:999px;background:var(--coral);white-space:nowrap}
+.tclock.cs-g{gap:0;padding:3px 9px;align-items:flex-end;border-radius:12px}
+.tclock.cs-g .l{font-size:20px;line-height:1.1}
+.tclock.cs-g .l small{font-size:12px;margin-right:3px;vertical-align:2px}
+.tclock.cs-g .t{font-size:12.5px;line-height:1.2;opacity:.85}
 .tclock.cs-b{flex-direction:row;gap:6px;padding:0;border:0;background:none;box-shadow:none;align-items:center}
 .tclock.cs-b .pill{display:flex;flex-direction:column;align-items:center;padding:3px 10px;border:3px solid var(--ink);border-radius:999px;line-height:1.1;box-shadow:2px 2px 0 var(--ink)}
 .tclock.cs-b .pill small{font-size:13px}
@@ -560,13 +577,24 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 #tools.one .tool-pick{display:none}
 .quick.six .qbtn{min-height:96px}
 #clocks{display:none!important}
+#ckCard{display:none!important}
+.loc-pop{position:fixed;inset:0;z-index:140;background:rgba(62,58,57,.5);display:none;align-items:flex-end;justify-content:center}
+.loc-pop.open{display:flex}
+.loc-sheet{background:var(--paper);border:3px solid var(--ink);border-bottom:0;border-radius:var(--r) var(--r) 0 0;width:100%;max-width:640px;max-height:92vh;overflow:auto;padding:16px 16px calc(18px + env(safe-area-inset-bottom))}
+.loc-sheet h3{font-size:24px;font-weight:400;text-align:center}
+.loc-who{display:flex;gap:8px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap}
+.loc-who button{font-size:19px;padding:6px 16px;border:3px solid var(--ink);border-radius:999px;background:var(--card)}
+.loc-who button[aria-pressed="true"]{background:var(--yellow)}
+.loc-map{margin-top:10px;border:3px solid var(--ink);border-radius:var(--r-sm);overflow:hidden;height:210px;background:var(--mizu);display:grid;place-items:center;font-size:18px;text-align:center;padding:0}
+.loc-map iframe{width:100%;height:100%;border:0;display:block}
+.loc-msg{font-size:17px;text-align:center;margin-top:8px;min-height:1.5em}
+.loc-sheet .big-btn{margin-top:12px}
+.loc-sheet .big-btn[disabled]{opacity:.45}
 #flights.only-go #tkHead,#flights.only-go #ticketList{display:none}
 #flights.only-tk > .h2,#flights.only-tk #flightList{display:none}
 #flights > .h2,#stay > .h2{display:none}
 #flights.only-tk #tkHead{display:none}
 #home .quick + .hero{margin-top:18px}
-.topbar{transition:transform .28s ease}
-.topbar.away{transform:translateY(-100%)}
 @media (prefers-reduced-motion: reduce){.topbar{transition:none}}
 </style>
 </head>
@@ -583,10 +611,10 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
       <option value="2026-12-04T10:00">12/4 巴塞隆納</option>
     </select>
     時鐘<select id="clockSel" aria-label="時鐘樣式">
-      <option value="a">A</option>
-      <option value="b">B</option>
-      <option value="c">C</option>
-      <option value="d">D</option>
+      <option value="d">D 原版</option>
+      <option value="e">E 一行</option>
+      <option value="f">F 精簡</option>
+      <option value="g">G 細卡</option>
     </select>
   </div>
   <div class="titlebar"><button class="back" id="backBtn" hidden aria-label="回上一頁">‹ 返回</button><h1 id="pgTitle">☀️ 今天</h1><button class="tclock" id="tClock" aria-label="現在時間，按一下重新整理"></button></div>
@@ -796,6 +824,7 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
   <section id="more">
     <div class="more-list">
       <p class="more-h">需要幫忙</p>
+      <button class="card more-row" data-q="loc"><span class="e" style="background:var(--coral)">📍</span><span><b>走散了？傳我的位置</b><small>一按就把 Google 地圖位置傳給家人</small></span></button>
       <a class="card more-row" href="#help"><span class="e" style="background:var(--coral)">🆘</span><span><b>求助</b><small>LINE 找家人、當地緊急電話</small></span></a>
       <p class="more-h">回憶</p>
       <a class="card more-row" href="#album"><span class="e" style="background:var(--mizu)">📷</span><span><b>旅行相簿</b><small>每個城市一本，上傳、放大、分享</small></span></a>
@@ -810,6 +839,18 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
   <footer id="foot"></footer>
   <p class="ver" id="verLine"></p>
 </main>
+<div class="loc-pop" id="locPop" role="dialog" aria-modal="true" aria-labelledby="locTtl">
+  <div class="loc-sheet">
+    <h3 id="locTtl">📍 傳我的位置給家人</h3>
+    <div class="loc-who" id="locWho" role="group" aria-label="我是誰"></div>
+    <div class="loc-map" id="locMap">正在找你的位置…</div>
+    <p class="loc-msg" id="locMsg" role="status"></p>
+    <button class="big-btn" id="locShare" disabled style="background:var(--coral)">📤 傳送位置給家人</button>
+    <a class="big-btn" id="locLine" href="#" target="_blank" rel="noopener" hidden style="background:var(--green)">💬 用 LINE 傳</a>
+    <button class="big-btn" id="locRetry" style="background:var(--card)">🔄 重新定位</button>
+    <button class="big-btn" id="locClose" style="background:var(--card)">關閉</button>
+  </div>
+</div>
 <nav class="tabbar" aria-label="主選單"><div class="in">
   <button class="tab" data-tab="home"><span class="ic">☀️</span>今天</button>
   <button class="tab" data-tab="days"><span class="ic">📅</span>行程</button>
@@ -2795,7 +2836,7 @@ function arrangeHome(){
     <button class="qbtn" style="background:var(--yellow)" data-q="taxi"><span class="e">🚕</span>給司機看<small>${h>=0?esc(STAYS[h].name):"回飯店"}</small></button>
     <button class="qbtn" style="background:var(--mizu)" data-q="orders"><span class="e">🎫</span>今天的訂單<small>給櫃檯看</small></button>
     <button class="qbtn" style="background:var(--green)" data-q="menu"><span class="e">🍽️</span>翻譯菜單<small>拍一下就好</small></button>
-    <button class="qbtn" style="background:var(--coral)" data-q="ck"><span class="e">👍</span>報平安<small>讓家人放心</small></button>
+    <button class="qbtn" style="background:var(--coral)" data-q="loc"><span class="e">📍</span>走散了？<small>傳我的位置給家人</small></button>
     <button class="qbtn" style="background:var(--card)" data-q="album"><span class="e">📷</span>旅行相簿<small>上傳今天的照片</small></button>
     <button class="qbtn" style="background:var(--card)" data-q="help"><span class="e">💬</span>找家人<small>LINE、緊急電話</small></button>` : `
     <button class="qbtn" style="background:var(--yellow)" data-q="vow"><span class="e">♡</span>家庭守則<small>出發前一起宣誓</small></button>
@@ -2815,7 +2856,7 @@ document.addEventListener("click", e=>{
   if (k === "tax") openTool("tfCard", "tfCam");
   if (k === "help") go("help");
   if (k === "menu") openTool("mnCard", "mnCam");
-  if (k === "ck") $("ckCard").scrollIntoView({behavior: reduce?"auto":"smooth", block:"start"});
+  if (k === "loc") openLoc();
   if (k === "vow") showPage("vow");
   if (k === "todo") showPage("todo");
 });
@@ -2847,6 +2888,46 @@ dayPanel.addEventListener("click", e=>{
 })();
 addEventListener("resize", setHeaderH);
 addCtx();
+/* ════════ 走散了：抓手機定位 → 做成 Google 地圖連結 → 用 LINE／WhatsApp 傳給家人（不需要 Google API） ════════ */
+const LOC_WHO = ["爸爸","媽媽","Sherry"];
+let locWho = (()=>{ try{ return localStorage.getItem("locWho") || ""; }catch(e){ return ""; } })();
+let locUrl = "", locText = "";
+function locRenderWho(){
+  $("locWho").innerHTML = `<span style="font-size:17px;align-self:center">我是</span>` + LOC_WHO.map(w=>`<button data-w="${w}" aria-pressed="${w===locWho}">${w}</button>`).join("");
+}
+function locBuild(){
+  if (!locUrl) return;
+  locText = `${locWho ? "我是" + locWho + "，" : ""}我在這裡，請來找我 👇\n${locUrl}`;
+  $("locLine").href = "https://line.me/R/share?text=" + encodeURIComponent(locText);
+}
+function locate(){
+  locUrl = ""; $("locShare").disabled = true; $("locLine").hidden = true;
+  $("locMap").textContent = "正在找你的位置…"; $("locMsg").textContent = "";
+  if (!navigator.geolocation){ $("locMap").textContent = "這支手機不能定位"; return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude:la, longitude:lo, accuracy:ac} = pos.coords, q = `${la.toFixed(6)},${lo.toFixed(6)}`;
+    locUrl = `https://www.google.com/maps/search/?api=1&query=${q}`;
+    $("locMap").innerHTML = `<iframe title="我的位置" loading="lazy" src="https://maps.google.com/maps?q=${q}&z=17&output=embed"></iframe>`;
+    $("locMsg").textContent = `✅ 找到了（誤差約 ${Math.round(ac)} 公尺）`;
+    $("locShare").disabled = false; $("locLine").hidden = false; locBuild();
+  }, err=>{
+    $("locMap").textContent = err.code === 1 ? "沒有開啟定位權限" : "暫時找不到位置";
+    $("locMsg").textContent = err.code === 1 ? "請到「設定 › 隱私權 › 定位服務 › Safari」選「使用 App 期間」，再按重新定位" : "請走到空曠一點的地方，再按重新定位";
+  }, {enableHighAccuracy:true, timeout:20000, maximumAge:30000});
+}
+function openLoc(){ locRenderWho(); $("locPop").classList.add("open"); locate(); }
+function closeLoc(){ $("locPop").classList.remove("open"); $("locMap").innerHTML = ""; }
+$("locWho").addEventListener("click", e=>{ const b = e.target.closest("[data-w]"); if (!b) return; locWho = b.dataset.w; try{ localStorage.setItem("locWho", locWho); }catch(_){} locRenderWho(); locBuild(); });
+$("locShare").onclick = async ()=>{
+  if (!locUrl) return;
+  try{
+    if (navigator.share) await navigator.share({text: locText});
+    else { await navigator.clipboard.writeText(locText); $("locMsg").textContent = "已複製，貼到 LINE 傳給家人"; }
+  }catch(e){ if (e && e.name !== "AbortError") window.open($("locLine").href, "_blank"); }
+};
+$("locRetry").onclick = locate;
+$("locClose").onclick = closeLoc;
+$("locPop").addEventListener("click", e=>{ if (e.target.id === "locPop") closeLoc(); });
 /* ════════ 右上角時鐘：當地時間＋台灣時間；時區一變就自動重新整理 ════════ */
 const ZONE_NAME = {"Asia/Seoul":"首爾","Europe/Paris":"法國","Europe/Monaco":"摩納哥","Europe/Lisbon":"里斯本","Europe/Madrid":"西班牙","Asia/Taipei":"台灣"};
 const LOAD_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -2860,7 +2941,7 @@ function localZone(){
   return {tz: plan || "Asia/Taipei", name: c==="回家" ? "仁川" : c};
 }
 function tzOffsetMin(tz, d){ const p = Object.fromEntries(new Intl.DateTimeFormat("en-US",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).formatToParts(d).map(x=>[x.type,x.value])); return (Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute) - Math.floor(d.getTime()/60000)*60000)/60000; }
-function clockStyle(){ const c = new URLSearchParams(location.search).get("clock"); return ["a","b","c","d"].includes(c) ? c : "a"; }
+function clockStyle(){ const c = new URLSearchParams(location.search).get("clock"); return ["a","b","c","d","e","f","g"].includes(c) ? c : "f"; }
 $("clockSel").value = clockStyle();
 $("clockSel").onchange = ()=>{ const q = new URLSearchParams(location.search); q.set("clock", $("clockSel").value); history.replaceState(history.state, "", "?" + q.toString() + location.hash); renderTClock(); };
 function renderTClock(){
@@ -2876,10 +2957,15 @@ function renderTClock(){
   const lt = f(L.tz), tt = f("Asia/Taipei"), nm = esc(L.name);
   const dh = (()=>{ const [a,b] = [lt,tt].map(x=>{const [h,m]=x.split(":").map(Number);return h*60+m;}); let d = Math.round(((b-a+1440)%1440)/60); return d>12?d-24:d; })();
   const cs = clockStyle(), el = $("tClock");
+  const dTxt = dh === 0 ? "同時間" : `台灣${dh>0?"快":"慢"} ${Math.abs(dh)} 小時`;
+  const dShort = dh === 0 ? "同時間" : `${dh>0?"快":"慢"}${Math.abs(dh)}小時`;
   el.className = "tclock cs-" + cs;
   el.innerHTML =
     cs === "b" ? `<span class="pill" style="background:var(--mizu)"><small>📍${nm}</small><b>${lt}</b></span><span class="pill" style="background:var(--yellow)"><small>🇹🇼台灣</small><b>${tt}</b></span>` :
     cs === "c" ? `<span class="big"><small>📍${nm}</small>${lt}</span><span class="sm">🇹🇼 台灣 ${tt}</span>` :
+    cs === "e" ? `<span class="l"><small>📍${nm}</small>${lt}</span><span class="sep"></span><span class="t">🇹🇼${tt}</span><span class="dd">${dShort}</span>` :
+    cs === "f" ? `<span class="half"><small>📍${nm}</small><b>${lt}</b></span><span class="half"><small>🇹🇼${dShort}</small><b>${tt}</b></span>` :
+    cs === "g" ? `<span class="l"><small>📍${nm}</small>${lt}</span><span class="t">🇹🇼 台灣 ${tt}・${dTxt}</span>` :
     cs === "d" ? `<span class="half"><small>📍${nm}</small><b>${lt}</b></span><span class="half"><small>🇹🇼台灣</small><b>${tt}</b><span class="diff">${dh===0?"同時間":(dh>0?"快 ":"慢 ")+Math.abs(dh)+" 小時"}</span></span>` :
     `<span>📍${nm}<b>${lt}</b></span><span class="tw">🇹🇼台灣<b>${tt}</b></span>`;
   setHeaderH();
@@ -2893,23 +2979,30 @@ $("tClock").onclick = ()=>location.reload();
 document.addEventListener("visibilitychange", ()=>{ if (!document.hidden && !checkZone()) renderTClock(); });
 setInterval(()=>{ if (!checkZone()) renderTClock(); }, 20000);
 renderTClock();
-/* ════════ 往下滑：頂端列藏起來；往上滑：再出現 ════════ */
+/* ════════ 頂端列跟著手指滑：往下滑慢慢收起、往上滑慢慢出來，放手後自動對齊（像 iPhone Safari） ════════ */
 (function(){
   const bar = document.querySelector(".topbar");
-  let lastY = Math.max(0, scrollY), ticking = false, holdUntil = 0;
-  function onScroll(){
-    const y = Math.max(0, scrollY), hh = bar.offsetHeight;
-    if (Date.now() < holdUntil){ lastY = y; ticking = false; return; }   // 程式自動捲到「今天」時，不要把頂端列藏起來
-    if (y < hh) bar.classList.remove("away");                 // 在最上面：一定顯示
-    else if (y > lastY + 8) bar.classList.add("away");        // 往下滑
-    else if (y < lastY - 8) bar.classList.remove("away");     // 往上滑
-    if (Math.abs(y - lastY) > 8) lastY = y;
-    ticking = false;
+  let off = 0, lastY = Math.max(0, scrollY), holdUntil = 0, snapT = null;
+  const maxY = ()=>Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  function apply(anim){ bar.style.transition = anim ? "transform .22s ease-out" : "none"; bar.style.transform = `translate3d(0,${off}px,0)`; }
+  function snap(){
+    const h = bar.offsetHeight, y = Math.max(0, scrollY);
+    off = (y < h || off > -h/2) ? 0 : -h;                       // 露出一半以上就整個出來，否則整個收起
+    apply(true);
   }
-  addEventListener("scroll", ()=>{ if (!ticking){ ticking = true; requestAnimationFrame(onScroll); } }, {passive:true});
-  // 換頁、按返回時先把頂端列叫回來
+  function onScroll(){
+    const y = Math.min(Math.max(0, scrollY), maxY()), h = bar.offsetHeight, dy = y - lastY;
+    lastY = y;
+    if (Date.now() < holdUntil){ return; }                      // 程式自動捲動時保持顯示
+    if (y <= 0){ off = 0; apply(false); return; }
+    off = Math.min(0, Math.max(-h, off - dy));
+    apply(false);
+    clearTimeout(snapT); snapT = setTimeout(snap, 140);
+  }
+  addEventListener("scroll", onScroll, {passive:true});
+  bar.style.willChange = "transform";
   const _render = renderPage;
-  renderPage = function(...a){ bar.classList.remove("away"); holdUntil = Date.now() + 1500; _render(...a); lastY = Math.max(0, scrollY); };
+  renderPage = function(...a){ off = 0; apply(true); holdUntil = Date.now() + 1500; _render(...a); lastY = Math.max(0, scrollY); };
 })();
 (function(){ const [p, t] = (location.hash||"#home").slice(1).split("/"); history.replaceState({p, t:t||null, d:0}, "", location.search + location.hash); renderPage(p, t); })();
 
