@@ -471,11 +471,153 @@ footer svg{width:130px;margin:0 auto 6px}
 @media (min-width:600px){
   .flights,.stays{grid-template-columns:1fr 1fr}
 }
+
+/* ════════ 新版樣板 ════════ */
+.nav{display:none!important}
+.demo-bar{white-space:nowrap;background:var(--yellow);border-bottom:3px solid var(--ink);font-size:15px;padding:5px 12px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:nowrap}
+.demo-bar select{font:inherit;font-size:15px;border:2px solid var(--ink);border-radius:999px;padding:1px 8px;background:var(--paper);color:var(--ink)}
+.titlebar{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 14px 8px}
+.titlebar h1{flex:1;font-size:26px;font-weight:400;line-height:1.2;display:flex;align-items:center;gap:8px;min-width:0}
+.titlebar .back{font-size:18px;padding:4px 12px 4px 8px;border:3px solid var(--ink);border-radius:999px;background:var(--card)}
+.sos-btn{flex:none;font-size:18px;padding:6px 14px;border:3px solid var(--ink);border-radius:999px;background:var(--coral);text-decoration:none;box-shadow:2px 2px 0 var(--ink)}
+.subbar{flex-wrap:wrap;overflow:visible;padding:0 12px 10px;gap:8px}
+.subbar:empty{display:none}
+.chip{font-size:17px;padding:6px 14px}
+main{padding-top:calc(var(--hh,120px) + 14px);padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
+.tabbar{position:fixed;inset:auto 0 0 0;z-index:60;background:var(--paper);border-top:3px solid var(--ink);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.tabbar .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 0 2px;font-size:15px;line-height:1.2;border-radius:16px}
+.tab .ic{font-size:25px;line-height:1;width:54px;height:36px;display:grid;place-items:center;border-radius:999px;border:3px solid transparent}
+.tab.on .ic{background:var(--yellow);border-color:var(--ink)}
+.tab:active{transform:scale(.94)}
+/* 今天頁 */
+.quick{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.qbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:104px;padding:12px 8px;text-align:center;font-size:19px;line-height:1.3;border:3px solid var(--ink);border-radius:var(--r);box-shadow:var(--shadow);text-decoration:none}
+.qbtn .e{font-size:34px;line-height:1}
+.qbtn small{font-size:14px;opacity:.8}
+.qbtn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.in-trip .hero .hero-art{max-height:150px;overflow:hidden}
+.in-trip .hero .hero-art svg{margin-top:-30px}
+.in-trip .hero .count-label,.in-trip .hero .count{display:none}
+/* 行程裡就地出現的按鈕 */
+.ctx{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ctx button{font-size:17px;padding:6px 14px;border:2.5px solid var(--ink);border-radius:999px;background:var(--yellow)}
+.ctx button.alt{background:var(--mizu)}
+/* 更多 */
+.more-list{display:flex;flex-direction:column;gap:12px}
+.more-row{display:flex;align-items:center;gap:14px;padding:14px 16px;min-height:76px;text-decoration:none;text-align:left;width:100%}
+.more-row .e{font-size:32px;width:52px;height:52px;display:grid;place-items:center;border:3px solid var(--ink);border-radius:16px;flex:none}
+.more-row b{display:block;font-weight:400;font-size:21px;line-height:1.3}
+.more-row small{display:block;font-size:15px;opacity:.8;line-height:1.4}
+.more-row::after{content:"›";margin-left:auto;font-size:30px;opacity:.5}
+.now-mark{scroll-margin-top:calc(var(--hh,120px) + 40px)!important}
+.more-h{font-size:17px;margin:20px 4px 2px;opacity:.75}
+.tclock.cs-e{flex-direction:row;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--card)}
+.tclock.cs-e .l{font-size:19px}
+.tclock.cs-e .l small{display:none}
+.tclock.cs-e .sep{width:2px;height:20px;background:var(--ink);opacity:.3}
+.tclock.cs-e .t{font-size:15px}
+.tclock.cs-e .dd{font-size:12px;padding:0 6px;border:2px solid var(--ink);border-radius:999px;background:var(--yellow);margin-left:2px}
+.tclock.cs-f{position:relative;flex-direction:row;gap:0;padding:0;align-items:stretch;border-radius:14px;overflow:visible}
+.tclock.cs-f .half{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 8px;line-height:1.1}
+.tclock.cs-f .half small{font-size:12px}
+.tclock.cs-f .half b{font-size:18px;margin:0;font-weight:400}
+.tclock.cs-f .half:first-child{border-radius:11px 0 0 11px}
+.tclock.cs-f .half + .half{border-left:3px solid var(--ink);background:var(--yellow);border-radius:0 11px 11px 0}
+.tclock.cs-f .badge{position:absolute;bottom:-11px;right:4px;font-size:11px;line-height:1;padding:3px 6px;border:2px solid var(--ink);border-radius:999px;background:var(--coral);white-space:nowrap}
+.tclock.cs-g{gap:0;padding:3px 9px;align-items:flex-end;border-radius:12px}
+.tclock.cs-g .l{font-size:20px;line-height:1.1}
+.tclock.cs-g .l small{font-size:12px;margin-right:3px;vertical-align:2px}
+.tclock.cs-g .t{font-size:12.5px;line-height:1.2;opacity:.85}
+.tclock.cs-b{flex-direction:row;gap:6px;padding:0;border:0;background:none;box-shadow:none;align-items:center}
+.tclock.cs-b .pill{display:flex;flex-direction:column;align-items:center;padding:3px 10px;border:3px solid var(--ink);border-radius:999px;line-height:1.1;box-shadow:2px 2px 0 var(--ink)}
+.tclock.cs-b .pill small{font-size:13px}
+.tclock.cs-b .pill b{font-size:19px;margin:0;font-weight:400}
+.tclock.cs-c{border:0;background:none;box-shadow:none;padding:0 2px;gap:0}
+.tclock.cs-c .big{font-size:30px;line-height:1;letter-spacing:.5px}
+.tclock.cs-c .big small{font-size:14px;margin-right:4px;vertical-align:4px}
+.tclock.cs-c .sm{font-size:14px;opacity:.75;margin-top:3px}
+.tclock.cs-d{flex-direction:row;gap:0;padding:0;overflow:hidden;align-items:stretch}
+.tclock.cs-d .half{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 9px;line-height:1.1}
+.tclock.cs-d .half small{font-size:13px}
+.tclock.cs-d .half b{font-size:20px;margin:0;font-weight:400}
+.tclock.cs-d .half + .half{border-left:3px solid var(--ink);background:var(--yellow)}
+.tclock.cs-d .diff{display:block;font-size:11px;opacity:.8}
+.tclock{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:1px;padding:4px 10px;border:3px solid var(--ink);border-radius:14px;background:var(--mizu);box-shadow:2px 2px 0 var(--ink);line-height:1.15;font-variant-numeric:tabular-nums}
+.tclock span{font-size:15px;white-space:nowrap}
+.tclock b{font-weight:400;font-size:19px;margin-left:4px}
+.tclock .tw{background:none;opacity:.85}
+.tclock:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+.titlebar h1{font-size:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.titlebar .back{flex:none;font-size:18px;padding:5px 11px 5px 8px;border:3px solid var(--ink);border-radius:999px;background:var(--card);box-shadow:2px 2px 0 var(--ink)}
+.titlebar .back:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+.tool-pick{display:flex;flex-direction:column;gap:14px}
+.tool-pick .more-row{min-height:96px}
+.tool-pick .more-row .e{width:62px;height:62px;font-size:38px}
+.tool-pick .more-row b{font-size:24px}
+.tool-pick .lead{font-size:19px;margin:0 4px 2px}
+#tools > .h2{display:none}
+#tools.pick .tool{display:none}
+#tools.one .tool{display:none}
+#tools.one .tool.show{display:block}
+#tools.one .tool-grid{display:none}
+.tool-grid{display:flex;flex-direction:column;gap:12px}
+.tg-sos{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;background:var(--coral);border:3px solid var(--ink);border-radius:var(--r);box-shadow:var(--shadow)}
+.tg-sos .e{font-size:44px;line-height:1;width:66px;height:66px;display:grid;place-items:center;background:var(--paper);border:3px solid var(--ink);border-radius:50%;flex:none}
+.tg-sos b{display:block;font-weight:400;font-size:26px;line-height:1.2}
+.tg-sos small{display:block;font-size:16px;line-height:1.4}
+.tg-sos .go{margin-left:auto;font-size:34px;opacity:.6}
+.tg-sos:active,.tg:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.tg-h{font-size:17px;margin:10px 4px 0;opacity:.75}
+.tg-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tg{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 4px 12px;border:3px solid var(--ink);border-radius:var(--r);box-shadow:var(--shadow);text-align:center;min-height:150px}
+.tg .e{font-size:40px;line-height:1.1}
+.tg b{font-weight:400;font-size:19px;line-height:1.25}
+.tg small{font-size:14px;line-height:1.35;opacity:.85}
+.quick.six .qbtn{min-height:96px}
+#clocks{display:none!important}
+#ckCard{display:none!important}
+.loc-pop{position:fixed;inset:0;z-index:140;background:rgba(62,58,57,.5);display:none;align-items:flex-end;justify-content:center}
+.loc-pop.open{display:flex}
+.loc-sheet{background:var(--paper);border:3px solid var(--ink);border-bottom:0;border-radius:var(--r) var(--r) 0 0;width:100%;max-width:640px;max-height:92vh;overflow:auto;padding:16px 16px calc(18px + env(safe-area-inset-bottom))}
+.loc-sheet h3{font-size:24px;font-weight:400;text-align:center}
+.loc-who{display:flex;gap:8px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap}
+.loc-who button{font-size:19px;padding:6px 16px;border:3px solid var(--ink);border-radius:999px;background:var(--card)}
+.loc-who button[aria-pressed="true"]{background:var(--yellow)}
+.loc-map{margin-top:10px;border:3px solid var(--ink);border-radius:var(--r-sm);overflow:hidden;height:210px;background:var(--mizu);display:grid;place-items:center;font-size:18px;text-align:center;padding:0}
+.loc-map iframe{width:100%;height:100%;border:0;display:block}
+.loc-msg{font-size:17px;text-align:center;margin-top:8px;min-height:1.5em}
+.loc-sheet .big-btn{margin-top:12px}
+.loc-sheet .big-btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.loc-sent{margin-top:10px;padding:10px 14px;border:3px solid var(--ink);border-radius:var(--r-sm);background:var(--green);font-size:17px;line-height:1.5;text-align:center}
+.loc-sent button{margin-top:8px;font-size:17px;padding:6px 16px;border:2.5px solid var(--ink);border-radius:999px;background:var(--card)}
+.lost-alert{position:fixed;inset:0;z-index:150;background:rgba(62,58,57,.6);display:none;align-items:center;justify-content:center;padding:16px}
+.lost-alert.open{display:flex}
+.lost-box{background:var(--coral);border:3px solid var(--ink);border-radius:var(--r);width:100%;max-width:520px;padding:18px 16px;box-shadow:var(--shadow);animation:lostIn .35s cubic-bezier(.3,1.4,.5,1)}
+@keyframes lostIn{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+.lost-box h3{font-size:28px;font-weight:400;text-align:center;line-height:1.3}
+.lost-when{text-align:center;font-size:17px;margin-top:4px}
+.lost-box .loc-map{background:var(--paper)}
+.lost-box .loc-more button{background:var(--paper)}
+.loc-top{display:flex;align-items:center;gap:10px}
+.loc-top h3{flex:1;text-align:left}
+.loc-top .back{flex:none;font-size:18px;padding:5px 11px 5px 8px;border:3px solid var(--ink);border-radius:999px;background:var(--card);box-shadow:2px 2px 0 var(--ink)}
+.loc-more{display:flex;gap:8px;margin-top:12px}
+.loc-more button{flex:1;font-size:16px;padding:9px 6px;border:2.5px solid var(--ink);border-radius:999px;background:var(--card)}
+.loc-more button[disabled]{opacity:.45}
+#flights.only-go #tkHead,#flights.only-go #ticketList{display:none}
+#flights.only-tk > .h2,#flights.only-tk #flightList{display:none}
+#flights > .h2,#stay > .h2{display:none}
+#flights.only-tk #tkHead{display:none}
+#home .quick + .hero{margin-top:18px}
+@media (prefers-reduced-motion: reduce){.topbar{transition:none}}
 </style>
 </head>
 <body>
 
 <header class="topbar">
+  <div class="titlebar"><button class="back" id="backBtn" hidden aria-label="回上一頁">‹ 返回</button><h1 id="pgTitle">☀️ 今天</h1><button class="tclock" id="tClock" aria-label="現在時間，按一下重新整理"></button></div>
   <nav class="nav" aria-label="主選單">
     <button class="navbtn" id="refreshBtn" aria-label="重新整理，取得最新行程"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="#3E3A39" stroke-width="2.6" stroke-linecap="round"/><path d="M20 3v5h-5" fill="none" stroke="#3E3A39" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <a href="#home" class="on">首頁</a>
@@ -566,6 +708,8 @@ footer svg{width:130px;margin:0 auto 6px}
     <div class="day-nav"><button id="prevDay">◀ 前一天</button><button id="nextDay">下一天 ▶</button></div>
   </section>
 
+  <section id="orders"><div class="tool-pick" id="orderPick"></div></section>
+
   <section id="stay">
     <h2 class="h2"><i style="background:var(--yellow)">⌂</i>住宿</h2>
     <div class="stays" id="stayList"></div>
@@ -587,6 +731,15 @@ footer svg{width:130px;margin:0 auto 6px}
   </section>
 
   <section id="tools">
+    <div class="tool-grid">
+      <button class="tg-sos" data-q="loc"><span class="e">📍</span><span class="tx"><b>走散了？</b><small>一按就把我的位置傳給家人</small></span><span class="go">›</span></button>
+      <p class="tg-h">旅行小幫手</p>
+      <div class="tg-row">
+        <button class="tg" data-tool="mn" style="background:var(--green)"><span class="e">🍽️</span><b>菜單翻譯</b><small>拍菜單<br>AI 幫你點</small></button>
+        <button class="tg" data-tool="tf" style="background:var(--yellow)"><span class="e">🧾</span><b>退稅清單</b><small>拍收據<br>自動記帳</small></button>
+        <button class="tg" data-tool="cv" style="background:var(--mizu)"><span class="e">💶</span><b>價格換算</b><small>歐元韓元<br>換台幣</small></button>
+      </div>
+    </div>
     <h2 class="h2"><i style="background:var(--mizu)">€</i>旅行小工具</h2>
 
     <div class="card tool" id="mnCard">
@@ -671,9 +824,56 @@ footer svg{width:130px;margin:0 auto 6px}
     <div class="card todo" id="bookCard"></div>
   </section>
 
+  <section id="more">
+    <div class="more-list">
+      <p class="more-h">需要幫忙</p>
+      <a class="card more-row" href="#help"><span class="e" style="background:var(--coral)">🆘</span><span><b>求助</b><small>LINE 找家人、當地緊急電話</small></span></a>
+      <p class="more-h">回憶</p>
+      <a class="card more-row" href="#album"><span class="e" style="background:var(--mizu)">📷</span><span><b>旅行相簿</b><small>每個城市一本，上傳、放大、分享</small></span></a>
+      <p class="more-h">出發前</p>
+      <a class="card more-row" href="#vow"><span class="e" style="background:var(--yellow)">♡</span><span><b>家庭守則・宣誓</b><small>九大幸福守則、蓋章</small></span></a>
+      <a class="card more-row" href="#todo"><span class="e" style="background:var(--mizu)">🧳</span><span><b>出發準備</b><small>行李清單、防小偷、重要預約</small></span></a>
+      <p class="more-h">其他</p>
+      <button class="card more-row" id="moreReload"><span class="e" style="background:var(--paper)">🔄</span><span><b>重新整理</b><small>拿最新的行程（平常會自動更新）</small></span></button>
+    </div>
+  </section>
+
   <footer id="foot"></footer>
   <p class="ver" id="verLine"></p>
 </main>
+<div class="lost-alert" id="lostAlert" role="alertdialog" aria-modal="true" aria-labelledby="lostTtl">
+  <div class="lost-box">
+    <h3 id="lostTtl"></h3>
+    <p class="lost-when" id="lostWhen"></p>
+    <div class="loc-map" id="lostMap"></div>
+    <a class="big-btn" id="lostGo" target="_blank" rel="noopener" style="background:var(--yellow)">🧭 帶我走過去</a>
+    <div class="loc-more">
+      <button id="lostFound">✅ 已經找到了</button>
+      <button id="lostLater">稍後再看</button>
+    </div>
+  </div>
+</div>
+<div class="loc-pop" id="locPop" role="dialog" aria-modal="true" aria-labelledby="locTtl">
+  <div class="loc-sheet">
+    <div class="loc-top"><button class="back" id="locBack" aria-label="回上一頁">‹ 返回</button><h3 id="locTtl">📍 走散了？</h3></div>
+    <div class="loc-who" id="locWho" role="group" aria-label="我是誰"></div>
+    <div class="loc-map" id="locMap">正在找你的位置…</div>
+    <p class="loc-msg" id="locMsg" role="status"></p>
+    <div class="loc-sent" id="locSent" hidden></div>
+    <a class="big-btn" id="locLine" href="#" target="_blank" rel="noopener" aria-disabled="true" style="background:var(--green)">💬 用 LINE 傳給家人</a>
+    <div class="loc-more">
+      <button id="locShare" disabled>📤 用其他 App 傳</button>
+      <button id="locRetry">🔄 重新定位</button>
+    </div>
+  </div>
+</div>
+<nav class="tabbar" aria-label="主選單"><div class="in">
+  <button class="tab" data-tab="home"><span class="ic">☀️</span>今天</button>
+  <button class="tab" data-tab="days"><span class="ic">📅</span>行程</button>
+  <button class="tab" data-tab="orders"><span class="ic">🎫</span>訂單</button>
+  <button class="tab" data-tab="tools"><span class="ic">🧰</span>工具</button>
+  <button class="tab" data-tab="more"><span class="ic">☰</span>更多</button>
+</div></nav>
 
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="照片預覽" hidden>
   <div class="lb-top"><span id="lbCap"></span><span class="lb-btns"><button class="btn lb-share" id="lbShare">📤 分享</button><button class="btn lb-del" id="lbDel">🗑 刪除</button><button class="btn" id="lbClose">關閉</button></span></div>
@@ -2293,7 +2493,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-10T14:57:25";
+const SITE_VERSION = "2026-10-11T00:13:46";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -2537,7 +2737,353 @@ document.addEventListener("click", e=>{
   const id = a.getAttribute("href").slice(1);
   if (PAGES.includes(id)){ e.preventDefault(); showPage(id); }
 });
-showPage((location.hash||"#home").slice(1));
+
+/* ════════ 新版樣板：底部分頁列＋返回鍵 ════════ */
+const TAB_OF = {home:"home", album:"home", days:"days", orders:"orders", flights:"orders", stay:"orders", tools:"tools", more:"more", vow:"more", todo:"more", help:"more"};
+const TITLES = {home:"☀️ 今天", days:"📅 行程", orders:"🎫 訂單", album:"📷 旅行相簿", more:"☰ 更多", tools:"🧰 工具", vow:"♡ 家庭守則", todo:"🧳 出發準備", help:"🆘 求助"};
+const TOOLS = {mn:["mnCard","🍽️ 菜單翻譯"], tf:["tfCard","🧾 退稅清單"], cv:["cvCard","💶 價格換算"]};
+const ORDERS = {go:["flights","✈️ 機票・火車・租車"], hotel:["stay","🏨 酒店"], tk:["flights","🎟 門票・預約"]};
+const TAB_ROOTS = ["home","days","orders","tools","more"];
+PAGES.push("orders","more");
+subItems = function(){ return []; };   // 不再顯示國家／分類快捷鍵
+function setHeaderH(){ document.documentElement.style.setProperty("--hh", document.querySelector(".topbar").offsetHeight + "px"); }
+let navTool = null;
+// 畫出某一頁（不動瀏覽紀錄）
+function renderPage(page, tool, opts={}){
+  if (page === "flights") { page = "orders"; tool = tool || "go"; }
+  if (page === "stay") { page = "orders"; tool = tool || "hotel"; }
+  if (!PAGES.includes(page)) page = "home";
+  navTool = page === "tools" && TOOLS[tool] ? tool : null;
+  const ord = page === "orders" && ORDERS[tool] ? tool : null;
+  const show = page === "orders" ? [ord ? ORDERS[ord][0] : "orders"] : [page];
+  document.querySelectorAll("main > section").forEach(sec=>sec.classList.toggle("active", show.includes(sec.id)));
+  $("flights").classList.toggle("only-go", ord === "go");
+  $("flights").classList.toggle("only-tk", ord === "tk");
+  if (page === "orders" && !ord) renderOrderPick();
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on", t.dataset.tab === TAB_OF[page]));
+  const tl = $("tools");
+  tl.classList.toggle("pick", page==="tools" && !navTool);
+  tl.classList.toggle("one", page==="tools" && !!navTool);
+  tl.querySelectorAll(".tool").forEach(c=>c.classList.toggle("show", !!navTool && c.id === TOOLS[navTool][0]));
+  const canBack = !!(history.state && history.state.d > 0);
+  let ttl = navTool ? TOOLS[navTool][1] : ord ? ORDERS[ord][1] : (TITLES[page] || "");
+  if (canBack) ttl = ttl.replace(/^\S+\s/, "");          // 有返回鍵時拿掉圖示，標題才放得下
+  $("pgTitle").textContent = ttl;
+  $("backBtn").hidden = !canBack;
+  if (page !== curPage) renderSubbar(page);
+  curPage = page;
+  if (page === "album") renderAlbum();
+  if (page === "home") arrangeHome();
+  setHeaderH();
+  window.scrollTo({top: opts.y || 0, behavior:"auto"});
+  if (page === "days") { const b = dayBtns.children[cur]; if (b) dayBtns.scrollTo({left: b.offsetLeft - 8}); }
+  if (!opts.noAuto && !opts.y){
+    if (page === "orders") { if (ord) autoOrders(ord); } else autoToday(page);
+  }
+}
+// 換頁：按底部分頁＝從頭開始；其他（點按鈕、連結）＝往下一層，可以按「返回」
+function go(page, opts={}){
+  const st = history.state || {d:0};
+  const url = location.search + "#" + page + (opts.tool ? "/" + opts.tool : "");
+  if (opts.reset){
+    history.replaceState({p:page, t:opts.tool||null, d:0}, "", url);
+  } else {
+    history.replaceState(Object.assign({}, st, {y: window.scrollY}), "");   // 記住目前捲到哪裡，返回時回到原位
+    history.pushState({p:page, t:opts.tool||null, d:(st.d||0)+1}, "", url);
+  }
+  renderPage(page, opts.tool, opts);
+}
+showPage = function(page, opts={}){ go(page, opts); };
+addEventListener("popstate", e=>{
+  const st = e.state || {p:"home", d:0};
+  renderPage(st.p, st.t, {y: st.y || 0, noAuto: true});
+});
+$("backBtn").onclick = ()=>history.back();
+// 訂單頁：今天有搭飛機／火車就標那一段，否則標今晚住的飯店
+function todayFlight(){
+  const t = todayKey();
+  return FLIGHTS.findIndex(f=>{ const m = f.date.match(/(\d+)月(\d+)日/); return m && keyMD(m[1],m[2]) === t; });
+}
+function nextFlight(){
+  const t = todayKey();
+  return FLIGHTS.findIndex(f=>{ const m = f.date.match(/(\d+)月(\d+)日/); return m && keyMD(m[1],m[2]) >= t; });
+}
+function autoOrders(kind){
+  if (!inTrip()) return;
+  if (kind === "go"){ const k = todayFlight(), n = k >= 0 ? k : nextFlight(); if (n >= 0) markNow($("fl"+n), k >= 0 ? "今天" : "下一段"); }
+  if (kind === "hotel"){ const h = tonightStay(); if (h >= 0) markNow($("st"+h), "今晚住這裡"); }
+}
+function renderOrderPick(){
+  const trip = todayIndex() >= 0, k = todayFlight(), n = nextFlight(), h = tonightStay();
+  const f = FLIGHTS[k >= 0 ? k : n], fs = f ? `${f.no}　${f.from[0]} → ${f.to[0]}` : "";
+  const goSub = trip && f ? `${k>=0?"📌 今天":"下一段"}：${fs}` : `飛機 ${FLIGHTS.filter(x=>x.type==="plane").length} 段・火車 ${FLIGHTS.filter(x=>x.type==="train").length} 段・租車 ${FLIGHTS.filter(x=>x.type==="car").length} 次`;
+  const hoSub = trip && h >= 0 ? `📌 今晚：${STAYS[h].name}` : `${STAYS.length} 間，含訂房編號、早餐、取消規定`;
+  $("orderPick").innerHTML = `
+    <p class="lead">要看哪一種？每一筆都有「給櫃檯看」</p>
+    <button class="card more-row" data-ord="go"><span class="e" style="background:var(--mizu)">✈️</span><span><b>機票・火車・租車</b><small>${esc(goSub)}</small></span></button>
+    <button class="card more-row" data-ord="hotel"><span class="e" style="background:var(--yellow)">🏨</span><span><b>酒店</b><small>${esc(hoSub)}</small></span></button>
+    <button class="card more-row" data-ord="tk"><span class="e" style="background:var(--green)">🎟</span><span><b>門票・預約</b><small>${TICKETS.length} 筆：景點門票、表演、餐廳訂位</small></span></button>`;
+}
+function tonightStay(){
+  const t = todayKey();
+  return STAYS.findIndex(st=>{ const [a,b] = st.dates.split("–").map(x=>x.trim().split("/")); return keyMD(a[0],a[1]) <= t && t < keyMD(b[0],b[1]); });
+}
+document.querySelector(".tabbar").addEventListener("click", e=>{ const b = e.target.closest("[data-tab]"); if (b) go(b.dataset.tab, {reset:true}); });
+document.querySelector(".titlebar").addEventListener("click", e=>{
+  const a = e.target.closest("a[href^='#']"); if (a){ e.preventDefault(); go(a.getAttribute("href").slice(1)); }
+});
+function openTool(card, cam){
+  const key = Object.keys(TOOLS).find(k=>TOOLS[k][0]===card);
+  go("tools", {tool:key, noAuto:true});
+  if (cam) $(cam).click();          // 直接打開相機（同一次點擊內才允許）
+}
+$("orders").addEventListener("click", e=>{ const b = e.target.closest("[data-ord]"); if (b) go("orders", {tool:b.dataset.ord}); });
+$("tools").addEventListener("click", e=>{ const b = e.target.closest("[data-tool]"); if (b) go("tools", {tool:b.dataset.tool}); });
+$("more").addEventListener("click", e=>{ if (e.target.closest("#moreReload")) location.reload(); });
+
+/* ════════ 今天頁：今天的卡片＋四個大按鈕放最上面 ════════ */
+function arrangeHome(){
+  const home = $("home"), trip = todayIndex() >= 0;
+  home.classList.toggle("in-trip", trip);
+  let q = $("quick");
+  if (!q){ q = document.createElement("div"); q.id = "quick"; q.className = "quick"; }
+  const h = tonightStay();
+  q.innerHTML = trip ? `
+    <button class="qbtn" style="background:var(--yellow)" data-q="taxi"><span class="e">🚕</span>給司機看<small>${h>=0?esc(STAYS[h].name):"回飯店"}</small></button>
+    <button class="qbtn" style="background:var(--mizu)" data-q="orders"><span class="e">🎫</span>今天的訂單<small>給櫃檯看</small></button>
+    <button class="qbtn" style="background:var(--green)" data-q="menu"><span class="e">🍽️</span>翻譯菜單<small>拍一下就好</small></button>
+    <button class="qbtn" style="background:var(--coral)" data-q="loc"><span class="e">📍</span>走散了？<small>傳我的位置給家人</small></button>
+    <button class="qbtn" style="background:var(--card)" data-q="album"><span class="e">📷</span>旅行相簿<small>上傳今天的照片</small></button>
+    <button class="qbtn" style="background:var(--card)" data-q="help"><span class="e">💬</span>找家人<small>LINE、緊急電話</small></button>` : `
+    <button class="qbtn" style="background:var(--yellow)" data-q="vow"><span class="e">♡</span>家庭守則<small>出發前一起宣誓</small></button>
+    <button class="qbtn" style="background:var(--mizu)" data-q="todo"><span class="e">🧳</span>行李清單<small>出發前準備</small></button>
+    <button class="qbtn" style="background:var(--green)" data-q="album"><span class="e">📷</span>旅行相簿<small>每個城市一本</small></button>
+    <button class="qbtn" style="background:var(--coral)" data-q="help"><span class="e">💬</span>找家人<small>LINE、緊急電話</small></button>`;
+  const today = $("today"), hero = home.querySelector(".hero");
+  if (trip){ home.prepend(q); home.prepend(today); today.after(q); q.after(hero); }
+  else { home.prepend(hero); hero.after(today); today.after(q); }
+}
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-q]"); if (!b) return;
+  const k = b.dataset.q, h = tonightStay();
+  if (k === "taxi"){ const btn = document.querySelector(`#stayList [data-drv="${h>=0?h:0}"]`); if (btn) btn.click(); }
+  if (k === "orders") go("orders", {tool: todayFlight() >= 0 ? "go" : "hotel"});
+  if (k === "album") go("album");
+  if (k === "tax") openTool("tfCard", "tfCam");
+  if (k === "help") go("help");
+  if (k === "menu") openTool("mnCard", "mnCam");
+  if (k === "loc") openLoc();
+  if (k === "vow") showPage("vow");
+  if (k === "todo") showPage("todo");
+});
+
+/* ════════ 行程裡：吃飯的地方出現「翻譯菜單」，買東西的地方出現「記退稅」 ════════ */
+const MEAL_RE = /午餐|晚餐|晚宴|早午餐|餐廳|用餐|河粉|小吃|下午茶|tapas|bistro/i;
+const SHOP_RE = /Goyard|Loewe|LV|Louis Vuitton|Chanel|Hermès|購物|精品|百貨|名店|逛街|Outlet/i;
+function addCtx(){
+  dayPanel.querySelectorAll(".tl .box").forEach(box=>{
+    if (box.querySelector(".ctx")) return;
+    const txt = box.textContent, btns = [];
+    if (MEAL_RE.test(box.querySelector("h4")?.textContent || "")) btns.push(`<button data-ctx="menu">📷 翻譯菜單</button>`);
+    if (SHOP_RE.test(txt)) btns.push(`<button class="alt" data-ctx="tax">🧾 買了東西？記退稅</button>`);
+    if (btns.length) box.insertAdjacentHTML("beforeend", `<div class="ctx">${btns.join("")}</div>`);
+  });
+}
+new MutationObserver(addCtx).observe(dayPanel, {childList:true});
+dayPanel.addEventListener("click", e=>{
+  const b = e.target.closest("[data-ctx]"); if (!b) return;
+  if (b.dataset.ctx === "menu") openTool("mnCard", "mnCam");
+  if (b.dataset.ctx === "tax") openTool("tfCard", "tfCam");
+});
+
+/* 模擬日期選單 */
+(function(){
+  const sel = $("demoSel"); if (!sel) return; sel.value = window.__DEMO || "real";
+  if (!sel.value) sel.value = "real";
+  sel.onchange = ()=>{ const q = new URLSearchParams(location.search); q.set("demo", sel.value); location.href = location.pathname + "?" + q.toString() + location.hash; };
+})();
+addEventListener("resize", setHeaderH);
+addCtx();
+/* ════════ 走散了：抓手機定位 → 做成 Google 地圖連結 → 用 LINE／WhatsApp 傳給家人（不需要 Google API） ════════ */
+const LOC_WHO = ["爸爸","媽媽","Sherry"];
+let locWho = (()=>{ try{ return localStorage.getItem("locWho") || ""; }catch(e){ return ""; } })();
+let locUrl = "", locText = "";
+function locRenderWho(){
+  $("locWho").innerHTML = `<span style="font-size:17px;align-self:center">我是</span>` + LOC_WHO.map(w=>`<button data-w="${w}" aria-pressed="${w===locWho}">${w}</button>`).join("");
+}
+function locBuild(){
+  if (!locUrl) return;
+  locText = `${locWho ? "我是" + locWho + "，" : ""}我在這裡，請來找我 👇\n${locUrl}`;
+  $("locLine").href = "https://line.me/R/share?text=" + encodeURIComponent(locText);
+}
+function locate(){
+  locUrl = ""; $("locShare").disabled = true; $("locLine").setAttribute("aria-disabled","true");
+  $("locMap").textContent = "正在找你的位置…"; $("locMsg").textContent = "";
+  if (!navigator.geolocation){ $("locMap").textContent = "這支手機不能定位"; return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude:la, longitude:lo, accuracy:ac} = pos.coords, q = `${la.toFixed(6)},${lo.toFixed(6)}`;
+    locUrl = `https://www.google.com/maps/search/?api=1&query=${q}`;
+    $("locMap").innerHTML = `<iframe title="我的位置" loading="lazy" src="https://maps.google.com/maps?q=${q}&z=17&output=embed"></iframe>`;
+    $("locMsg").textContent = `✅ 找到了（誤差約 ${Math.round(ac)} 公尺）`;
+    $("locShare").disabled = false; $("locLine").setAttribute("aria-disabled","false"); locBuild();
+    pingSend(la, lo, ac);
+  }, err=>{
+    $("locMap").textContent = err.code === 1 ? "沒有開啟定位權限" : "暫時找不到位置";
+    $("locMsg").textContent = err.code === 1 ? "請到「設定 › 隱私權 › 定位服務 › Safari」選「使用 App 期間」，再按重新定位" : "請走到空曠一點的地方，再按重新定位";
+  }, {enableHighAccuracy:true, timeout:20000, maximumAge:30000});
+}
+function openLoc(){ locRenderWho(); $("locPop").classList.add("open"); $("locSent").hidden = true; locate(); }
+function closeLoc(){ $("locPop").classList.remove("open"); $("locMap").innerHTML = ""; }
+$("locWho").addEventListener("click", e=>{ const b = e.target.closest("[data-w]"); if (!b) return; locWho = b.dataset.w; try{ localStorage.setItem("locWho", locWho); }catch(_){} locRenderWho(); locBuild(); if (pendingPing) pingSend(...pendingPing); });
+
+/* ── 網站內即時通知：存到 Supabase lost_pings，其他開著網站的手機每 15 秒檢查一次 ── */
+let myPingId = null, pendingPing = null;
+const myPings = new Set((()=>{ try{ return JSON.parse(localStorage.getItem("myPings")||"[]"); }catch(e){ return []; } })());
+async function pingSend(la, lo, ac){
+  if (!locWho){ pendingPing = [la, lo, ac]; $("locSent").hidden = false; $("locSent").innerHTML = "👆 請先按上面「我是誰」，家人才知道是誰走散了"; return; }
+  pendingPing = null;
+  const body = {who: locWho, lat: la, lng: lo, acc: Math.round(ac)};
+  try{
+    if (myPingId){
+      await sbSend("PATCH", `lost_pings?id=eq.${myPingId}`, Object.assign(body, {created_at: new Date().toISOString()}));
+    } else {
+      const r = await fetch(`${SB_URL}/rest/v1/lost_pings`, {method:"POST", headers: sbH({"Content-Type":"application/json", Prefer:"return=representation"}), body: JSON.stringify(body)});
+      if (!r.ok) throw new Error(r.status);
+      const [row] = await r.json(); myPingId = row && row.id;
+      if (myPingId){ myPings.add(myPingId); try{ localStorage.setItem("myPings", JSON.stringify([...myPings].slice(-20))); }catch(e){} }
+    }
+    $("locSent").hidden = false;
+    $("locSent").innerHTML = `🚨 已經通知家人了！<br>有開著網站的家人，手機會馬上跳出你的位置。<br><button id="locDone">✅ 我們已經會合了</button>`;
+  }catch(e){
+    $("locSent").hidden = false;
+    $("locSent").innerHTML = String(e.message).startsWith("4") ? "網站通知還沒開通，請先用下面的 LINE 傳" : "網路不穩，網站通知沒送出，請用下面的 LINE 傳";
+  }
+}
+document.addEventListener("click", async e=>{
+  if (!e.target.closest("#locDone")) return;
+  try{ if (myPingId) await sbSend("PATCH", `lost_pings?id=eq.${myPingId}`, {done:true}); }catch(_){}
+  myPingId = null; $("locSent").innerHTML = "👍 太好了！已經通知大家會合了"; setTimeout(closeLoc, 1200);
+});
+const seenLost = new Set();
+let lostShown = null;
+async function pollLost(){
+  if (document.hidden) return;
+  try{
+    const since = new Date(Date.now() - 60*60*1000).toISOString();
+    const rows = await sbGet(`lost_pings?select=id,who,lat,lng,acc,created_at&done=eq.false&created_at=gt.${since}&order=created_at.desc&limit=5`);
+    const r = rows.find(x => !myPings.has(x.id) && x.who !== locWho && !seenLost.has(x.id + "|" + x.created_at));
+    if (r) showLost(r);
+    else if (lostShown && !rows.some(x=>x.id===lostShown)) hideLost();
+  }catch(e){}
+}
+function showLost(r){
+  lostShown = r.id;
+  const q = `${(+r.lat).toFixed(6)},${(+r.lng).toFixed(6)}`, mins = Math.max(0, Math.round((Date.now() - new Date(r.created_at).getTime())/60000));
+  $("lostTtl").textContent = `🚨 ${r.who}走散了！`;
+  $("lostWhen").textContent = `${mins ? mins + " 分鐘前" : "剛剛"}傳來的位置（誤差約 ${r.acc||"?"} 公尺）`;
+  $("lostMap").innerHTML = `<iframe title="${esc(r.who)}的位置" loading="lazy" src="https://maps.google.com/maps?q=${q}&z=17&output=embed"></iframe>`;
+  $("lostGo").href = `https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=walking`;
+  $("lostAlert").dataset.key = r.id + "|" + r.created_at;
+  $("lostAlert").classList.add("open");
+  try{ navigator.vibrate && navigator.vibrate([300,150,300]); }catch(e){}
+}
+function hideLost(){ $("lostAlert").classList.remove("open"); $("lostMap").innerHTML = ""; lostShown = null; }
+$("lostLater").onclick = ()=>{ seenLost.add($("lostAlert").dataset.key); hideLost(); };   // 位置更新時會再跳出來
+$("lostFound").onclick = async ()=>{ try{ await sbSend("PATCH", `lost_pings?id=eq.${lostShown}`, {done:true}); }catch(_){} hideLost(); };
+setInterval(pollLost, 15000);
+document.addEventListener("visibilitychange", ()=>{ if (!document.hidden) pollLost(); });
+pollLost();
+// 走散的人畫面開著時，每 30 秒自動更新位置，家人看到的是最新的
+setInterval(()=>{ if ($("locPop").classList.contains("open") && myPingId && navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(p=>pingSend(p.coords.latitude, p.coords.longitude, p.coords.accuracy), ()=>{}, {enableHighAccuracy:true, timeout:15000, maximumAge:10000});
+} }, 30000);
+$("locShare").onclick = async ()=>{
+  if (!locUrl) return;
+  try{
+    if (navigator.share) await navigator.share({text: locText});
+    else { await navigator.clipboard.writeText(locText); $("locMsg").textContent = "已複製，貼到 LINE 傳給家人"; }
+  }catch(e){ if (e && e.name !== "AbortError") window.open($("locLine").href, "_blank"); }
+};
+$("locRetry").onclick = locate;
+$("locBack").onclick = closeLoc;
+$("locPop").addEventListener("click", e=>{ if (e.target.id === "locPop") closeLoc(); });
+/* ════════ 右上角時鐘：當地時間＋台灣時間；時區一變就自動重新整理 ════════ */
+const ZONE_NAME = {"Asia/Seoul":"首爾","Europe/Paris":"法國","Europe/Monaco":"摩納哥","Europe/Lisbon":"里斯本","Europe/Madrid":"西班牙","Asia/Taipei":"台灣"};
+const LOAD_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const LOAD_DAY = new Date().toDateString();
+function localZone(){
+  const phone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const c = hereCity(), plan = TZ[c];
+  if (todayIndex() < 0) return {tz: plan || "Asia/Seoul", name: new Date() < new Date(TRIP.start) ? "首爾" : "高雄"};
+  // 手機已經自動換到當地時區 → 用手機的；否則用行程上今天所在的城市
+  if (phone !== "Asia/Taipei") return {tz: phone, name: (TZ[c] === phone ? (c==="回家"?"仁川":c) : (ZONE_NAME[phone] || phone.split("/").pop()))};
+  return {tz: plan || "Asia/Taipei", name: c==="回家" ? "仁川" : c};
+}
+function tzOffsetMin(tz, d){ const p = Object.fromEntries(new Intl.DateTimeFormat("en-US",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).formatToParts(d).map(x=>[x.type,x.value])); return (Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute) - Math.floor(d.getTime()/60000)*60000)/60000; }
+function clockStyle(){ return "f"; }   // 決定用 F 精簡款
+
+function renderTClock(){
+  let f = z => new Date().toLocaleTimeString("zh-TW",{timeZone:z,hour:"2-digit",minute:"2-digit",hour12:false});
+  const L = localZone();
+  // 樣板模擬日期：把手機現在的時間當成「當地時間」，台灣時間用時差推算（正式版不會用到）
+  if (window.__DEMO && window.__DEMO !== "real" && todayIndex() >= 0){
+    const phone = Intl.DateTimeFormat().resolvedOptions().timeZone, now = new Date();
+    const local = now.toLocaleTimeString("zh-TW",{timeZone:phone,hour:"2-digit",minute:"2-digit",hour12:false});
+    const tw = new Date(now.getTime() + (tzOffsetMin(phone, now) - tzOffsetMin(L.tz, now))*60000);   // 當地牆上時間 → 換算台灣時間
+    f = z => z === "Asia/Taipei" ? tw.toLocaleTimeString("zh-TW",{timeZone:"Asia/Taipei",hour:"2-digit",minute:"2-digit",hour12:false}) : local;
+  }
+  const lt = f(L.tz), tt = f("Asia/Taipei"), nm = esc(L.name);
+  const dh = (()=>{ const [a,b] = [lt,tt].map(x=>{const [h,m]=x.split(":").map(Number);return h*60+m;}); let d = Math.round(((b-a+1440)%1440)/60); return d>12?d-24:d; })();
+  const cs = clockStyle(), el = $("tClock");
+  const dTxt = dh === 0 ? "同時間" : `台灣${dh>0?"快":"慢"} ${Math.abs(dh)} 小時`;
+  const dShort = dh === 0 ? "同時間" : `${dh>0?"快":"慢"}${Math.abs(dh)}小時`;
+  el.className = "tclock cs-" + cs;
+  el.innerHTML =
+    cs === "b" ? `<span class="pill" style="background:var(--mizu)"><small>📍${nm}</small><b>${lt}</b></span><span class="pill" style="background:var(--yellow)"><small>🇹🇼台灣</small><b>${tt}</b></span>` :
+    cs === "c" ? `<span class="big"><small>📍${nm}</small>${lt}</span><span class="sm">🇹🇼 台灣 ${tt}</span>` :
+    cs === "e" ? `<span class="l"><small>📍${nm}</small>${lt}</span><span class="sep"></span><span class="t">🇹🇼${tt}</span><span class="dd">${dShort}</span>` :
+    cs === "f" ? `<span class="half"><small>📍${nm}</small><b>${lt}</b></span><span class="half"><small>🇹🇼${dShort}</small><b>${tt}</b></span>` :
+    cs === "g" ? `<span class="l"><small>📍${nm}</small>${lt}</span><span class="t">🇹🇼 台灣 ${tt}・${dTxt}</span>` :
+    cs === "d" ? `<span class="half"><small>📍${nm}</small><b>${lt}</b></span><span class="half"><small>🇹🇼台灣</small><b>${tt}</b><span class="diff">${dh===0?"同時間":(dh>0?"快 ":"慢 ")+Math.abs(dh)+" 小時"}</span></span>` :
+    `<span>📍${nm}<b>${lt}</b></span><span class="tw">🇹🇼台灣<b>${tt}</b></span>`;
+  setHeaderH();
+}
+function checkZone(){
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if (tz !== LOAD_TZ || new Date().toDateString() !== LOAD_DAY){ location.reload(); return true; }  // 飛到新國家或過了午夜：整頁重新整理，行程、天氣、時間全部對齊
+  return false;
+}
+$("tClock").onclick = ()=>location.reload();
+document.addEventListener("visibilitychange", ()=>{ if (!document.hidden && !checkZone()) renderTClock(); });
+setInterval(()=>{ if (!checkZone()) renderTClock(); }, 20000);
+renderTClock();
+/* ════════ 頂端列跟著手指滑：往下滑慢慢收起、往上滑慢慢出來，放手後自動對齊（像 iPhone Safari） ════════ */
+(function(){
+  const bar = document.querySelector(".topbar");
+  let off = 0, lastY = Math.max(0, scrollY), holdUntil = 0, snapT = null;
+  const maxY = ()=>Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  function apply(anim){ bar.style.transition = anim ? "transform .22s ease-out" : "none"; bar.style.transform = `translate3d(0,${off}px,0)`; }
+  function snap(){
+    const h = bar.offsetHeight, y = Math.max(0, scrollY);
+    off = (y < h || off > -h/2) ? 0 : -h;                       // 露出一半以上就整個出來，否則整個收起
+    apply(true);
+  }
+  function onScroll(){
+    const y = Math.min(Math.max(0, scrollY), maxY()), h = bar.offsetHeight, dy = y - lastY;
+    lastY = y;
+    if (Date.now() < holdUntil){ return; }                      // 程式自動捲動時保持顯示
+    if (y <= 0){ off = 0; apply(false); return; }
+    off = Math.min(0, Math.max(-h, off - dy));
+    apply(false);
+    clearTimeout(snapT); snapT = setTimeout(snap, 140);
+  }
+  addEventListener("scroll", onScroll, {passive:true});
+  bar.style.willChange = "transform";
+  const _render = renderPage;
+  renderPage = function(...a){ off = 0; apply(true); holdUntil = Date.now() + 1500; _render(...a); lastY = Math.max(0, scrollY); };
+})();
+(function(){ const [p, t] = (location.hash||"#home").slice(1).split("/"); history.replaceState({p, t:t||null, d:0}, "", location.search + location.hash); renderPage(p, t); })();
+
 </script>
 </body>
 </html>
