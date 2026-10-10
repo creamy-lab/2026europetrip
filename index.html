@@ -13,6 +13,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
+<script>
+/* ── 語言：預設繁體中文；選了 English／日本語 時，先把畫面藏起來，等翻譯好再顯示 ── */
+(function(){
+  var L = "zh"; try{ L = localStorage.getItem("lang") || "zh"; }catch(e){}
+  if (L !== "en" && L !== "ja") L = "zh";
+  window.LANG = L;
+  if (L === "zh") return;
+  document.documentElement.lang = L === "en" ? "en" : "ja";
+  document.documentElement.classList.add("i18n-wait");
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T01:44:48").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
+})();
+</script>
 <style>
 :root{
   --paper:#FFFCF6; --ink:#3E3A39; --card:#FFFFFF;
@@ -615,6 +628,14 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 #flights.only-tk #tkHead{display:none}
 #home .quick + .hero{margin-top:18px}
 @media (prefers-reduced-motion: reduce){.topbar{transition:none}}
+
+html.i18n-wait body{visibility:hidden}
+html[lang=ja] .tg b{font-size:16.5px}
+html[lang=ja] .tg small,html[lang=en] .tg small{font-size:12.5px}
+.lang-opts{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.lang-opts button{display:flex;align-items:center;gap:12px;font-size:22px;padding:14px 18px;border:3px solid var(--ink);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);text-align:left}
+.lang-opts button[aria-pressed="true"]{background:var(--yellow)}
+.lang-opts button .ck{margin-left:auto;font-size:22px}
 </style>
 </head>
 <body>
@@ -837,6 +858,7 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
       <a class="card more-row" href="#vow"><span class="e" style="background:var(--yellow)">♡</span><span><b>家庭守則・宣誓</b><small>九大幸福守則、蓋章</small></span></a>
       <a class="card more-row" href="#todo"><span class="e" style="background:var(--mizu)">🧳</span><span><b>出發準備</b><small>行李清單、防小偷、重要預約</small></span></a>
       <p class="more-h">其他</p>
+      <button class="card more-row" id="moreLang"><span class="e" style="background:var(--mizu)">🌐</span><span><b>語言</b><small data-notr id="langNow">繁體中文・English・日本語</small></span></button>
       <button class="card more-row" id="moreReload"><span class="e" style="background:var(--paper)">🔄</span><span><b>重新整理</b><small>拿最新的行程（平常會自動更新）</small></span></button>
     </div>
   </section>
@@ -853,6 +875,16 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
     <div class="loc-more">
       <button id="lostFound">✅ 已經找到了</button>
       <button id="lostLater">稍後再看</button>
+    </div>
+  </div>
+</div>
+<div class="loc-pop" id="langPop" role="dialog" aria-modal="true" aria-labelledby="langTtl">
+  <div class="loc-sheet">
+    <div class="loc-top"><button class="back" id="langBack" aria-label="回上一頁">‹ 返回</button><h3 id="langTtl">🌐 語言</h3></div>
+    <div class="lang-opts" data-notr>
+      <button data-lang="zh">🇹🇼 繁體中文<span class="ck"></span></button>
+      <button data-lang="en">🇬🇧 English<span class="ck"></span></button>
+      <button data-lang="ja">🇯🇵 日本語<span class="ck"></span></button>
     </div>
   </div>
 </div>
@@ -2496,7 +2528,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T00:34:48";
+const SITE_VERSION = "2026-10-11T01:44:48";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -3103,6 +3135,80 @@ renderTClock();
   const _render = renderPage;
   renderPage = function(...a){ off = 0; apply(true); holdUntil = Date.now() + 1500; _render(...a); lastY = Math.max(0, scrollY); };
 })();
+
+/* ════════ 多語言：把畫面上的中文換成英文／日文（翻譯檔 i18n.json，事先翻好，不花錢） ════════ */
+const LANG_NAME = {zh:"繁體中文", en:"English", ja:"日本語"};
+$("langNow").textContent = "目前：" + LANG_NAME[window.LANG];
+if (window.LANG !== "zh") $("langNow").textContent = {en:"Now: English", ja:"現在：日本語"}[window.LANG];
+function openLang(){ document.querySelectorAll("#langPop [data-lang]").forEach(b=>{ const on = b.dataset.lang === window.LANG; b.setAttribute("aria-pressed", on); b.querySelector(".ck").textContent = on ? "✓" : ""; }); $("langPop").classList.add("open"); }
+$("moreLang").onclick = openLang;
+$("langBack").onclick = ()=>$("langPop").classList.remove("open");
+$("langPop").addEventListener("click", e=>{
+  if (e.target.id === "langPop") return $("langPop").classList.remove("open");
+  const b = e.target.closest("[data-lang]"); if (!b) return;
+  try{ localStorage.setItem("lang", b.dataset.lang); }catch(_){}
+  location.reload();
+});
+if (window.LANG !== "zh" && window.I18N_P) window.I18N_P.then(dict=>{
+  const HAN = /[㐀-鿿豈-﫿]/;
+  const plain = Object.keys(dict).filter(k=>!k.includes("{") && k.length >= 2).sort((a,b)=>b.length - a.length);
+  const KANA = /[\u3041-\u3096\u30a1-\u30fa]/;   // 平假名／片假名（不含中文也會用的「・」）
+  const esc2 = t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const fragRe = plain.length ? new RegExp(plain.map(esc2).join("|"), "g") : null;
+  const sep = window.LANG === "en" ? " " : "";
+  function tr(str){
+    if (!str || !HAN.test(str) || KANA.test(str)) return null;     // 已經是日文（有假名）就不再處理
+    const m = str.match(/^(\s*)([\s\S]*?)(\s*)$/), core = m[2], nums = [];
+    const key = core.replace(/\d+/g, d=>{ nums.push(d); return "{" + (nums.length-1) + "}"; });
+    let out = dict[key];
+    if (out != null) out = out.replace(/\{(\d+)\}/g, (_, i)=>nums[+i] ?? "");
+    else if (fragRe) {                                                   // 沒有整句：拆成認得的片段逐一換
+      out = core.replace(fragRe, f=>"\u0001" + dict[f] + "\u0001");
+      // 英文：片段之間若是兩個英文字相鄰就補一個空格
+      out = window.LANG === "en"
+        ? out.replace(/([A-Za-z0-9!?.,:)'])\u0001+(?=\s*[A-Za-z0-9(])/g, "$1 ").replace(/\u0001+([A-Za-z])/g, (m, c, i)=>(i && /[A-Za-z0-9]/.test(out[i-1]) ? " " : "") + c).replace(/\u0001/g, "").replace(/ {2,}/g, " ")
+        : out.replace(/\u0001/g, "");
+      if (out === core) return null;
+    } else return null;
+    return m[1] + out + m[3];
+  }
+  const done = new WeakMap();
+  const SKIP = n => { const p = n.parentElement; return !p || /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.tagName) || p.closest("[data-notr],#mnOut"); };
+  function doText(n){
+    if (done.get(n) === n.data || SKIP(n)) return;
+    const t = tr(n.data); if (t != null && t !== n.data) n.data = t;
+    done.set(n, n.data);
+  }
+  const ATTRS = ["placeholder","aria-label","title","alt"];
+  const doneA = new WeakMap();
+  function doEl(el){
+    if (el.nodeType !== 1 || el.closest("[data-notr]")) return;
+    const seen = doneA.get(el) || {};
+    for (const a of ATTRS){
+      const v = el.getAttribute(a); if (!v || seen[a] === v || !HAN.test(v)) continue;
+      const t = tr(v); if (t != null && t !== v) el.setAttribute(a, t);
+      seen[a] = el.getAttribute(a);
+    }
+    doneA.set(el, seen);
+  }
+  function walk(root){
+    if (root.nodeType === 3) return doText(root);
+    if (root.nodeType !== 1) return;
+    doEl(root); root.querySelectorAll("[placeholder],[aria-label],[title],[alt]").forEach(doEl);
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) doText(n);
+  }
+  walk(document.body);
+  { const t = tr(document.title); if (t) document.title = t; }
+  new MutationObserver(list=>{
+    for (const m of list){
+      if (m.type === "characterData") doText(m.target);
+      else if (m.type === "attributes") doEl(m.target);
+      else m.addedNodes.forEach(walk);
+    }
+  }).observe(document.body, {subtree:true, childList:true, characterData:true, attributes:true, attributeFilter:ATTRS});
+  document.documentElement.classList.remove("i18n-wait");
+  setHeaderH();
+});
 (function(){ const [p, t] = (location.hash||"#home").slice(1).split("/"); history.replaceState({p, t:t||null, d:0}, "", location.search + location.hash); renderPage(p, t); })();
 
 </script>
