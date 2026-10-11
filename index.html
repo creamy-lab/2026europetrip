@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T12:46:50").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T12:50:00").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -1062,7 +1062,7 @@ const DAYS = [
   {date:"11/19", wk:"四", s:"首爾", city:"韓國首爾", art:"seoul", title:"媽媽醫美茶歇・爸爸古剎茶香", walk:2, meet:"10:00 飯店大廳出發", bring:"", items:[
     {t:"07:45", e:"09:45", n:"早餐", note:["☕ 飯店沒有含早餐：可以在飯店加購，或到附近麵包店、咖啡館","多米旅館的早餐（粥、烤魚、熱時蔬）可以現場加購"]},
     {t:"10:00", e:"12:30", n:"狎鷗亭・清潭洞名品街散步", tr:["計程車"], note:"Galleria 百貨與旗艦店，路面寬敞平坦"},
-    {t:"13:00", e:"17:30", n:"媽媽與 Sherry：江南醫美保濕＋光療", note:"療程後在貴賓室喝紅棗人參熱茶"},
+    {t:"13:00", e:"17:30", n:"媽媽與 Sherry：江南醫美保濕＋光療", note:["🏥 네스트의원 강남（NEST Clinic）","療程後在貴賓室喝紅棗人參熱茶"]},
     {t:"13:15", e:"15:15", n:"爸爸：千年古剎奉恩寺", tr:["計程車"], must:true, note:["計程車 8 分鐘","看 23 公尺彌勒大佛","在木造茶坊「蓮會堂」喝雙和茶配米菓"]},
     {t:"15:30", e:"17:00", n:"爸爸：星空圖書館（COEX）", tr:["步行"], note:"室內平路，在大書牆下喝熱拿鐵"},
     {t:"18:00", e:"19:30", n:"米其林必比登：百年屋晚餐", note:"現磨豆腐湯、野菜石鍋拌飯（無牛肉）"},
@@ -1279,7 +1279,7 @@ const ITEM_MAPS = {
   "出關領行李，計程車到江南飯店": [["Dormy Inn Seoul Gangnam","Dormy Inn Seoul Gangnam"]],
   "嫩豆腐鍋暖胃晚餐": [["飯店附近豆腐鍋（大約位置）?","순두부 near Dormy Inn Seoul Gangnam"]],
   "狎鷗亭・清潭洞名品街散步": [["Galleria 百貨名品館","Galleria Department Store Luxury Hall Apgujeong"]],
-  "媽媽與 Sherry：江南醫美保濕＋光療": [["江南醫美診所","https://maps.app.goo.gl/XEiBEtt2pC95sgMf8"]],
+  "媽媽與 Sherry：江南醫美保濕＋光療": [["네스트의원 강남 NEST Clinic","https://maps.app.goo.gl/XEiBEtt2pC95sgMf8"]],
   "爸爸：千年古剎奉恩寺": [["奉恩寺","Bongeunsa Temple Seoul"]],
   "爸爸：星空圖書館（COEX）": [["星空圖書館","Starfield Library COEX Seoul"]],
   "米其林必比登：百年屋晚餐": [["百年屋 백년옥?","백년옥 서초"]],
@@ -1502,7 +1502,7 @@ const PACK = [
 const BOOK = [
   // 依日期排列；✅ 已訂好・⏳ 已申請，等確認信・⚠️ 還沒訂
   ["11/18 專車：台南家裡 → 小港機場","⚠️ 還沒訂：11:20 出發，3 人＋行李，約 1 小時"],
-  ["11/19 江南皮膚管理（媽媽、Sherry）","⚠️ 還沒訂：13:00 母女雙人保養，用診所官方 LINE 預約，保留貴賓休息室"],
+  ["11/19 江南皮膚管理（媽媽、Sherry）","⚠️ 還沒訂：네스트의원 강남（NEST Clinic），13:00 母女雙人保養，用診所官方 LINE 預約"],
   ["11/21 Negresco 皇宮酒店下午茶","⚠️ 還沒訂：15:45，官網或 Email 預約，指定沙龍座位"],
   ["11/23 摩納哥 Café de Paris 午餐","⚠️ 還沒訂：12:30，蒙地卡羅 SBM 官網，指定戶外露台（看賭場噴泉）"],
   ["11/24 Fragonard 香水工坊導覽","⚠️ 還沒訂：10:45 免費導覽，Fragonard 官網，有免費平面停車"],
@@ -2800,7 +2800,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T12:46:50";
+const SITE_VERSION = "2026-10-11T12:50:00";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
