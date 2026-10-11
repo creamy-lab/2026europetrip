@@ -1,4 +1,4 @@
-// 讀收據：把收據照片交給 Claude Haiku，回傳店名、商品、價格、總額（JSON）
+// 讀收據：把收據照片交給 Claude Haiku，回傳店名、商品、價格、總額、消費類別、是否有退稅字樣（JSON）
 // 部署在 Supabase Edge Functions，API 金鑰放在 Secrets（ANTHROPIC_API_KEY），不會出現在網頁裡。
 
 const ALLOWED_ORIGINS = ["https://creamy-lab.github.io"];
@@ -19,7 +19,9 @@ Return ONLY one JSON object, no other text:
  "card": card used to pay, as card brand plus last 4 digits if printed, e.g. "Visa •1234", "Mastercard •5678", "Visa", or null if paid in cash / not shown,
  "subtotal_net": total before tax or null,
  "tax_total": total tax or null,
- "total": total paid including tax}
+ "total": total paid including tax,
+ "category": what kind of spending this is, exactly one of "shop" (shopping: fashion, luxury, souvenirs, supermarket goods, pharmacy), "food" (restaurant, café, bar, bakery, food stall), "transport" (taxi, train, metro, bus, fuel, parking, car rental), "ticket" (museum, attraction, show, tour), "hotel" (accommodation), "other",
+ "tax_free": true if the receipt shows any sign that a tax-free / VAT refund form was or can be issued (e.g. "Tax Free", "Tax Refund", "Détaxe", "Global Blue", "Planet", "Innova", "DIVA", "PABLO", "VAT refund", "Tax free form", "즉시환급", "사후면세", "退稅"), false if there is no such sign}
 Rules:
 - If the printed item prices EXCLUDE tax (common in the US), net = printed price, tax = that line's tax, price = net + tax.
 - If the printed item prices already INCLUDE tax/VAT/TVA/IVA (common in Europe and Korea), price = printed price;
