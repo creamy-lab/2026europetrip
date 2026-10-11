@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T10:09:19").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T10:54:20").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -828,7 +828,10 @@ html[lang=ja] .tg small,html[lang=en] .tg small{font-size:12.5px}
     <div class="card tool" id="tfCard">
       <h3 class="ck-title">💰 旅費記帳</h3>
       <p class="ck-sub">海外每一筆花費都記下來：吃飯、交通、門票、購物都可以。可以退稅的會自動標出來，12/7 在巴塞隆納機場辦退稅時拿出來對照。</p>
-      <label class="ph-up" style="background:var(--yellow)">📷 拍收據自動記帳<input type="file" accept="image/*" capture="environment" id="tfCam"></label>
+      <div class="mn-up">
+        <label class="ph-up" style="background:var(--yellow)">📷 拍收據<input type="file" accept="image/*" capture="environment" id="tfCam"></label>
+        <label class="ph-up">🖼 從相簿選<input type="file" accept="image/*" id="tfPick"></label>
+      </div>
       <p class="ck-msg" id="ocrMsg" role="status"></p>
       <div class="ai-review card" id="aiReview" hidden></div>
       <img id="ocrPrev" alt="收據預覽" hidden style="max-width:100%;max-height:220px;border:3px solid var(--ink);border-radius:12px;margin-top:6px">
@@ -2361,7 +2364,7 @@ function showAiReview(d){
     loadTax();
   };
 }
-$("tfCam").addEventListener("change", async e=>{
+const onReceipt = async e=>{
   const f = e.target.files[0]; if(!f) return;
   const msg = $("ocrMsg");
   $("aiReview").hidden = true;
@@ -2385,7 +2388,9 @@ $("tfCam").addEventListener("change", async e=>{
   }catch(err){
     msg.textContent = "讀取失敗（可能網路不穩），請手動輸入店名和金額。";
   }finally{ e.target.value = ""; }
-});
+};
+$("tfCam").addEventListener("change", onReceipt);
+$("tfPick").addEventListener("change", onReceipt);
 
 
 let delArm = null;
@@ -2597,7 +2602,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T10:09:19";
+const SITE_VERSION = "2026-10-11T10:54:20";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
