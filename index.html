@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T11:20:24").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T11:29:14").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -637,6 +637,7 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 @media (prefers-reduced-motion: reduce){.topbar{transition:none}}
 
 html.i18n-wait body{visibility:hidden}
+.book-note{font-size:17px;line-height:1.5;padding:10px 12px;background:var(--paper);border:2.5px dashed var(--ink);border-radius:var(--r-sm)}
 .ptr{position:fixed;left:50%;top:calc(var(--hh,120px) + 8px);z-index:45;display:flex;align-items:center;gap:8px;padding:6px 16px 6px 8px;font-size:16px;background:var(--card);border:3px solid var(--ink);border-radius:999px;box-shadow:2px 2px 0 var(--ink);transform:translate(-50%,-70px);opacity:0;pointer-events:none;white-space:nowrap}
 .ptr-ic{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--yellow);border:2px solid var(--ink);font-size:16px;transition:transform .2s}
 .ptr.ready .ptr-ic{transform:rotate(180deg)}
@@ -885,6 +886,11 @@ html[lang=ja] .tg small,html[lang=en] .tg small{font-size:12.5px}
     <div class="card promise" id="guardCard" style="margin-top:0"></div>
     <h3 class="h3" id="tdBook">📌 重要預約（導遊備忘）</h3>
     <div class="card todo" id="bookCard"></div>
+    <h3 class="h3">📝 訂餐廳時貼在備註欄</h3>
+    <div class="card promise" style="margin-top:0;padding:14px 16px">
+      <p class="book-note" id="bookNote" data-notr lang="en"></p>
+      <button class="btn" id="bookCopy" type="button" style="margin-top:10px">📋 複製</button>
+    </div>
   </section>
 
   <section id="more">
@@ -1450,17 +1456,31 @@ const PACK = [
   ["轉接頭","韓國、法國、葡萄牙、西班牙都是圓腳"],["泳衣","莊園 SPA 要用"],["保溫杯","隨時喝熱茶"],
 ];
 const BOOK = [
-  ["阿爾罕布拉宮","✅ 已訂好：訂單 1631400MYXWB，11/29 14:30，3 位成人"],
-  ["聖家堂","12/4 14:30 受難立面＋登塔電梯・出發前 60 天"],
-  ["塞維亞王宮","⚠️ 還沒訂：12/2 10:30 入場"],
-  ["El Rinconcillo 晚餐","✅ 已訂好：12/2 20:00，3 位"],
-  ["Finca La Bobadilla 莊園","等飯店回信確認 11/30 12:00 橄欖油品鑑、19:30 El Cortijo 晚餐（爸爸素食）"],
+  // 依日期排列；✅ 已訂好・⏳ 已申請，等確認信・⚠️ 還沒訂
+  ["11/19 江南皮膚管理（媽媽、Sherry）","⚠️ 還沒訂：13:00 母女雙人保養，用診所官方 LINE 預約，保留貴賓休息室"],
+  ["11/21 Negresco 皇宮酒店下午茶","⚠️ 還沒訂：15:45，官網或 Email 預約，指定沙龍座位"],
+  ["11/23 摩納哥 Café de Paris 午餐","⚠️ 還沒訂：12:30，蒙地卡羅 SBM 官網，指定戶外露台（看賭場噴泉）"],
+  ["11/24 Fragonard 香水工坊導覽","⚠️ 還沒訂：10:45 免費導覽，Fragonard 官網，有免費平面停車"],
+  ["11/24 La Bastide Saint-Antoine 午宴","⚠️ 還沒訂：12:30，官網或 TheFork，備註全員不吃牛肉、爸爸吃素"],
+  ["11/26 熱羅尼莫斯修道院","⚠️ 還沒買：10:00 定時票，官網，買成人票"],
+  ["11/26 26 Vegan Food Project 晚餐","⚠️ 還沒訂：18:30，座位少要早訂（地點待確認）"],
+  ["11/27 Cervejaria Ramiro 海鮮","⚠️ 還沒訂：18:30，官網訂位（每人約 €25 訂金，結帳時扣抵）"],
+  ["11/28 龍達 Don Miguel 晚餐","⚠️ 還沒訂：19:00，官網或 TheFork，備註新橋第一排露台"],
+  ["11/29 阿爾罕布拉宮","✅ 已訂好：訂單 1631400MYXWB，14:30 納斯里德宮殿，3 位成人"],
+  ["11/30 Finca 莊園品油、晚宴","⏳ 已寄信：12:00 橄欖油品鑑、19:30 El Cortijo 晚餐（爸爸素食），等飯店回信"],
   ["Finca 免費取消期限","10/29 前可免費取消，之後就確定入住"],
-  ["Tablao Cordobes 佛朗明哥","✅ 已訂好：Klook SRY792479，12/4 18:00，3 位成人"],
-  ["米拉之家","12/5 10:00 日間門票・出發前 30 天"],
-  ["7 Portes 百年燉飯","✅ 已訂好：12/5 19:00，3 位"],
-  ["Xiringuito Escribà","12/6 海景午餐・出發前 30 天"],
+  ["12/1 Espacio Eslava 晚餐","⚠️ 還沒訂：18:00，官網訂位，指定一般餐桌（不要高腳椅）"],
+  ["12/2 塞維亞王宮","⚠️ 還沒訂：10:30 入場，官網，3 人買成人票"],
+  ["12/2 Alfonso XIII 酒店下午茶","⚠️ 還沒訂：14:00，Email 預約，指定磁磚中庭座位"],
+  ["12/2 El Rinconcillo 晚餐","✅ 已訂好：20:00，3 位"],
+  ["12/4 聖家堂","⏳ 等確認信：14:30 受難立面＋登塔電梯"],
+  ["12/4 Tablao Cordobes 佛朗明哥","✅ 已訂好：Klook SRY792479，18:00，3 位成人"],
+  ["12/5 米拉之家","⏳ 等確認信：10:00 日間門票"],
+  ["12/5 Majestic 酒店下午茶","⚠️ 還沒訂：15:00，官網預約"],
+  ["12/5 7 Portes 百年燉飯","✅ 已訂好：19:00，3 位"],
+  ["12/6 Xiringuito Escribà 海灘燉飯","⏳ 等確認信：12:30，指定海景露台"],
 ];
+const BOOK_NOTE = "3 adults. Please NO beef and NO beef broth for all 3 guests. One guest is vegetarian (no meat, no fish, no meat or fish broth; eggs and dairy are OK) and prefers hot cooked dishes. Thank you!";
 
 // LINE 連結：可填 LINE 的 QR 碼連結（https://line.me/ti/p/...）
 const LINE_CONTACTS = [
@@ -2084,7 +2104,9 @@ function checklist(el, key, list, doneText){
   upd();
 }
 checklist($("packCard"), "trip2026-pack", PACK, "都準備好了！");
-checklist($("bookCard"), "trip2026-book", BOOK, "全部訂好了！");
+checklist($("bookCard"), "trip2026-book2", BOOK, "全部訂好了！");
+$("bookNote").textContent = BOOK_NOTE;
+$("bookCopy").onclick = async ()=>{ try{ await navigator.clipboard.writeText(BOOK_NOTE); $("bookCopy").textContent = "✅ 已複製"; setTimeout(()=>$("bookCopy").textContent = "📋 複製", 1500); }catch(e){} };
 
 /* ══════════════ 求助 ══════════════ */
 $("lineList").innerHTML = LINE_CONTACTS.map(c=>`
@@ -2731,7 +2753,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T11:20:24";
+const SITE_VERSION = "2026-10-11T11:29:14";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
