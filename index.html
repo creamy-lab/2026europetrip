@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T12:39:28").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T12:46:50").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -1279,7 +1279,7 @@ const ITEM_MAPS = {
   "出關領行李，計程車到江南飯店": [["Dormy Inn Seoul Gangnam","Dormy Inn Seoul Gangnam"]],
   "嫩豆腐鍋暖胃晚餐": [["飯店附近豆腐鍋（大約位置）?","순두부 near Dormy Inn Seoul Gangnam"]],
   "狎鷗亭・清潭洞名品街散步": [["Galleria 百貨名品館","Galleria Department Store Luxury Hall Apgujeong"]],
-  "媽媽與 Sherry：江南醫美保濕＋光療": [["江南醫美（診所待確認）?","Gangnam station dermatology clinic"]],
+  "媽媽與 Sherry：江南醫美保濕＋光療": [["江南醫美診所","https://maps.app.goo.gl/XEiBEtt2pC95sgMf8"]],
   "爸爸：千年古剎奉恩寺": [["奉恩寺","Bongeunsa Temple Seoul"]],
   "爸爸：星空圖書館（COEX）": [["星空圖書館","Starfield Library COEX Seoul"]],
   "米其林必比登：百年屋晚餐": [["百年屋 백년옥?","백년옥 서초"]],
@@ -1399,7 +1399,7 @@ function bookBtns(it, day){
   if (b.todo) out.push(`<button class="bk-go todo" data-bkgo="todo">⚠️ 還沒訂，點這裡看</button>`);
   return dest + (out.length ? `<div class="bk-links">${out.join("")}</div>` : "");
 }
-const gmapUrl = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+const gmapUrl = q => /^https?:\/\//.test(q) ? q : "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);   // 已經是地圖連結就直接用
 DAYS.forEach(d=>d.items.forEach(it=>{
   const extra = ITEM_MAPS[it.n]; if (!extra) return;
   const have = new Set((it.map||[]).map(m=>m[0]));
@@ -2800,7 +2800,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T12:39:28";
+const SITE_VERSION = "2026-10-11T12:46:50";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
