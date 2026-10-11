@@ -5,7 +5,7 @@ const ALLOWED_ORIGINS = ["https://creamy-lab.github.io"];
 const MODEL = "claude-haiku-5-5";
 
 const PROMPT = `You are reading a shopping receipt photographed by a traveller.
-Return ONLY one JSON object, no other text:
+Call the "receipt" tool with exactly one object in this format:
 {"store": brand or shop name (read the logo or header, e.g. "Goyard", "Louis Vuitton", "Loewe"),
  "city": city printed on the receipt or null,
  "country": country in English or null,
@@ -28,6 +28,25 @@ Rules:
   take the VAT from the receipt's VAT breakdown and split it across lines in proportion to price if it is only shown in total; net = price - tax.
 - Items' price values should add up to total. Leave out tax lines, discounts, deposits and payment lines from items.
 - Use a dot as the decimal separator. If something is unreadable use null. Never invent items.`;
+
+// AI 偶爾會回傳格式不完全正確的 JSON（例如多一個逗號），這裡先盡量修好再解析
+function parseLooseJson(text: string) {
+  const a = text.indexOf("{"), b = text.lastIndexOf("}");
+  if (a < 0 || b <= a) throw new Error("AI 沒有回傳結果，請再拍一次");
+  let s = text.slice(a, b + 1);
+  try { return JSON.parse(s); } catch (_) { /* 修一修再試 */ }
+  s = s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'")
+       .replace(/\/\/[^\n"]*$/gm, "")
+       .replace(/,\s*([}\]])/g, "$1")
+       .replace(/\b(NaN|undefined)\b/g, "null")
+       .replace(/}\s*{/g, "},{")
+       .replace(/"\s*\n\s*"/g, '",\n"')
+       .replace(/(\d)\s*\n\s*"/g, '$1,\n"')
+       .replace(/(true|false|null)\s*\n\s*"/g, '$1,\n"')
+       .replace(/}\s*\n\s*"/g, '},\n"')
+       .replace(/]\s*\n\s*"/g, '],\n"');
+  return JSON.parse(s);
+}
 
 function corsHeaders(origin: string) {
   return {
@@ -64,7 +83,9 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 1024,
+        max_tokens: 2048,
+        tools: [{ name: "receipt", description: "Return the result as structured data, following the JSON format described in the instructions.", input_schema: { type: "object", additionalProperties: true } }],
+        tool_choice: { type: "tool", name: "receipt" },
         messages: [{
           role: "user",
           content: [
@@ -76,9 +97,9 @@ Deno.serve(async (req) => {
     });
     const j = await r.json();
     if (!r.ok) throw new Error(j?.error?.message ?? `Claude API ${r.status}`);
+    const used = (j.content ?? []).find((c: { type: string }) => c.type === "tool_use") as { input?: unknown } | undefined;
     const text = (j.content ?? []).find((c: { type: string }) => c.type === "text")?.text ?? "";
-    const m = text.match(/\{[\s\S]*\}/);
-    const data = m ? JSON.parse(m[0]) : {};
+    const data = used && used.input && typeof used.input === "object" ? used.input : parseLooseJson(text);
     return new Response(JSON.stringify(data), { headers });
   } catch (e) {
     return new Response(JSON.stringify({ error: String((e as Error)?.message ?? e) }), { status: 500, headers });

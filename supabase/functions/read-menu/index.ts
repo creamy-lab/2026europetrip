@@ -18,7 +18,7 @@ General rules for these preferences:
 - "No beef" means beef in any form: beef, veal, ox, oxtail, beef broth/stock/jus, bresaola, cecina, rabo de toro, carrillada de ternera, steak tartare, 소고기/불고기/갈비 etc.
 - "Vegetarian" means no meat, poultry, ham, bacon, chorizo, fish, seafood, anchovy, meat/chicken/fish stock, lard or gelatin.
 
-Read every dish and drink on the menu photo and return ONLY one JSON object, no other text:
+Read every dish and drink on the menu photo and call the "menu" tool with exactly one object in this format:
 {"lang": language of the menu in Traditional Chinese, e.g. "西班牙文",
  "currency": ISO code if prices are shown, e.g. "EUR", or null,
  "intro": 2 short sentences in Traditional Chinese: what kind of restaurant/cuisine this is and what this place or region is famous for,
@@ -41,6 +41,25 @@ Rules:
 - Use Taiwanese wording (例如：馬鈴薯、番茄、起司、優格、鮭魚、花枝、鷹嘴豆、橄欖油、燉飯、義大利麵), never Mainland or Hong Kong wording.
 - When unsure about beef, vegetarian or spicy status, choose the cautious answer ("maybe" / true).
 - If the photo is not a menu or is unreadable, return {"items": [], "tip": "看不清楚菜單，請靠近一點、光線亮一點再拍一次"}.`;
+}
+
+// AI 偶爾會回傳格式不完全正確的 JSON（例如多一個逗號），這裡先盡量修好再解析
+function parseLooseJson(text: string) {
+  const a = text.indexOf("{"), b = text.lastIndexOf("}");
+  if (a < 0 || b <= a) throw new Error("AI 沒有回傳結果，請再拍一次");
+  let s = text.slice(a, b + 1);
+  try { return JSON.parse(s); } catch (_) { /* 修一修再試 */ }
+  s = s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'")
+       .replace(/\/\/[^\n"]*$/gm, "")
+       .replace(/,\s*([}\]])/g, "$1")
+       .replace(/\b(NaN|undefined)\b/g, "null")
+       .replace(/}\s*{/g, "},{")
+       .replace(/"\s*\n\s*"/g, '",\n"')
+       .replace(/(\d)\s*\n\s*"/g, '$1,\n"')
+       .replace(/(true|false|null)\s*\n\s*"/g, '$1,\n"')
+       .replace(/}\s*\n\s*"/g, '},\n"')
+       .replace(/]\s*\n\s*"/g, '],\n"');
+  return JSON.parse(s);
 }
 
 function corsHeaders(origin: string) {
@@ -80,6 +99,8 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 8000,
+        tools: [{ name: "menu", description: "Return the result as structured data, following the JSON format described in the instructions.", input_schema: { type: "object", additionalProperties: true } }],
+        tool_choice: { type: "tool", name: "menu" },
         messages: [{
           role: "user",
           content: [
@@ -91,10 +112,10 @@ Deno.serve(async (req) => {
     });
     const j = await r.json();
     if (!r.ok) throw new Error(j?.error?.message ?? `Claude API ${r.status}`);
+    const used = (j.content ?? []).find((c: { type: string }) => c.type === "tool_use") as { input?: unknown } | undefined;
     const text = (j.content ?? []).find((c: { type: string }) => c.type === "text")?.text ?? "";
-    const m = text.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error("AI 沒有回傳結果，請再拍一次");
-    return new Response(m[0], { headers });
+    const data = used && used.input && typeof used.input === "object" ? used.input : parseLooseJson(text);
+    return new Response(JSON.stringify(data), { headers });
   } catch (e) {
     return new Response(JSON.stringify({ error: String((e as Error)?.message ?? e) }), { status: 500, headers });
   }
