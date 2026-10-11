@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T02:04:40").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T09:52:54").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -963,7 +963,7 @@ html[lang=ja] .tg small,html[lang=en] .tg small{font-size:12.5px}
 const TRIP = {
   kicker: "Sherry 陪爸媽的家庭旅遊手冊",
   title: "22 天歐洲奢華慢活之旅",
-  subtitle: "11月18日（三）– 12月9日（三）",
+  subtitle: "2026年 11/18（三）– 12/9（三）",
   start: "2026-11-18T14:00:00+08:00",
   end:   "2026-12-09T15:55:00+08:00",
   // [名稱, 顏色, 從第幾天開始(0 起算)]
@@ -2538,7 +2538,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T02:04:40";
+const SITE_VERSION = "2026-10-11T09:52:54";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
