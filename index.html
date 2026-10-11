@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T12:23:11").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T12:32:24").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -34,7 +34,8 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;touch-action:manipulation}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;touch-action:manipulation;overscroll-behavior-y:none}
+body{overscroll-behavior-y:none;overflow-anchor:none}
 /* 不要連點兩下就放大（像 App 一樣）；雙指放大仍然可以 */
 body,button,a,input,select,textarea,label,.tab,.qbtn,.tg,.tg-sos,.chip{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 body{background:var(--paper);color:var(--ink);font-family:"Huninn","PingFang TC","Noto Sans TC",system-ui,sans-serif;line-height:1.6;font-size:19px}
@@ -2799,7 +2800,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T12:23:11";
+const SITE_VERSION = "2026-10-11T12:32:24";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -3496,8 +3497,10 @@ if (window.LANG !== "zh" && window.I18N_P) window.I18N_P.then(dict=>{
 
 /* ════════ 往下拉重新整理：已經在最上面時，手指再往下拉就重新整理（像 App 一樣） ════════ */
 (function(){
-  const el = $("ptr"), ic = $("ptrIc"), tx = $("ptrTx"), TH = 90;
-  let y0 = null, x0 = 0, pull = 0, active = false;
+  const el = $("ptr"), ic = $("ptrIc"), tx = $("ptrTx"), TH = 80;
+  let y0 = null, x0 = 0, startX = 0, pull = 0, active = false;
+  // 長頁面（今天、行程）在最上面時，iPhone 的捲動位置常常是 0.3、0.7 這種小數，不是剛好 0 → 給一點容許範圍
+  const atTop = ()=>Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop) <= 3;
   const blocked = ()=>document.querySelector(".lb:not([hidden]),.driver.open,.wait-pop.open,.loc-pop.open,.lost-alert.open");
   function show(d){
     const k = Math.min(1, d / TH);
@@ -3510,21 +3513,26 @@ if (window.LANG !== "zh" && window.I18N_P) window.I18N_P.then(dict=>{
     if (tx.dataset.k !== t){ tx.dataset.k = t; tx.textContent = t; }
   }
   function hide(){ el.style.transition = "transform .25s, opacity .25s"; el.style.opacity = "0"; el.style.transform = "translate(-50%,-70px)"; el.classList.remove("ready"); }
-  addEventListener("touchstart", e=>{
-    if (e.touches.length !== 1 || window.scrollY > 0 || blocked()) { y0 = null; return; }
-    y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; pull = 0; active = false;
-  }, {passive:true});
-  addEventListener("touchmove", e=>{
+  // 手指按下時不一定剛好在最上面（例如還差幾像素、或正在往上捲）：等真的到頂端後，再從那一點開始算往下拉的距離
+  document.addEventListener("touchstart", e=>{
+    if (e.touches.length !== 1 || blocked()) { y0 = null; return; }
+    x0 = e.touches[0].clientX; y0 = atTop() ? e.touches[0].clientY : NaN; pull = 0; active = false; startX = x0;
+  }, {passive:true, capture:true});
+  document.addEventListener("touchmove", e=>{
     if (y0 == null) return;
-    const dy = e.touches[0].clientY - y0, dx = Math.abs(e.touches[0].clientX - x0);
+    const y = e.touches[0].clientY, x = e.touches[0].clientX;
     if (!active){
-      if (dy > 12 && dy > dx * 1.5 && window.scrollY <= 0) active = true;   // 主要是往下拉，才算
-      else if (dy < -5 || dx > 20) { y0 = null; return; }
+      if (!atTop()){ y0 = NaN; return; }                 // 還沒到頂端：繼續等
+      if (isNaN(y0)) { y0 = y; x0 = x; return; }         // 剛到頂端：從這裡開始算
+      const dy = y - y0, dx = Math.abs(x - x0);
+      if (dy > 10 && dy > dx) active = true;
+      else if (dy < -8) { y0 = y; return; }
+      else if (dx > 24 && dx > dy * 1.5) { y0 = null; return; }   // 明顯左右滑：不是重新整理
       else return;
     }
-    pull = Math.max(0, dy - 12); show(pull);
-  }, {passive:true});
-  addEventListener("touchend", ()=>{
+    pull = Math.max(0, y - y0 - 10); show(pull);
+  }, {passive:true, capture:true});
+  document.addEventListener("touchend", ()=>{
     if (y0 == null || !active){ y0 = null; return; }
     y0 = null;
     if (pull >= TH){
@@ -3532,8 +3540,8 @@ if (window.LANG !== "zh" && window.I18N_P) window.I18N_P.then(dict=>{
       el.style.transition = "transform .2s"; el.style.transform = "translate(-50%, 6px)";
       setTimeout(()=>location.reload(), 350);
     } else hide();
-  });
-  addEventListener("touchcancel", ()=>{ y0 = null; hide(); });
+  }, {capture:true});
+  document.addEventListener("touchcancel", ()=>{ if (active && pull >= TH) return; y0 = null; hide(); }, {capture:true});
 })();
 (function(){ const [p, t] = (location.hash||"#home").slice(1).split("/"); history.replaceState({p, t:t||null, d:0}, "", location.search + location.hash); renderPage(p, t); if (lostOpen()){ locRenderWho(); locate(); } })();
 
