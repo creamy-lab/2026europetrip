@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T11:29:14").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T11:38:11").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -637,6 +637,10 @@ main [id], section{scroll-margin-top:calc(var(--hh,120px) + 16px)}
 @media (prefers-reduced-motion: reduce){.topbar{transition:none}}
 
 html.i18n-wait body{visibility:hidden}
+.bk-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bk-go{font-size:16px;padding:5px 13px;border:2.5px solid var(--ink);border-radius:999px;background:var(--mizu)}
+.bk-go.wait{background:var(--yellow)}
+.bk-go.todo{background:var(--coral)}
 .book-note{font-size:17px;line-height:1.5;padding:10px 12px;background:var(--paper);border:2.5px dashed var(--ink);border-radius:var(--r-sm)}
 .ptr{position:fixed;left:50%;top:calc(var(--hh,120px) + 8px);z-index:45;display:flex;align-items:center;gap:8px;padding:6px 16px 6px 8px;font-size:16px;background:var(--card);border:3px solid var(--ink);border-radius:999px;box-shadow:2px 2px 0 var(--ink);transform:translate(-50%,-70px);opacity:0;pointer-events:none;white-space:nowrap}
 .ptr-ic{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--yellow);border:2px solid var(--ink);font-size:16px;transition:transform .2s}
@@ -1041,7 +1045,8 @@ const FLIGHTS = [
 /* 每日行程
    t 開始 e 結束 n 名稱 tr 交通 must 必去 note 補充（字串或陣列；🥬 開頭＝爸爸素食） */
 const DAYS = [
-  {date:"11/18", wk:"三", s:"首爾", city:"韓國首爾", art:"seoul", title:"啟程出發・抵達首爾暖胃", walk:1, meet:"11:30 前到小港機場（14:05 起飛）", bring:"護照、外套、常用藥", items:[
+  {date:"11/18", wk:"三", s:"首爾", city:"韓國首爾", art:"seoul", title:"啟程出發・抵達首爾暖胃", walk:1, meet:"10:30 從台南家裡出發，11:30 前到小港機場（14:05 起飛）", bring:"護照、外套、常用藥", items:[
+    {t:"10:30", e:"11:30", n:"🏠 從台南家裡開車到小港機場", tr:["自駕"], note:["車程大約 1 小時，預留塞車時間","出門前檢查：護照、手機、充電器、外幣"]},
     {t:"11:30", n:"⏰ 抵達小港機場國際線航廈，報到、託運行李", note:["起飛前 2.5 小時到","📱 Sherry 前一天記得先線上報到（起飛前 24–48 小時開放）"]},
     {t:"14:05", e:"17:55", n:"高雄小港 ✈ 首爾金浦", tr:["飛機"], note:["德威航空 TW652（已更名 Trinity Airways，櫃檯可能掛新名字）","小港機場國際線航廈出發","機上小睡、喝熱茶吃輕食"]},
     {t:"17:55", e:"19:15", n:"出關領行李，計程車到江南飯店", tr:["計程車"], note:"約 40 分鐘平穩車程"},
@@ -1245,12 +1250,15 @@ const DAYS = [
     {t:"10:45", e:"11:00", n:"計程車到仁川機場第一航廈（T1）", tr:["計程車"], note:["⚠️ 回程是第一航廈，跟昨天抵達的第二航廈不同","📱 Sherry 前一天記得先線上報到（起飛前 24–48 小時開放）"]},
     {t:"10:55", n:"⏰ 最晚這時到報到櫃檯", note:"起飛前 2.5 小時；座位已選好"},
     {t:"13:25", e:"15:55", n:"仁川 ✈ 高雄小港", tr:["飛機"], note:["德威航空 TW671（已更名 Trinity Airways）","平安健康，帶著滿滿回憶回家！"]},
+    {t:"16:30", e:"17:30", n:"🏠 出關領行李，開車回台南的家", tr:["自駕"], note:["車程大約 1 小時","到家記得在 LINE 跟家人報平安 🏡"]},
   ]},
 ];
 
 /* ── 行程每個地點的 Google 地圖（行程裡沒有自帶地圖連結的，從這裡補上）──
    key＝行程項目名稱；值＝[按鈕文字, 地圖搜尋字]；標 ? 的是大約位置，等確認店名 */
 const ITEM_MAPS = {
+  "🏠 從台南家裡開車到小港機場": [["小港機場國際線航廈","Kaohsiung International Airport International Terminal"]],
+  "🏠 出關領行李，開車回台南的家": [["小港機場國際線航廈","Kaohsiung International Airport International Terminal"]],
   "高雄小港 ✈ 首爾金浦": [["小港機場國際線航廈","Kaohsiung International Airport International Terminal"]],
   "韓亞 OZ501 商務艙直飛巴黎": [["仁川機場第二航廈","Incheon International Airport Terminal 2"]],
   "報到、出境，貴賓室吃早餐": [["仁川機場第二航廈","Incheon International Airport Terminal 2"]],
@@ -1362,6 +1370,40 @@ const ITEM_MAPS = {
   "本粥：甜南瓜粥早餐": [["本粥（分店待確認）?","본죽 운서"]],
   "計程車到仁川機場第一航廈（T1）": [["仁川機場第一航廈","Incheon International Airport Terminal 1"]],
 };
+
+/* ── 行程 ↔ 訂單：已訂好的顯示「🎫 看訂單」，還沒訂／等確認的顯示提醒 ──
+   f＝交通（FLIGHTS 第幾筆）、s＝住宿（STAYS 第幾筆）、t＝門票餐廳（TICKETS 的店名）、wait＝等確認信、todo＝還沒訂 */
+const ITEM_BOOK = {
+  "⏰ 抵達小港機場國際線航廈，報到、託運行李":{f:0}, "高雄小港 ✈ 首爾金浦":{f:0}, "入住首爾江南多米旅館":{s:0},
+  "媽媽與 Sherry：江南醫美保濕＋光療":{todo:1},
+  "報到、出境，貴賓室吃早餐":{f:1}, "韓亞 OZ501 商務艙直飛巴黎":{f:1}, "搭機場電車到美居酒店":{s:1},
+  "⏰ 到 2F 報到、託運、安檢":{f:2}, "法航 AF7300 飛尼斯":{f:2}, "計程車到 Le Soleia 飯店寄放行李":{s:2},
+  "☕ 內格雷斯科皇宮酒店下午茶":{todo:1},
+  "🚗 圓夢時刻：坐上 Mini Cooper！":{f:3}, "☕ 巴黎咖啡館露台午餐":{todo:1},
+  "花宮娜歷史香水工坊":{todo:1}, "古樹莊園午宴":{todo:1}, "開車回尼斯，到火車站還車":{f:3},
+  "葡萄牙航空 TP481 飛里斯本":{f:4}, "計程車到 My Story Hotel Tejo 入住":{s:3},
+  "熱羅尼莫斯修道院":{todo:1}, "純素晚餐 26 Vegan Food Project":{todo:1}, "Cervejaria Ramiro 海鮮晚宴":{todo:1},
+  "葡萄牙航空 TP1136 飛馬拉加":{f:5}, "Sixt 取車":{f:6}, "入住龍達國營旅館":{s:4}, "新橋第一排晚餐 Don Miguel":{todo:1},
+  "先到莊園放行李":{s:5}, "阿爾罕布拉宮":{t:"Alhambra"},
+  "🫒 三人一起橄欖油品鑑":{wait:1}, "El Cortijo 莊園晚宴":{wait:1},
+  "火車站還車，計程車到 Meliá Sevilla":{f:6, s:6}, "Espacio Eslava 熱 Tapas 晚餐":{todo:1},
+  "塞維亞王宮":{todo:1}, "☕ 阿方索十三世酒店下午茶":{todo:1}, "百年老酒館 El Rinconcillo":{t:"Rinconcillo"},
+  "AVE 03943 高鐵到巴塞隆納":{f:7}, "計程車到 Hotel Casa Luz 入住":{s:7},
+  "聖家堂＋搭電梯登塔":{wait:1}, "自助晚餐＋佛朗明哥表演":{t:"Cordobes"},
+  "米拉之家":{wait:1}, "☕ Majestic 酒店下午茶":{todo:1}, "1836 年老店 7 Portes 晚餐":{t:"7 Portes"},
+  "Xiringuito Escribà 海灘燉飯":{wait:1},
+  "韓亞 OZ512 商務艙起飛":{f:8}, "抵達仁川第二航廈，計程車到金色鬱金香酒店":{s:8}, "仁川 ✈ 高雄小港":{f:9},
+};
+function bookBtns(it){
+  const b = ITEM_BOOK[it.n]; if (!b) return "";
+  const out = [];
+  if (b.f != null) out.push(`<button class="bk-go" data-bkgo="f:${b.f}">🎫 看${FLIGHTS[b.f].type==="car"?"租車":FLIGHTS[b.f].type==="train"?"車票":"機票"}訂單</button>`);
+  if (b.s != null) out.push(`<button class="bk-go" data-bkgo="s:${b.s}">🏨 看訂房</button>`);
+  if (b.t) out.push(`<button class="bk-go" data-bkgo="t:${esc(b.t)}">🎟 看預約</button>`);
+  if (b.wait) out.push(`<button class="bk-go wait" data-bkgo="todo">⏳ 已申請，等確認信</button>`);
+  if (b.todo) out.push(`<button class="bk-go todo" data-bkgo="todo">⚠️ 還沒訂，點這裡看</button>`);
+  return out.length ? `<div class="bk-links">${out.join("")}</div>` : "";
+}
 const gmapUrl = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
 DAYS.forEach(d=>d.items.forEach(it=>{
   const extra = ITEM_MAPS[it.n]; if (!extra) return;
@@ -1874,7 +1916,7 @@ $("flightList").innerHTML = FLIGHTS.map((f,i)=>`
 
 TICKETS.sort((a,b)=>{const k=t=>{const m=t.date.match(/(\d+)月(\d+)日.*?(\d+):(\d+)/);return +m[1]*1e6 + +m[2]*1e4 + +m[3]*100 + +m[4];};return k(a)-k(b);});
 $("ticketList").innerHTML = TICKETS.map((t,i)=>`
-  <article class="card flight">
+  <article class="card flight" id="tk${i}">
     <div class="f-top"><span class="pill" style="background:var(--coral)">🎟 門票</span><span>${esc(t.date)}</span></div>
     <div class="f-city" style="margin-top:10px">${esc(t.name)}</div>
     <div class="f-code">${esc(t.local)}・${esc(t.addr)}</div>
@@ -1964,6 +2006,7 @@ function renderDay(i, animate){
           ${it.tr&&it.tr.length?`<div class="tags">${it.tr.map(t=>{const m=TR[t]||{c:"paper",i:""};return `<span class="tag" style="background:var(--${m.c})"><svg viewBox="0 0 20 20" aria-hidden="true">${m.i}</svg>${esc(t)}</span>`}).join("")}</div>`:""}
           ${it.note?`<ul class="notes">${notes(it.note)}</ul>`:""}
           ${it.map?`<div class="maps">${it.map.map(([l,u])=>`<a class="mapbtn" target="_blank" rel="noopener" href="${esc(u)}">📍 ${esc(l)}</a>`).join("")}</div>`:""}
+          ${bookBtns(it)}
           ${it.dad?`<div class="dad"><b>👴 爸爸可以考慮（自由選擇，不想去也沒關係）</b><ul>${it.dad.map(x=>`<li>・${esc(x)}</li>`).join("")}</ul><small>分開前跟 Sherry 約好會合地點和時間，手機保持有電 📱</small></div>`:""}
         </div>
       </li>`).join("")}
@@ -2753,7 +2796,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T11:29:14";
+const SITE_VERSION = "2026-10-11T11:38:11";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
@@ -3168,6 +3211,18 @@ function addCtx(){
   });
 }
 new MutationObserver(addCtx).observe(dayPanel, {childList:true});
+dayPanel.addEventListener("click", e=>{
+  const b = e.target.closest("[data-bkgo]"); if (!b) return;
+  const [kind, v] = b.dataset.bkgo.split(":");
+  const LABEL = {zh:"這一筆", en:"This one", ja:"この予約"}[window.LANG] || "這一筆";
+  if (kind === "todo"){ go("todo", {noAuto:true}); setTimeout(()=>{ const el = $("tdBook"); if (el) el.scrollIntoView({block:"start"}); }, 60); return; }
+  let tool, id;
+  if (kind === "f"){ tool = "go"; id = "fl" + v; }
+  if (kind === "s"){ tool = "hotel"; id = "st" + v; }
+  if (kind === "t"){ tool = "tk"; id = "tk" + TICKETS.findIndex(x=>(x.local+x.name).includes(v)); }
+  go("orders", {tool, noAuto:true});
+  setTimeout(()=>markNow($(id), LABEL), 60);
+});
 dayPanel.addEventListener("click", e=>{
   const b = e.target.closest("[data-ctx]"); if (!b) return;
   if (b.dataset.ctx === "menu") openTool("mnCard", "mnCam");
