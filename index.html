@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T10:54:20").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T11:07:12").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -2096,6 +2096,8 @@ fetch("https://open.er-api.com/v6/latest/TWD").then(r=>r.json()).then(j=>{
 calcCv();
 
 /* ══════════════ 退稅清單 ══════════════ */
+/* 國家 → 當地貨幣（幣別跟著行程走，跟國家、城市一樣） */
+const COUNTRY_CUR = {"法國":"EUR","摩納哥":"EUR","葡萄牙":"EUR","西班牙":"EUR","韓國":"KRW","台灣":"TWD","美國":"USD","英國":"GBP"};
 /* 旅費記帳：類別、誰付、退稅 */
 const TF_CATS = [["shop","🛍 購物"],["food","🍽 餐飲"],["move","🚕 交通"],["ticket","🎟 門票"],["hotel","🏨 住宿"],["other","📦 其他"]];
 const TF_PAYERS = ["爸爸","媽媽","Sherry","大家一起"];
@@ -2229,7 +2231,8 @@ async function addTaxRow({store, amount, currency, country, item, remark, city, 
   try{ await sbSend("POST","taxfree",rec); return; }catch(e1){}
   await sbSend("POST","taxfree",base);                 // 資料表還沒加新欄位時，至少存基本資料
 }
-(function(){ const pl = placeFor(""); if (pl.country){ const sel = $("tfCountry"); if ([...sel.options].some(o=>o.value===pl.country)) sel.value = pl.country; if (pl.country==="韓國") $("tfCur").value = "KRW"; } })();
+(function(){ const pl = placeFor(""); if (pl.country){ const sel = $("tfCountry"); if ([...sel.options].some(o=>o.value===pl.country)) sel.value = pl.country; const c = COUNTRY_CUR[pl.country]; if (c && [...$("tfCur").options].some(o=>o.value===c)) $("tfCur").value = c; } })();
+$("tfCountry").addEventListener("change", ()=>{ const c = COUNTRY_CUR[$("tfCountry").value]; if (c && [...$("tfCur").options].some(o=>o.value===c)) $("tfCur").value = c; });
 $("tfForm").addEventListener("submit", async e=>{
   e.preventDefault();
   const store = $("tfStore").value.trim(); if(!store) return;
@@ -2295,11 +2298,13 @@ function showAiReview(d){
     if (net==null && price!=null && tax!=null) net = Math.round((price - tax)*100)/100;
     return {name: x.name||"", net, tax, price};
   });
-  const cur0 = String(d.currency||"").toUpperCase().trim() || (todayIndex()>=0 && ["首爾","仁川"].includes(hereCity()) ? "KRW" : "EUR");
-  const curList = ["EUR","KRW","USD","GBP","TWD"]; if (!curList.includes(cur0)) curList.push(cur0);
+  const place = placeFor(d.date);
+  const curRead = String(d.currency||"").toUpperCase().trim();
+  const curPlace = COUNTRY_CUR[place.country] || "";
+  const cur0 = curPlace || curRead || "EUR";                     // 先依行程上的國家；行程外才用收據上讀到的
+  const curList = ["EUR","KRW","USD","GBP","TWD"]; [cur0, curRead].forEach(c=>{ if (c && !curList.includes(c)) curList.push(c); });
   const box = $("aiReview");
   const fv = v => v==null ? "" : v;
-  const place = placeFor(d.date);
   const CAT_MAP = {shop:"shop", shopping:"shop", food:"food", restaurant:"food", transport:"move", ticket:"ticket", hotel:"hotel", other:"other"};
   const aiCat = CAT_MAP[String(d.category||"").toLowerCase()] || "shop";
   const aiRefund = aiCat !== "shop" ? "no" : d.tax_free === true ? "yes" : "auto";
@@ -2310,6 +2315,7 @@ function showAiReview(d){
       <div><label for="aiCity">城市</label><input type="text" id="aiCity" value="${esc(place.city)}" placeholder="例如 尼斯"></div>
       <div><label for="aiCur">幣別</label><select id="aiCur">${curList.map(c=>`<option value="${c}"${c===cur0?" selected":""}>${c}</option>`).join("")}</select></div>
     </div>
+    ${curRead && curPlace && curRead !== curPlace ? `<p class="ck-sub" style="font-size:13px;margin-top:4px">⚠️ 收據上寫的是 ${esc(curRead)}，幣別已依行程設成 ${esc(curPlace)}，請確認</p>` : ""}
     <label for="aiCard">付款卡</label><input type="text" id="aiCard" list="tfCardList" value="${esc(d.card||"")}" placeholder="例如 Visa •1234">
     <div class="ai-row3">
       <div><label for="aiCat">類別</label><select id="aiCat">${optHtml(TF_CATS, aiCat)}</select></div>
@@ -2347,6 +2353,7 @@ function showAiReview(d){
   box.querySelectorAll('[id^="aiPrice"], [id^="aiChk"]').forEach(x=>x.addEventListener("input", recalc));
   box.querySelectorAll('[id^="aiChk"]').forEach(x=>x.addEventListener("change", recalc));
   $("aiCur").addEventListener("change", recalc);
+  $("aiCountry").addEventListener("change", ()=>{ const c = COUNTRY_CUR[$("aiCountry").value.trim()]; if (c){ if (![...$("aiCur").options].some(o=>o.value===c)) $("aiCur").insertAdjacentHTML("beforeend", `<option value="${c}">${c}</option>`); $("aiCur").value = c; recalc(); } });
   recalc();
   $("aiCancel").onclick = ()=>{ box.hidden = true; $("ocrMsg").textContent = ""; $("ocrPrev").hidden = true; receiptPath = null; };
   $("aiSave").onclick = async ()=>{
@@ -2602,7 +2609,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T10:54:20";
+const SITE_VERSION = "2026-10-11T11:07:12";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
