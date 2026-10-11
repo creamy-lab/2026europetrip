@@ -22,7 +22,7 @@
   if (L === "zh") return;
   document.documentElement.lang = L === "en" ? "en" : "ja";
   document.documentElement.classList.add("i18n-wait");
-  window.I18N_P = fetch("i18n.json?v=2026-10-11T11:07:12").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
+  window.I18N_P = fetch("i18n.json?v=2026-10-11T11:20:24").then(function(r){ return r.json(); }).then(function(j){ return j[L] || {}; }).catch(function(){ return {}; });
   setTimeout(function(){ document.documentElement.classList.remove("i18n-wait"); }, 3000);   // 萬一讀不到翻譯，最多等 3 秒就照中文顯示
 })();
 </script>
@@ -1241,6 +1241,128 @@ const DAYS = [
     {t:"13:25", e:"15:55", n:"仁川 ✈ 高雄小港", tr:["飛機"], note:["德威航空 TW671（已更名 Trinity Airways）","平安健康，帶著滿滿回憶回家！"]},
   ]},
 ];
+
+/* ── 行程每個地點的 Google 地圖（行程裡沒有自帶地圖連結的，從這裡補上）──
+   key＝行程項目名稱；值＝[按鈕文字, 地圖搜尋字]；標 ? 的是大約位置，等確認店名 */
+const ITEM_MAPS = {
+  "高雄小港 ✈ 首爾金浦": [["小港機場國際線航廈","Kaohsiung International Airport International Terminal"]],
+  "韓亞 OZ501 商務艙直飛巴黎": [["仁川機場第二航廈","Incheon International Airport Terminal 2"]],
+  "報到、出境，貴賓室吃早餐": [["仁川機場第二航廈","Incheon International Airport Terminal 2"]],
+  "⏰ 到 2F 報到、託運、安檢": [["戴高樂機場第二航廈 2F","Paris Charles de Gaulle Airport Terminal 2F"]],
+  "法航 AF7300 飛尼斯": [["戴高樂機場第二航廈 2F","Paris Charles de Gaulle Airport Terminal 2F"]],
+  "計程車到海邊市集": [["Marché des Halles 芒通市集","Marché des Halles Menton"]],
+  "坐火車回尼斯": [["芒通火車站","Gare de Menton"]],
+  "🚗 圓夢時刻：坐上 Mini Cooper！": [["Sixt 尼斯火車站","Sixt Nice Train Station 12 Avenue Thiers Nice"]],
+  "開車前往香水之都格拉斯": [["Fragonard 香水工坊","Fragonard Parfumeur Historic Factory Grasse"]],
+  "葡萄牙航空 TP481 飛里斯本": [["尼斯機場第一航廈","Nice Côte d'Azur Airport Terminal 1"]],
+  "葡萄牙航空 TP1136 飛馬拉加": [["里斯本機場第一航廈","Lisbon Airport Terminal 1"]],
+  "出關領行李，機場坐著休息、吃點熱食": [["馬拉加機場","Málaga-Costa del Sol Airport"]],
+  "莊園散步、橄欖林拍照": [["La Bobadilla","La Bobadilla a Royal Hideaway Hotel"]],
+  "🫒 三人一起橄欖油品鑑": [["La Bobadilla","La Bobadilla a Royal Hideaway Hotel"]],
+  "El Cortijo 莊園晚宴": [["La Bobadilla","La Bobadilla a Royal Hideaway Hotel"]],
+  "開車前往塞維亞": [["Sixt 塞維亞 Santa Justa","Sixt Sevilla Santa Justa train station"]],
+  "⏰ 到車站過行李安檢、找月台": [["Santa Justa 火車站","Estación de Sevilla-Santa Justa"]],
+  "退房寄放行李，飯店庭院輕食": [["Hotel Casa Luz","Hotel Casa Luz Ronda de la Universitat 1 Barcelona"]],
+  "電子退稅、貴賓室休息": [["巴塞隆納機場第一航廈","Barcelona El Prat Airport Terminal 1"]],
+  "韓亞 OZ512 商務艙起飛": [["巴塞隆納機場第一航廈","Barcelona El Prat Airport Terminal 1"]],
+  "仁川 ✈ 高雄小港": [["仁川機場第一航廈","Incheon International Airport Terminal 1"]],
+  "⏰ 抵達小港機場國際線航廈，報到、託運行李": [["小港機場國際線航廈","Kaohsiung International Airport International Terminal"]],
+  "出關領行李，計程車到江南飯店": [["金浦機場國際線","Gimpo International Airport International Terminal"]],
+  "入住首爾江南多米旅館": [["Dormy Inn Seoul Gangnam","Dormy Inn Seoul Gangnam"]],
+  "嫩豆腐鍋暖胃晚餐": [["飯店附近豆腐鍋（大約位置）?","순두부 near Dormy Inn Seoul Gangnam"]],
+  "狎鷗亭・清潭洞名品街散步": [["Galleria 百貨名品館","Galleria Department Store Luxury Hall Apgujeong"]],
+  "媽媽與 Sherry：江南醫美保濕＋光療": [["江南醫美（診所待確認）?","Gangnam station dermatology clinic"]],
+  "爸爸：千年古剎奉恩寺": [["奉恩寺","Bongeunsa Temple Seoul"]],
+  "爸爸：星空圖書館（COEX）": [["星空圖書館","Starfield Library COEX Seoul"]],
+  "米其林必比登：百年屋晚餐": [["百年屋 백년옥?","백년옥 서초"]],
+  "計程車到仁川機場第二航廈（T2）": [["仁川機場第二航廈","Incheon International Airport Terminal 2"]],
+  "搭機場電車到美居酒店": [["CDGVAL Parking PR 站","CDGVAL Parking PR station"],["Mercure Paris CDG Airport","Mercure Paris CDG Airport & Convention"]],
+  "飯店餐廳晚餐": [["Mercure Paris CDG Airport","Mercure Paris CDG Airport & Convention"]],
+  "退房，搭 CDGVAL 到第二航廈": [["戴高樂機場第二航廈","Paris Charles de Gaulle Airport Terminal 2F"]],
+  "計程車到 Le Soleia 飯店寄放行李": [["Hôtel Le Soleia","Hôtel Le Soleia by Inwood, 48 Boulevard Victor Hugo, Nice"]],
+  "薩雷雅鮮花市集": [["Cours Saleya 鮮花市集","Cours Saleya flower market Nice"],["Chez Thérésa","Chez Thérésa socca Cours Saleya Nice"]],
+  "市集旁露台午餐 Le Safari": [["Le Safari","Le Safari restaurant Cours Saleya Nice"]],
+  "海濱大道看天使灣": [["英國人散步大道","Promenade des Anglais Nice"],["#ILoveNICE","I Love Nice sign Quai des Etats-Unis"]],
+  "☕ 內格雷斯科皇宮酒店下午茶": [["Hôtel Negresco","Hôtel Negresco Nice"]],
+  "Sentimi 黑松露野菇燉飯晚餐": [["Sentimi（待確認）?","Sentimi restaurant Nice"]],
+  "搭雙層景觀火車到芒通": [["尼斯火車站","Gare de Nice-Ville"],["芒通火車站","Gare de Menton"]],
+  "芒通百年市集": [["Marché des Halles 芒通市集","Marché des Halles Menton"]],
+  "Le Nautic 海景午餐": [["Le Nautic（待確認）?","Le Nautic restaurant Menton"]],
+  "☕ 太陽長廊散步＋檸檬塔": [["太陽長廊","Promenade du Soleil Menton"],["Au Baiser du Mitron（待確認）?","Au Baiser du Mitron"]],
+  "熱蔬菜濃湯、海鮮義大利麵晚餐": [["尼斯飯店附近餐廳（待確認）?","restaurants near 48 Boulevard Victor Hugo Nice"]],
+  "計程車到尼斯火車站": [["Sixt 尼斯火車站","Sixt Nice Train Station 12 Avenue Thiers Nice"]],
+  "開車看埃茲古堡全景": [["埃茲觀景台","Èze viewpoint Moyenne Corniche"]],
+  "☕ 巴黎咖啡館露台午餐": [["Café de Paris Monte-Carlo","Café de Paris Monte-Carlo"]],
+  "熱越南河粉晚餐": [["尼斯越南河粉（待確認）?","pho vietnamese restaurant Nice Jean Médecin"]],
+  "古樹莊園午宴": [["La Bastide Saint-Antoine","La Bastide Saint-Antoine Grasse"]],
+  "熱披薩、熱蔬菜湯晚餐": [["尼斯披薩餐廳（待確認）?","pizzeria near 48 Boulevard Victor Hugo Nice"]],
+  "計程車到尼斯機場第一航廈（T1）": [["尼斯機場第一航廈","Nice Côte d'Azur Airport Terminal 1"]],
+  "計程車到 My Story Hotel Tejo 入住": [["My Story Hotel Tejo","My Story Hotel Tejo Lisboa"]],
+  "自由大道林蔭購物": [["自由大道","Avenida da Liberdade Lisboa"]],
+  "Pinóquio 晚餐": [["Pinóquio","Restaurante Pinóquio Praça dos Restauradores Lisboa"]],
+  "計程車到貝倫區": [["熱羅尼莫斯修道院","Mosteiro dos Jerónimos"]],
+  "熱羅尼莫斯修道院": [["熱羅尼莫斯修道院","Mosteiro dos Jerónimos"]],
+  "☕ 創始老店吃熱蛋塔": [["Pastéis de Belém","Pastéis de Belém"]],
+  "河邊發現者紀念碑拍照": [["發現者紀念碑","Padrão dos Descobrimentos"]],
+  "純素晚餐 26 Vegan Food Project": [["26 Vegan Food Project（待確認）?","26 Vegan Food Project Lisboa"]],
+  "特茹河畔木棧道散步": [["Ribeira das Naus 河畔","Ribeira das Naus Lisboa"]],
+  "Viet Day 熱湯河粉午餐": [["Viet Day（待確認）?","Viet Day Lisboa"]],
+  "☕ 百年糕餅店下午茶＋逛街": [["Confeitaria Nacional","Confeitaria Nacional Lisboa"]],
+  "Cervejaria Ramiro 海鮮晚宴": [["Cervejaria Ramiro","Cervejaria Ramiro Lisboa"]],
+  "計程車到里斯本機場第一航廈（T1）": [["里斯本機場第一航廈","Lisbon Airport Terminal 1"]],
+  "Sixt 取車": [["Sixt 馬拉加機場","Sixt Malaga Airport"]],
+  "入住龍達國營旅館": [["Parador de Ronda","Parador de Ronda"]],
+  "☕ 國營旅館露台喝熱茶看晚霞": [["Parador de Ronda","Parador de Ronda"]],
+  "新橋第一排晚餐 Don Miguel": [["Don Miguel","Restaurante Don Miguel Ronda"]],
+  "先到莊園放行李": [["La Bobadilla","La Bobadilla a Royal Hideaway Hotel"]],
+  "走到入口，領中文語音導覽": [["阿爾罕布拉宮入口","Alhambra ticket office entrance Granada"]],
+  "阿爾罕布拉宮": [["阿爾罕布拉宮","Alhambra Granada"]],
+  "宮門口晚餐 Jardines Alberto": [["Jardines Alberto","Jardines Alberto Granada"]],
+  "老城購物街慢慢逛": [["Calle Sierpes 購物街","Calle Sierpes Sevilla"]],
+  "西班牙廣場看夕陽": [["西班牙廣場","Plaza de España Sevilla"]],
+  "Espacio Eslava 熱 Tapas 晚餐": [["Espacio Eslava","Espacio Eslava Sevilla"]],
+  "計程車到王宮": [["塞維亞王宮","Real Alcázar de Sevilla"]],
+  "塞維亞王宮": [["塞維亞王宮","Real Alcázar de Sevilla"]],
+  "KingDo 中餐廳午餐": [["KingDo（待確認）?","KingDo restaurante chino Sevilla"]],
+  "☕ 阿方索十三世酒店下午茶": [["Hotel Alfonso XIII","Hotel Alfonso XIII Sevilla"]],
+  "白馬車遊老城": [["馬車上車處（西班牙廣場）","horse carriages Plaza de España Sevilla"]],
+  "百年老酒館 El Rinconcillo": [["El Rinconcillo","El Rinconcillo Calle Gerona 40 Sevilla"]],
+  "計程車到塞維亞 Santa Justa 火車站": [["Santa Justa 火車站","Estación de Sevilla-Santa Justa"]],
+  "AVE 03943 高鐵到巴塞隆納": [["Barcelona Sants 車站","Estació de Barcelona Sants"]],
+  "計程車到 Hotel Casa Luz 入住": [["Hotel Casa Luz","Hotel Casa Luz Ronda de la Universitat 1 Barcelona"]],
+  "加泰隆尼亞廣場、英國宮百貨": [["英國宮百貨（加泰隆尼亞廣場）","El Corte Inglés Plaça de Catalunya"]],
+  "Ciutat Condal 熱 Tapas 晚餐": [["Ciutat Comtal","Cerveseria Ciutat Comtal Rambla de Catalunya 18 Barcelona"]],
+  "加泰隆尼亞廣場、El Triangle 逛街": [["El Triangle","El Triangle Barcelona"]],
+  "Pho Hanoi 暖胃午餐": [["Pho Hanoi（待確認）?","Pho Hanoi Barcelona"]],
+  "計程車到聖家堂": [["聖家堂","Sagrada Família"]],
+  "聖家堂＋搭電梯登塔": [["聖家堂","Sagrada Família"]],
+  "計程車到蘭布拉大道": [["Tablao Cordobes","Tablao Flamenco Cordobes La Rambla 35 Barcelona"]],
+  "自助晚餐＋佛朗明哥表演": [["Tablao Cordobes","Tablao Flamenco Cordobes La Rambla 35 Barcelona"]],
+  "計程車到米拉之家": [["米拉之家","Casa Milà La Pedrera"]],
+  "米拉之家": [["米拉之家","Casa Milà La Pedrera"]],
+  "💎 感恩大道購物：Loewe 必逛": [["Casa Loewe","Casa Loewe Passeig de Gràcia 35 Barcelona"]],
+  "午餐二選一": [["Teresa Carles","Teresa Carles Barcelona"],["El Nacional","El Nacional Barcelona"]],
+  "☕ Majestic 酒店下午茶": [["Hotel Majestic","Majestic Hotel & Spa Barcelona"]],
+  "計程車到舊港口": [["7 Portes","Restaurant 7 Portes Passeig d'Isabel II 14 Barcelona"]],
+  "計程車到海港": [["貝爾港","Port Vell Barcelona"]],
+  "貝爾港木棧道看海": [["貝爾港","Port Vell Barcelona"]],
+  "Xiringuito Escribà 海灘燉飯": [["Xiringuito Escribà","Xiringuito Escribà Barcelona"]],
+  "☕ 1906 年 Escribà 甜點店下午茶": [["Escribà 蘭布拉店","Escribà La Rambla 83 Barcelona"]],
+  "悅來小館中式晚餐": [["悅來小館（待確認）?","悅來小館 Barcelona"]],
+  "英國宮百貨超市買特產": [["英國宮百貨（加泰隆尼亞廣場）","El Corte Inglés Plaça de Catalunya"]],
+  "計程車到巴塞隆納機場第一航廈（T1）": [["巴塞隆納機場第一航廈","Barcelona El Prat Airport Terminal 1"]],
+  "抵達仁川第二航廈，計程車到金色鬱金香酒店": [["金色鬱金香酒店","Golden Tulip Incheon Airport Hotel & Suites"]],
+  "雲西站嫩豆腐湯、石鍋拌飯": [["雲西站餐廳（待確認）?","운서역 순두부"],["樂天超市","Lotte Mart Unseo"]],
+  "本粥：甜南瓜粥早餐": [["本粥（分店待確認）?","본죽 운서"]],
+  "計程車到仁川機場第一航廈（T1）": [["仁川機場第一航廈","Incheon International Airport Terminal 1"]],
+};
+const gmapUrl = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+DAYS.forEach(d=>d.items.forEach(it=>{
+  const extra = ITEM_MAPS[it.n]; if (!extra) return;
+  const have = new Set((it.map||[]).map(m=>m[0]));
+  it.map = (it.map||[]).concat(extra.filter(([l])=>!have.has(l.replace(/\?$/,""))).map(([l,q])=>[l.replace(/\?$/,""), gmapUrl(q)]));
+}));
+
 
 // 住宿（地址待從訂房確認信補上）
 const STAYS = [
@@ -2609,7 +2731,7 @@ $("albumIn").addEventListener("change", async e=>{
 });
 
 /* ══════════════ 自動更新：從主畫面圖示打開時也會拿到最新版 ══════════════ */
-const SITE_VERSION = "2026-10-11T11:07:12";
+const SITE_VERSION = "2026-10-11T11:20:24";
 (function(){
   const v = SITE_VERSION.startsWith("__") ? "" : SITE_VERSION;
   if (v) $("verLine").textContent = `行程版本：${v.replace("T"," ").slice(0,16)}`;
